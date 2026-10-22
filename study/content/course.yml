@@ -1,0 +1,160 @@
+id: high-performance-systems
+title: High-Performance Systems Programming
+lang: en
+dir: ltr
+summary: >
+  C is the window onto the machine. The path runs from the representation
+  of a number, through bytes, pointers, and the process the operating
+  system builds, to structures and command-line arguments.
+
+changelog:
+  - date: 2026-10-22
+    note: Opening guide on representation, memory, the process image, and the C that makes them visible.
+
+sources:
+  - path: "Lecture 1 - Introduction.pdf"
+    type: lecture
+    status: incorporated
+    note: "A number is a pattern of bits, memory is an array of bytes, a process is the running image, and C is how a program sees all of that."
+    problems:
+      - worked-square-overflow
+      - worked-float-associativity
+      - worked-row-major
+      - prac-square-sign
+      - prac-float-add
+      - prac-loop-stride
+      - prac-no-magic
+      - worked-dereference
+      - worked-index-equivalence
+      - prac-value-and-address
+      - prac-pointer-step
+      - prac-array-formula
+      - prac-first-program-roles
+      - worked-stop-the-pipeline
+      - worked-place-each-variable
+      - prac-pipeline-order
+      - prac-section-quiz
+      - prac-lifecycle
+      - prac-who-fetches
+      - worked-integer-division
+      - worked-sizeof-sample
+      - prac-type-widths
+      - prac-char-values
+      - prac-two-divisions
+      - prac-scanf-ampersand
+      - prac-float-bits
+      - worked-moshe-layout
+      - prac-sizeof-two-ints
+      - prac-struct-sum
+      - prac-initializer-order
+      - prac-field-scanf
+      - prac-three-students
+      - worked-omer-sum
+      - prac-argc-count
+      - prac-atoi-role
+      - prac-argv-shape
+
+topics:
+  - id: why-low-level
+    file: topics/why-low-level.md
+    title: Why we go low level
+    exam_weight: taught
+    prerequisites: []
+    unlocks: [memory-and-pointers]
+  - id: memory-and-pointers
+    file: topics/memory-and-pointers.md
+    title: Bytes, variables, and pointers
+    exam_weight: taught
+    prerequisites: [why-low-level]
+    unlocks: [source-to-process]
+  - id: source-to-process
+    file: topics/source-to-process.md
+    title: From source to a running process
+    exam_weight: taught
+    prerequisites: [memory-and-pointers]
+    unlocks: [c-data-types]
+  - id: c-data-types
+    file: topics/c-data-types.md
+    title: Data types and sizeof
+    exam_weight: taught
+    prerequisites: [source-to-process]
+    unlocks: [structures]
+  - id: structures
+    file: topics/structures.md
+    title: Structures
+    exam_weight: taught
+    prerequisites: [c-data-types]
+    unlocks: [command-line-arguments]
+  - id: command-line-arguments
+    file: topics/command-line-arguments.md
+    title: Command-line arguments
+    exam_weight: taught
+    prerequisites: [structures]
+    unlocks: []
+
+glossary:
+  - term: bit
+    topic: memory-and-pointers
+    definition: A binary digit whose value is 0 or 1.
+  - term: byte
+    topic: memory-and-pointers
+    definition: A sequence of 8 bits, drawn with the most significant bit on the left.
+  - term: address
+    topic: memory-and-pointers
+    definition: The index of a byte in RAM, running from 0 up to 2^n - 1.
+  - term: pointer
+    topic: memory-and-pointers
+    definition: A variable whose value is the address of an object.
+  - term: dereference
+    topic: memory-and-pointers
+    definition: The object stored at the address a pointer holds, written with a leading star.
+  - term: contiguous
+    topic: memory-and-pointers
+    definition: Stored one element after another, with no gap between neighbors.
+  - term: preprocessor
+    topic: source-to-process
+    definition: The pipeline stage that handles #include, #define, and the other directives.
+  - term: object file
+    topic: source-to-process
+    definition: The machine-code file the assembler writes, before the linker builds an executable.
+  - term: linker
+    topic: source-to-process
+    definition: The stage that combines object files and libraries into an executable.
+  - term: loader
+    topic: source-to-process
+    definition: The operating-system step that maps an executable's code and data into RAM and sets up a stack.
+  - term: process
+    topic: source-to-process
+    definition: The running image of a program, entered in the process table under a PID.
+  - term: ".text"
+    topic: source-to-process
+    definition: The section that holds the machine instructions of the program.
+  - term: ".data"
+    topic: source-to-process
+    definition: The section for global and static variables initialized with nonzero values.
+  - term: ".bss"
+    topic: source-to-process
+    definition: The section for global variables that are zero or have no explicit initializer.
+  - term: ".rodata"
+    topic: source-to-process
+    definition: The read-only section for immutable initialized globals, string literals, and compiler constants.
+  - term: stack
+    topic: source-to-process
+    definition: The high-address region that holds function calls and local variables and grows downward.
+  - term: heap
+    topic: source-to-process
+    definition: The region for dynamic allocation, filled by malloc and released by free.
+  - term: sizeof
+    topic: c-data-types
+    definition: The unary operator that returns how many bytes its operand occupies.
+  - term: structure
+    topic: structures
+    definition: A contiguous object whose fields may have different types and appear in declaration order.
+  - term: argc
+    topic: command-line-arguments
+    definition: The count of command-line words, including the program name and excluding the terminating null pointer.
+  - term: argv
+    topic: command-line-arguments
+    definition: The null-terminated array of pointers to the command-line words.
+
+exams: []

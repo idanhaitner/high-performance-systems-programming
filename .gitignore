@@ -1,0 +1,7 @@
+.DS_Store
+study/web/node_modules/
+study/web/.next/
+study/web/out/
+study/web/tsconfig.tsbuildinfo
+**/__pycache__/
+*.pyc
