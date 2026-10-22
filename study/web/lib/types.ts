@@ -19,12 +19,32 @@ export type Block =
       line?: number;
     };
 
+export type LessonRef = {
+  id: string;
+  title: string;
+  blurb: string;
+  lessonNumber: number;
+  practiceIds: string[];
+};
+
+export type Lecture = {
+  id: string;
+  number: number;
+  title: string;
+  summary: string;
+  lessons: LessonRef[];
+};
+
 export type Topic = {
   id: string;
   title: string;
   blurb: string;
   practiceIds: string[];
   blocks: Block[];
+  lectureId: string;
+  lectureNumber: number;
+  lectureTitle: string;
+  lessonNumber: number;
 };
 
 export type GlossaryEntry = {
@@ -48,6 +68,7 @@ export type Course = {
   lang: string;
   dir: "ltr" | "rtl";
   summary: string;
+  lectures: Lecture[];
   topics: Topic[];
   glossary: GlossaryEntry[];
   search: SearchHit[];

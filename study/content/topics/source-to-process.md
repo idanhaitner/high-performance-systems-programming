@@ -1,35 +1,45 @@
 ---
 id: source-to-process
-title: From source to a running process
+title: Programs and processes
 sources:
   - "Lecture 1 - Introduction.pdf"
+  - c/01-program/lesson.md
+  - c/09-build/lesson.md
 ---
 
-`gcc main.c -o main` looks like one action. Under that command the file is rewritten four times, and then the operating system turns the resulting executable into a process with a stack, a heap, data, and code. The executable is a file. The process is what runs.
+`gcc main.c -o main` is a driver command. It runs several translators and then the linker. The resulting executable is a file. A process is an execution of that file, with its own virtual address space and a process identifier. The section names in this lesson are the usual ELF names. C defines storage durations and linkage, not section names.
 
-## The pipeline
+## Translation
 
-:::definition id=def-pipeline title="The compilation pipeline" source="Lecture 1 - Introduction.pdf"
-The pipeline is preprocessor, then compiler, then assembler, then linker. `gcc main.c -o main` runs all four and writes an executable.
+:::definition id=def-pipeline title="Translation and linking" source="Lecture 1 - Introduction.pdf"
+For one C source file, preprocessing produces a translation unit, translation produces assembly or another intermediate form, assembly produces an object file, and linking combines object files and libraries into an executable.
 :::
 
-| Stage | What it does | Typical file |
-| --- | --- | --- |
-| Preprocessor | Handles `#include`, `#define`, and the rest of the directives | preprocessed C |
-| Compiler | Translates C and optimizes | assembly |
-| Assembler | Produces machine code in an object file | object file |
-| Linker | Combines object files and libraries | executable |
+| Stage | Result |
+| --- | --- |
+| Preprocessor | A translation unit, after header inclusion and macro expansion |
+| Compiler | Assembly or an equivalent intermediate representation |
+| Assembler | A relocatable object file |
+| Linker | An executable or another linked image |
 
-![Preprocessor, compiler, assembler, and linker, and the gcc flags that stop after each stage.](../assets/figures/compile-pipeline.svg)
+![Preprocessing, compilation, assembly, and linking, with the GCC options that stop after each stage.](../assets/figures/compile-pipeline.svg)
 
-The same pipeline, seen from the programmer, is four sentences:
+The same path can be stopped early:
 
-1. The programmer writes the program in a source language.
-2. The compiler converts the program into machine language, as one or more object files.
-3. The linker links the object files into an executable file.
-4. The loader loads code and data from the executable into RAM, and an initial stack is allocated.
+```text
+gcc -E main.c -o main.i
+gcc -S main.c -o main.s
+gcc -c main.c -o main.o
+gcc main.o -o main
+```
 
-A tiny Hello program, lowered all the way to system calls, looks like this:
+`-E` stops after preprocessing, `-S` after assembly text is written, and `-c` after the object file is written. The last command links. `gcc main.c -o main` performs the whole sequence and removes the intermediate files.
+
+A source file plus the headers it includes is one translation unit. A declaration gives a name a type. Exactly one definition must be linked for an external function or object that the program uses. A header normally contains declarations, not the sole definition of a function.
+
+`int main(void)` is the program's C entry function. Returning 0 reports success to the host. The shell does not print that status unless it is asked, for example with `echo $?`.
+
+The following Linux x86-64 assembly is a freestanding program. It does not call `printf`, and it does not show the normal output of `gcc -S` for a hosted C program:
 
 ```text
 .section .rodata
@@ -47,143 +57,102 @@ _start:
     syscall
 ```
 
-Read it as a fully lowered Hello, so you can see a message and instructions in one listing. `msg` sits in `.rodata`. The first `syscall` is Linux `write`: `rax` is 1, `rdi` is file descriptor 1 (standard output), `rsi` is the address of the message, `rdx` is the length 5. The second `syscall` is `exit`: `rax` is 60 and `rdi` is the status 0. A real `gcc -S` of `printf("Hello")` emits a call to `printf`. The `write` and `exit` system calls live in the C library, which the linker attaches. Both listings are the same pipeline: source text becomes instructions, and the link finishes the executable.
-
-## Stopping after each stage
-
-:::algorithm id=alg-gcc-stops title="Run the pipeline one stage at a time" source="Lecture 1 - Introduction.pdf" complexity="Four stops for one translation unit" invariant="Each command writes only the result of the stages up to the stop you asked for."
-```text
-gcc -E main.c -o main.i    /* stop after preprocessing */
-gcc -S main.c -o main.s    /* stop after compilation to assembly */
-gcc -c main.c -o main.o    /* stop after assembling */
-gcc main.o -o main         /* link the object file */
-```
-:::
-
-`gcc main.c -o main` is the same four stages with no intermediate files kept. The flags exist so you can open the preprocessed source, the assembly, or the object file and see the stage that produced it.
+The first `syscall` is Linux `write`: the system-call number 1 is in `%rax`, file descriptor 1 is in `%rdi`, the buffer address is in `%rsi`, and the length 5 is in `%rdx`. The second is `exit`, number 60, with status 0. A system call is a request to the kernel. It is not a function body stored in the C library. A hosted call to `printf("Hello\n")` is compiled as a call to the library function; that function may later perform a `write` system call.
 
 :::problem id=worked-stop-the-pipeline title="Which flag stops where" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-Name the flag and the output file for stopping after preprocessing, after compilation, and after assembling.
+Name the GCC option and output for stopping after preprocessing, after generating assembly, and after assembling.
 
 :::solution
-`gcc -E main.c -o main.i` stops after the preprocessor. `gcc -S main.c -o main.s` stops after the compiler has written assembly. `gcc -c main.c -o main.o` stops after the assembler has written an object file. `gcc main.o -o main` links.
+`gcc -E main.c -o main.i` stops after preprocessing. `gcc -S main.c -o main.s` stops after writing assembly. `gcc -c main.c -o main.o` stops after writing an object file. `gcc main.o -o main` links that object file.
 :::
 :::
 
-## Sections of the process image
-
-The loader maps the executable into RAM. The next program is small enough to place every line.
+## Static storage in a typical ELF image
 
 ```c
 #include <stdio.h>
 
-int x;            /* .bss  */
-int y = 10;       /* .data */
-const int z = 5;  /* .rodata */
+int x;            /* zero-initialized static storage */
+int y = 10;       /* explicitly initialized static storage */
+const int z = 5;  /* const-qualified static storage */
 
-int main() {
-    int a = 12;              /* stack */
-    printf("z = %d", z);     /* the literal also lives in .rodata */
+int main(void) {
+    int a = 12;          /* automatic storage */
+    printf("z = %d", z); /* the literal has static storage */
     return 0;
 }
 ```
 
-:::definition id=def-bss title="bss" source="Lecture 1 - Introduction.pdf"
-`.bss` (block started by symbol) contains global variables that are initialized to zero, or that have no explicit initializer in the source. The global `int x;` with no initializer belongs here.
+:::definition id=def-bss title=".bss" source="Lecture 1 - Introduction.pdf"
+In a typical ELF object, `.bss` reserves space for zero-initialized objects with static storage duration. The file does not store all of those zeros. `int x;` with no initializer is a common member.
 :::
 
-:::definition id=def-data title="data" source="Lecture 1 - Introduction.pdf"
-`.data` contains global and static variables that are initialized with nonzero values. The global `int y = 10;` belongs here.
+:::definition id=def-data title=".data" source="Lecture 1 - Introduction.pdf"
+`.data` typically holds statically allocated objects whose initial representation is not all zeros. `int y = 10;` is a common member.
 :::
 
-:::definition id=def-rodata title="rodata" source="Lecture 1 - Introduction.pdf"
-`.rodata` (read-only data) contains immutable global variables initialized with nonzero values, string literals, and constants stored by the compiler. The global `const int z = 5` and the format string belong here.
+:::definition id=def-rodata title=".rodata" source="Lecture 1 - Introduction.pdf"
+`.rodata` is a common read-only section for string literals and other immutable static data. Compilers often place a `const` object with static storage there. The `const` qualifier itself does not require that placement, and a string literal must not be modified even when its actual section differs.
 :::
 
-:::definition id=def-text title="text" source="Lecture 1 - Introduction.pdf"
-`.text` contains the code, the machine instructions of the program.
+:::definition id=def-text title=".text" source="Lecture 1 - Introduction.pdf"
+`.text` typically contains executable machine instructions.
 :::
 
-:::definition id=def-stack title="Stack allocation of locals" source="Lecture 1 - Introduction.pdf"
-Local variables are allocated on the stack. The local `int a = 12;` belongs here.
+:::definition id=def-stack title="Automatic storage" source="Lecture 1 - Introduction.pdf"
+An object with automatic storage duration is created on entry to its block. Implementations commonly place it in a stack frame or a register. Taking its address prevents the register-only choice.
 :::
 
-:::definition id=def-heap title="Heap" source="Lecture 1 - Introduction.pdf"
-The heap contains dynamic allocations. `malloc` and `free` allocate and release memory in this region.
+:::definition id=def-heap title="Allocated storage" source="Lecture 1 - Introduction.pdf"
+`malloc`, `calloc`, and `realloc` create objects with allocated storage duration. `free` ends that lifetime. The usual name for this region is the heap.
 :::
 
-![Each line of the program lands in bss, data, rodata, the stack, or text.](../assets/figures/program-sections.svg)
+![A common placement of the sample objects. Section names and stack allocation are implementation choices.](../assets/figures/program-sections.svg)
 
-`const int z = 5` is initialized and immutable, so it belongs in `.rodata` rather than in `.data`. `int x` with no initializer goes to `.bss`, which is the zero-filled region, distinct from a local on the stack. The instructions of `main` are `.text` even though the source line `int a = 12` also causes a stack slot to exist while `main` runs.
+`y` belongs in initialized static data because its initializer is nonzero. `x` is zero-initialized static data. A compiler may place `z` in read-only static data, but that is a placement choice. `a` has automatic storage. The instructions of `main` are code, whichever section contains them. The format string is a string literal and must be treated as immutable.
 
-:::problem id=worked-place-each-variable title="Place x, y, z, and a" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-Name the region that holds `x`, `y`, `z`, the format string, `a`, and the instructions of `main`.
+:::problem id=worked-place-each-variable title="Place x, y, z, and a" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
+Using ordinary ELF placement, identify the storage of `x`, `y`, `z`, the format string, `a`, and the instructions of `main`.
 
 :::solution
-`x` is `.bss`. `y` is `.data`. `z` and the string `"z = %d"` are `.rodata`. `a` is on the stack. The instructions are `.text`.
+`x` is zero-initialized static storage, commonly `.bss`. `y` is initialized static storage, commonly `.data`. `z` is `const` static storage and is often placed in `.rodata`; `const` does not guarantee that section. The format string is a string literal and is also commonly in `.rodata`. `a` has automatic storage, commonly a stack slot if its address is needed. The instructions are commonly in `.text`.
 :::
 :::
 
 :::trap
-Putting every global in `.data`. A global with no initializer, or an initializer of zero, is `.bss`. A `const` global with a nonzero initializer is `.rodata`. A local, even one with an initializer, is the stack.
+Putting every file-scope object in `.data`. An object with no initializer, or an initializer that is all zeros, is normally zero-initialized storage. A block-scope object without `static` has automatic storage even when it has an initializer.
 :::
 
-## The address space
+## Address space and execution
 
 :::definition id=def-address-space title="Process address space" source="Lecture 1 - Introduction.pdf"
-A process has a structured address space. From high addresses toward low addresses, the conceptual picture is the stack, free space, the heap, global and static data, and code in `.text`.
+A process executes against a virtual address space. A conventional drawing, from high addresses to low addresses, shows a downward-growing stack, unused address space, an upward-growing heap, static data, and code. The actual mapping is chosen by the platform and the loader.
 :::
 
-![High addresses hold the stack, then free space, the heap, global data, and code at low addresses.](../assets/figures/address-space.svg)
+![A conventional address-space drawing. Growth directions and the order of regions are platform conventions.](../assets/figures/address-space.svg)
 
-The stack grows downward, toward lower addresses, and holds function calls and local variables. The heap grows upward and holds dynamically allocated memory. Between them there is free space. Global and static data sit below the heap. Code sits at the low end. This is a programmer's conceptual view, and the exact layout can vary. What you should be able to draw is the order and the direction of growth.
-
-The summary of how a run starts:
-
-```text
-./main
-  → operating system
-  → loader
-  → create an address space
-  → map code and data
-  → set up the stack
-  → start execution
-```
-
-## What the operating system does
+The loader creates the address space, maps the executable's loadable segments, prepares the initial stack, and transfers control to the executable entry point. On Linux that symbol is commonly `_start`, supplied by the C runtime. The runtime performs startup work and then calls `main`. The kernel does not search the program for a function named `main`.
 
 :::definition id=def-process title="Process" source="Lecture 1 - Introduction.pdf"
-A process is the running image of a program. The OS registers it in the process table and gives it a PID, a process identifier.
+A process is a running instance of a program. The operating system records it in its process table and assigns it a process identifier.
 :::
 
-While the process exists, the OS allocates CPU time and serves requests: more memory, I/O devices, and the rest. The CPU runs the process's instructions one by one. The cycle is three steps.
+While the process is runnable, the scheduler assigns it CPU time. The CPU fetches instructions from the process image and executes them. The operating system also services requests such as I/O and additional mappings. Termination removes the process record and releases its resources.
 
-:::algorithm id=alg-fetch title="Fetch and execute one instruction" source="Lecture 1 - Introduction.pdf" complexity="One instruction per trip around the cycle" invariant="The instruction executed on a trip is the instruction the CPU just fetched from the process image."
-```text
-1. Request the next instruction.
-2. Get that instruction from the process image.
-3. Execute it.
-```
+:::definition id=def-lifecycle title="Process lifetime" source="Lecture 1 - Introduction.pdf"
+Creation builds the address space and loads the executable. Execution begins at the image entry point; hosted C then calls `main`. Termination reclaims the process and its resources.
 :::
 
-Termination removes the process from the process table and frees the memory allocated for it.
-
-The lifecycle has three phases, in this order.
-
-:::definition id=def-lifecycle title="Process lifecycle" source="Lecture 1 - Introduction.pdf"
-Creation: the OS builds the process image, allocates memory, and loads instructions and data from the executable. Execution: the OS identifies `main` and runs it, and serves the process's requests for resources. Termination: the OS removes the process and releases its resources.
-:::
-
-Dynamic memory comes next: `malloc`, `calloc`, `realloc`, and `free`. Four questions stay open until then: who owns the allocated memory, how long it lives, what happens if it is never released, and what happens if it is used after it was released. In C, memory management is part of the program.
+`malloc` and `free` belong to allocated storage. They do not change the distinction between an executable file and a process. Ownership, leaks, and use after `free` are later material.
 
 :::check id=chk-bss
-A global `int x;` with no initializer is placed in which region?
+In ordinary ELF placement, a file-scope `int x;` with no initializer is placed in which region?
 
-- [ ] The stack, beside `main`'s locals
-- [x] `.bss`
-- [ ] `.data`, because every global is initialized storage
+- [ ] The stack, beside the automatic objects of `main`
+- [x] Zero-initialized static storage, commonly `.bss`
+- [ ] `.data`, because every file-scope object is stored with an explicit image
 
-`.bss` is the home for globals that are zero or that have no explicit initializer. `.data` is for globals initialized with a nonzero value.
+`x` has static storage duration and is zero-initialized. `.data` is the usual section for nonzero initialized static data. Automatic objects are the stack or register case.
 :::
 
 ## Practice
@@ -192,95 +161,95 @@ A global `int x;` with no initializer is placed in which region?
 :::check id=prac-pipeline-order-q1
 The stage that handles `#include` and `#define` is the {{=preprocessor|compiler|linker}}.
 
-That is the first stage. Its output is still C, with the directives expanded.
+Preprocessing expands directives and produces the translation unit. Its output is still C text.
 :::
 
 :::check id=prac-pipeline-order-q2
-The stage that writes machine code into an object file is the {{=assembler|preprocessor|loader}}.
+The stage that writes machine code into a relocatable object file is the {{=assembler|preprocessor|loader}}.
 
-The compiler writes assembly. The assembler turns that assembly into the object file. The loader runs later, on the executable.
+The compiler produces assembly. The assembler produces the object file. The loader runs later, when the executable is executed.
 :::
 
 :::check id=prac-pipeline-order-q3
 `gcc -S main.c -o main.s` stops after {{=compilation to assembly|preprocessing|linking}}.
 
-`-S` stops after the compiler. The file `main.s` is assembly.
+`-S` requests assembly output and does not assemble or link it.
 :::
 :::
 
-:::problem id=prac-section-quiz title="Region of each object" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-Use `int x;`, `int y = 10;`, `const int z = 5;`, and `int a = 12;` inside `main`, plus `printf("z = %d", z)`.
+:::problem id=prac-section-quiz title="Region of each object" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+Use `int x;`, `int y = 10;`, `const int z = 5;`, a block-scope `int a = 12;`, and `printf("z = %d", z)`. Answer with ordinary ELF placement.
 
 :::check id=prac-section-quiz-q1
-`y` lives in {{=.data|.bss|.text}}.
+`y` is commonly placed in {{=.data|.bss|.text}}.
 
-`y` is a global initialized with a nonzero value.
+`y` has static storage duration and a nonzero initializer.
 :::
 
 :::check id=prac-section-quiz-q2
-`z` lives in {{=.rodata|.data|the stack}}.
+`z` is commonly placed in {{=.rodata|.data|the stack}}.
 
-`z` is an immutable global initialized with a nonzero value, which is the description of `.rodata`.
+`z` is a `const` object with static storage duration. Compilers commonly use a read-only section. The qualifier does not make that section a language requirement.
 :::
 
 :::check id=prac-section-quiz-q3
-Which placements are right?
+Which placements match the usual implementation?
 
-- [x] `a` is on the stack
-- [x] The instructions of `main` are in `.text`
-- [ ] `x` is on the stack because it has no initializer
+- [x] `a` has automatic storage, commonly on the stack when it has an address
+- [x] The instructions of `main` are commonly in `.text`
+- [ ] `x` has automatic storage because it has no initializer
 - [ ] The format string is in `.bss` because it is constant
 
-Locals are the stack. Code is `.text`. An uninitialized global is `.bss`. A string literal is `.rodata`.
+`x` has static storage and is zero-initialized. A string literal is immutable static data, commonly `.rodata`. Optimization may keep an automatic object in a register when its address is not used.
 :::
 :::
 
-:::problem id=prac-lifecycle title="Creation, execution, termination" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
+:::problem id=prac-lifecycle title="Creation, execution, termination" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-lifecycle-q1
-During creation the OS {{=loads instructions and data from the executable into allocated memory|asks main for a PID|frees the process image}}.
+During creation the operating system {{=maps the executable into a new address space|asks main for a process identifier|runs the preprocessor}}.
 
-Creation builds the image. The PID is how the process table entry is named. Freeing memory is termination.
+Creation and loading produce a process image. The process identifier names that process. Preprocessing happened before the executable existed.
 :::
 
 :::check id=prac-lifecycle-q2
-During execution the OS identifies {{=main|the preprocessor|.bss}} and runs it.
+Execution of a normal hosted program begins at {{=the executable entry point|a function the kernel selects by the name main|the preprocessor}}.
 
-The OS finds `main` and runs it, and serves requests for resources.
+The loader transfers control to the entry point, commonly `_start`. C runtime code then calls `main`.
 :::
 
 :::check id=prac-lifecycle-q3
-Termination {{=removes the process and releases its resources|maps .text into RAM|runs the linker}}.
+Termination {{=removes the process and releases its resources|maps .text into memory|runs the linker}}.
 
-The linker has already finished before the process exists. Termination undoes the process, not the build.
+Linking finished before execution. Termination ends the process that execution created.
 :::
 :::
 
-:::problem id=prac-who-fetches title="The instruction cycle and the address space" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
+:::problem id=prac-who-fetches title="The instruction cycle and the address space" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-who-fetches-q1
-The cycle is request the next instruction, get it, then {{=execute it|link it|preprocess it}}.
+The processor repeats this cycle: fetch the next instruction, receive it from the process image, then {{=execute it|link it|preprocess it}}.
 
-Those three steps are how the CPU runs the instructions already loaded in the process.
+Fetch and execute describe the running process. Linking and preprocessing are build steps.
 :::
 
 :::check id=prac-who-fetches-q2
-Which region sits at the high addresses and grows downward?
+In the conventional drawing, which region is at the high addresses and grows downward?
 
 - [x] The stack
 - [ ] `.text`
 - [ ] The heap, which grows downward toward the stack
 
-Code is drawn at the low addresses. The heap grows upward. The stack is the high region and grows down.
+Code is commonly mapped at low addresses. The heap commonly grows upward. The drawing is a convention, not a rule that every platform uses the same addresses.
 :::
 
 :::check id=prac-who-fetches-q3
 The heap is
 
-- [x] The region of dynamic allocations, taken up with malloc and free
-- [ ] The region that holds `int y = 10`
-- [ ] A synonym for `.text`
+- [x] The conventional region for objects created by malloc and released by free
+- [ ] The section that holds `int y = 10`
+- [ ] Another name for `.text`
 
-`y` is `.data`. The heap is named here and then postponed, together with `malloc` and `free`.
+`y` has static storage. Allocated storage is the heap in the usual vocabulary.
 :::
 :::
 
-The regions explain the widths you are about to measure. [Data types and sizeof](topic:c-data-types) says how many bytes each C type occupies in those regions. Those four questions about ownership and lifetime are the subject of dynamic memory, so they stay open here.
+[Command-line arguments](topic:command-line-arguments) are supplied by the host when it calls `main`. Their storage is separate from the string literals of the program.

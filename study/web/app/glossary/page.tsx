@@ -6,10 +6,10 @@ export default function GlossaryPage() {
   const course = loadCourse();
   const known = new Set(course.topics.map((topic) => topic.id));
   const groups = course.topics
-    .map((topic, index) => ({
+    .map((topic) => ({
       id: topic.id,
       title: topic.title,
-      number: String(index + 1).padStart(2, "0"),
+      number: String(topic.lessonNumber).padStart(2, "0"),
       entries: course.glossary.filter((entry) => entry.topic === topic.id),
     }))
     .filter((group) => group.entries.length > 0);
@@ -22,7 +22,7 @@ export default function GlossaryPage() {
         <h1>Glossary</h1>
         <span className="masthead-num" aria-hidden="true">{String(course.glossary.length).padStart(2, "0")}</span>
       </header>
-      <p className="lead">The terms the lessons keep, grouped by the chapter that defines them.</p>
+      <p className="lead">The terms used in the lessons, grouped by the lesson that defines them.</p>
       {groups.length > 0 && (
         <nav className="glossary-jump" aria-label="Chapters in the glossary">
           {groups.map((group) => (
@@ -41,7 +41,7 @@ export default function GlossaryPage() {
               <article className="glossary-card" id={entry.anchor} key={entry.anchor}>
                 <h3><Mixed text={entry.term} /></h3>
                 <p><Mixed text={entry.definition} /></p>
-                <Link href={`/topics/${entry.topic}`}>Open the chapter</Link>
+                <Link href={`/topics/${entry.topic}`}>Open the lesson</Link>
               </article>
             ))}
           </div>

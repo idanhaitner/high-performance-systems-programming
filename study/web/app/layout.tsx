@@ -31,11 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Rail
             courseId={course.id}
             title={course.title}
-            chapters={course.topics.map((topic) => ({
-              id: topic.id,
-              title: topic.title,
-              practiceIds: topic.practiceIds,
-            }))}
+            lectures={course.lectures}
             hits={course.search}
           />
           <main id="content">{children}</main>

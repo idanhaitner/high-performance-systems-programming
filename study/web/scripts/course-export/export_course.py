@@ -12,14 +12,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import studylib
 
 
-def lecture_blurb(sources: dict, meta: dict) -> str:
-    for path in meta.get("sources") or []:
-        src = sources.get(studylib.norm_rel(path))
-        if src and src.get("type") == "lecture" and str(src.get("note") or "").strip():
-            return str(src["note"]).strip()
-    return ""
-
-
 def practice_ids(blocks) -> list[str]:
     ids = []
     for _parent, block in studylib.walk_directives(blocks):
@@ -36,20 +28,19 @@ def main() -> None:
     parser.add_argument("--root", required=True)
     args = parser.parse_args()
     model = studylib.load_course(Path(args.root))
+    errors = studylib.validate_content(model)
+    if errors:
+        print("\n".join(errors), file=sys.stderr)
+        sys.exit(1)
     course = model["course"]
-    sources = {}
-    for src in course.get("sources") or []:
-        if isinstance(src, dict) and src.get("path"):
-            sources[studylib.norm_rel(src["path"])] = src
 
     topics = []
     search = []
     for topic in model["topics"]:
         entry = topic["entry"] if isinstance(topic["entry"], dict) else {}
-        meta = topic["meta"] if isinstance(topic["meta"], dict) else {}
         slug = str(entry.get("id") or "")
         title = str(entry.get("title") or slug)
-        blurb = lecture_blurb(sources, meta)
+        blurb = str(entry.get("summary") or "").strip()
         topics.append({
             "id": slug,
             "title": title,
@@ -58,7 +49,7 @@ def main() -> None:
             "blocks": topic["blocks"],
         })
         search.append({
-            "kind": "Chapter",
+            "kind": "Lesson",
             "title": title,
             "text": blurb,
             "href": f"/topics/{slug}",
@@ -74,6 +65,31 @@ def main() -> None:
                 "text": text[:240],
                 "href": f"/topics/{slug}#{block['attrs'].get('id')}",
             })
+
+    by_id = {topic["id"]: topic for topic in topics}
+    lectures = []
+    for lecture in course.get("lectures") or []:
+        lessons = []
+        for index, topic_id in enumerate(lecture.get("topics") or [], start=1):
+            topic = by_id[str(topic_id)]
+            topic["lectureId"] = str(lecture.get("id") or "")
+            topic["lectureNumber"] = lecture.get("number")
+            topic["lectureTitle"] = str(lecture.get("title") or "")
+            topic["lessonNumber"] = index
+            lessons.append({
+                "id": topic["id"],
+                "title": topic["title"],
+                "blurb": topic["blurb"],
+                "lessonNumber": index,
+                "practiceIds": topic["practiceIds"],
+            })
+        lectures.append({
+            "id": str(lecture.get("id") or ""),
+            "number": lecture.get("number"),
+            "title": str(lecture.get("title") or ""),
+            "summary": str(lecture.get("summary") or "").strip(),
+            "lessons": lessons,
+        })
 
     glossary = []
     used = set()
@@ -111,6 +127,7 @@ def main() -> None:
             "lang": course.get("lang") or "en",
             "dir": course.get("dir") or "ltr",
             "summary": str(course.get("summary") or "").strip(),
+            "lectures": lectures,
             "topics": topics,
             "glossary": glossary,
             "search": search,

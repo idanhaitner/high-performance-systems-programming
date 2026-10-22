@@ -27,7 +27,7 @@
   </g>
   <g class="step" style="animation-delay:0.32s">
     <text x="36" y="128" class="mono" font-size="15">const int z = 5;</text>
-    <text x="280" y="128" class="t" font-size="15">.rodata — immutable initialized data</text>
+    <text x="280" y="128" class="t" font-size="15">.rodata — often used for const data</text>
   </g>
   <g class="step" style="animation-delay:0.44s">
     <text x="36" y="172" class="mono" font-size="15">"z = %d"</text>

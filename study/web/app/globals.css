@@ -88,7 +88,7 @@ img { max-width: 100%; height: auto; border-radius: 12px; display: block; margin
 .figure img {
   margin: 0 auto;
   width: 100%;
-  max-width: 720px;
+  max-width: 100%;
   height: auto;
   border-radius: 12px;
   background: oklch(0.97 0.012 240);
@@ -434,6 +434,46 @@ p { margin: 0.75rem 0; text-wrap: pretty; }
   font-style: normal;
   font-size: 0.95rem;
 }
+.lecture-list { display: flex; flex-direction: column; gap: 1rem; }
+.lecture-card {
+  padding: 1.05rem 1.05rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in oklch, var(--card) 88%, transparent);
+}
+.lecture-card h2 { margin: 0.15rem 0 0.35rem; font-size: 1.55rem; }
+.lecture-card > p:last-of-type { margin-top: 0.2rem; }
+.lecture-card .chapter-list { margin-top: 0.9rem; }
+.lecture-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  margin: 0.85rem 0.6rem 0.25rem;
+  color: var(--rail-muted);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+.lecture-label span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.outline {
+  margin: 1.35rem 0 0.4rem;
+  padding: 0.85rem 1rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+.outline ol {
+  margin: 0.35rem 0 0;
+  padding-inline-start: 1.25rem;
+}
+.outline li { margin: 0.28rem 0; }
+.outline a { text-decoration: none; }
+.lesson-section, .practice, .formal, .check { scroll-margin-top: 1.25rem; }
+.lesson-section > h2 { margin-top: 1.7rem; }
 
 .card, .formal, .callout {
   background: var(--card);
@@ -567,12 +607,12 @@ p { margin: 0.75rem 0; text-wrap: pretty; }
 .fold.is-open .fold-toggle::after { transform: rotate(-135deg); }
 .fold-body { padding: 0 1rem 0.35rem; }
 .actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  align-items: stretch;
+  align-items: center;
 }
-.actions button { width: 100%; }
+.actions button { width: auto; }
 .practice.is-solved { background: var(--accent-soft); }
 .hint, .solution, .check-why {
   margin-top: 0.85rem;
@@ -979,8 +1019,8 @@ blockquote {
     overscroll-behavior-x: contain;
     background: var(--bg);
   }
-  .part-panel, .fold, .glossary-group, .glossary-card {
-    scroll-margin-top: calc(var(--rail-bar) + 3.6rem);
+  .part-panel, .fold, .glossary-group, .glossary-card, .lesson-section, .practice, .formal, .check {
+    scroll-margin-top: calc(var(--rail-bar) + 0.8rem);
   }
   .chapter-hops:has(.chapter-hop:nth-child(2)) {
     width: 100%;
@@ -1017,9 +1057,9 @@ blockquote {
   font-weight: 650;
 }
 .section-pop {
-  position: fixed;
-  z-index: 4;
-  top: 1.15rem;
+  position: static;
+  z-index: 1;
+  top: auto;
   bottom: auto;
   display: flex;
   align-items: center;
@@ -1115,10 +1155,10 @@ button.section-pop { min-height: 0; }
   flex-direction: row;
   justify-content: space-between;
   align-items: stretch;
-  gap: 1.5rem;
-  width: calc(100% + 4rem);
-  max-width: calc(100vw - 20.5rem);
-  margin-inline: -2rem;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
 }
 .chapter-hops:has(.chapter-hop:nth-child(2)) .chapter-hop {
   flex: 1 1 0;
@@ -1198,8 +1238,8 @@ button.section-pop { min-height: 0; }
   justify-content: center;
   gap: 0.3rem;
   width: auto;
-  max-width: none;
-  min-width: 9.5rem;
+  max-width: 100%;
+  min-width: 0;
   margin-top: 0;
   padding: 0.3rem 1.1rem;
   border-radius: 999px;

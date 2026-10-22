@@ -1,34 +1,24 @@
-import type { ReactNode } from "react";
 import { Blocks } from "@/components/Blocks";
-import { ReadingFooter, SectionSwitch, type ChapterHop } from "@/components/SectionSwitch";
+import { ReadingFooter, type LessonHop } from "@/components/SectionSwitch";
+import { Inline } from "@/lib/inline";
 import type { Block } from "@/lib/types";
 
-type Slice = { title: string; blocks: Block[] };
+type Slice = { id: string; title: string; blocks: Block[] };
 
-function walk(blocks: Block[], visit: (block: Block) => void) {
-  for (const block of blocks) {
-    visit(block);
-    if (block.type === "directive") walk(block.children, visit);
-    if (block.type === "list") {
-      for (const item of block.items) walk(item.children, visit);
-    }
-  }
+function slug(text: string, used: Map<string, number>) {
+  const base = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "section";
+  const count = used.get(base) ?? 0;
+  used.set(base, count + 1);
+  return count === 0 ? base : `${base}-${count + 1}`;
 }
 
-function idsOf(blocks: Block[]) {
-  const ids: string[] = [];
-  walk(blocks, (block) => {
-    if (block.type === "directive" && block.attrs.id) ids.push(block.attrs.id);
-  });
-  return ids;
-}
-
-function splitAt(blocks: Block[], level: number) {
+function splitAt(blocks: Block[]) {
   const intro: Block[] = [];
   const slices: Slice[] = [];
+  const used = new Map<string, number>();
   for (const block of blocks) {
-    if (block.type === "heading" && block.level === level) {
-      slices.push({ title: block.text, blocks: [] });
+    if (block.type === "heading" && block.level === 2) {
+      slices.push({ id: slug(block.text, used), title: block.text, blocks: [] });
     } else if (slices.length === 0) {
       intro.push(block);
     } else {
@@ -38,55 +28,40 @@ function splitAt(blocks: Block[], level: number) {
   return { intro, slices };
 }
 
-function renderBlocks(blocks: Block[], courseId: string) {
-  return <Blocks blocks={blocks} courseId={courseId} />;
-}
-
 export function Chapter({
   blocks,
   courseId,
-  previousChapter,
-  nextChapter,
+  previousLesson,
+  nextLesson,
 }: {
   blocks: Block[];
   courseId: string;
-  previousChapter: ChapterHop | null;
-  nextChapter: ChapterHop | null;
+  previousLesson: LessonHop | null;
+  nextLesson: LessonHop | null;
 }) {
-  const { intro, slices } = splitAt(blocks, 2);
-  if (slices.length === 0) {
-    return (
-      <>
-        {renderBlocks(blocks, courseId)}
-        <ReadingFooter previousChapter={previousChapter} nextChapter={nextChapter} />
-      </>
-    );
-  }
-
-  const parts = slices.map((slice) => {
-    const inner = splitAt(slice.blocks, 3);
-    const grouped = inner.slices.length >= 2;
-    const groups = grouped
-      ? inner.slices.map((group) => ({
-          title: group.title,
-          ids: idsOf(group.blocks),
-          body: renderBlocks(group.blocks, courseId) as ReactNode,
-        }))
-      : [];
-    return {
-      title: slice.title,
-      ids: idsOf(grouped ? inner.intro : slice.blocks),
-      intro: renderBlocks(grouped ? inner.intro : slice.blocks, courseId) as ReactNode,
-      groups,
-    };
-  });
-
+  const { intro, slices } = splitAt(blocks);
   return (
-    <SectionSwitch
-      intro={renderBlocks(intro, courseId)}
-      parts={parts}
-      previousChapter={previousChapter}
-      nextChapter={nextChapter}
-    />
+    <>
+      <Blocks blocks={intro} courseId={courseId} />
+      {slices.length > 1 && (
+        <nav className="outline" aria-label="On this page">
+          <p className="kicker">On this page</p>
+          <ol>
+            {slices.map((slice) => (
+              <li key={slice.id}>
+                <a href={`#${slice.id}`}><Inline text={slice.title} /></a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+      {slices.map((slice) => (
+        <section className="lesson-section" id={slice.id} key={slice.id}>
+          <h2><Inline text={slice.title} /></h2>
+          <Blocks blocks={slice.blocks} courseId={courseId} />
+        </section>
+      ))}
+      <ReadingFooter previousLesson={previousLesson} nextLesson={nextLesson} />
+    </>
   );
 }

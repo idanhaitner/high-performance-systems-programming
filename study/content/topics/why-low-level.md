@@ -1,123 +1,109 @@
 ---
 id: why-low-level
-title: Why we go low level
+title: Representation and performance
 sources:
   - "Lecture 1 - Introduction.pdf"
+  - c/03-expressions/lesson.md
 ---
 
-High-level code is a promise that something underneath will keep. This course starts where that promise meets the machine: the representation of a number, the order of bytes in memory, and the process the operating system actually runs. C is the window, because it lets you write ordinary programs and still name addresses, widths, and bits.
+Performance work starts from a concrete machine model. A mathematical expression names a value. A C expression names an operation on a finite representation, and the generated code then reads and writes memory. Those two steps explain the results in this lesson: a signed overflow, a rounding difference, and an access pattern that walks memory in a different order.
 
-The path runs from C, through memory, through cache and the CPU, through multicore, and on to the GPU.
+The later lectures move from this model to cache behavior, CPU execution, multicore programs, and GPUs. C is the course language because a C program can name widths, addresses, and layout directly.
 
-![The course walks from C through memory, cache and the CPU, multicore, and the GPU.](../assets/figures/course-path.svg)
+![The course proceeds from C to memory, cache and the CPU, multicore execution, and the GPU.](../assets/figures/course-path.svg)
 
-## There is no magic
+## Where an abstraction spends its time
 
-:::definition id=def-no-magic title="An abstraction has an implementation" source="Lecture 1 - Introduction.pdf"
-Every abstraction is implemented by something underneath. Performance starts where abstractions meet reality.
+:::definition id=def-no-magic title="Implementation of an abstraction" source="Lecture 1 - Introduction.pdf"
+An abstraction has an implementation in software or hardware. The cost of an operation is the cost of that implementation.
 :::
 
-A language such as Python or Java gives you objects, automatic memory, and arithmetic that looks like the arithmetic you learned. Those features are real, and they are also code and hardware. The stack of abstractions runs downward:
+Python and Java hide allocation, object layout, and parts of numeric representation. C leaves allocation and layout under the program's control and maps most operations closely to machine instructions. That difference is a design tradeoff. It does not mean that every higher-level implementation is written in C: a runtime may use C, another language, or a JIT. The useful boundary is which decisions the language lets the program make.
 
-![Python and Java sit on C, and C sits on the hardware and the operating system.](../assets/figures/abstraction-stack.svg)
+![Application code uses explicit C operations, which become instructions and memory accesses.](../assets/figures/abstraction-stack.svg)
 
-C is in the middle on purpose. It is efficient and portable, it was designed in 1972 at Bell Labs by Dennis Ritchie, and it still lets a program reach bit-level details. The tradeoff is more abstraction on one side and more control on the other.
-
-| | Python / Java | C |
+| Decision | Common application language | C |
 | --- | --- | --- |
-| Memory | automatic | explicit |
-| Data | objects, hidden layout | addresses and representation you choose |
-| Machine | implementation details hidden | close interaction with the OS and the hardware |
+| Storage duration | Often managed by a runtime | Chosen by the program |
+| Layout | Hidden by the object model | Chosen by declarations and the ABI |
+| Numeric result | A language-defined numeric model | The C type and its representation |
 
-C is the course's systems language. It is the window into the machine. The goal of the course is the machine, and C is how the programs in this course reach it.
-
-The same idea shows up in the work this course is preparing you to read: compilers and linkers, the operating system, embedded and real-time systems, and low-level work such as reverse engineering, patching, and direct hardware manipulation. Think about more than the algorithm. Two programs with the same algorithm can differ in speed and in reliability once the representation and the memory system get a vote.
+The same algorithm can have different running times once the representation or the memory traffic changes. Compilers, operating systems, embedded software, and reverse engineering all depend on that fact.
 
 :::check id=chk-no-magic
-Where does performance start?
+Which statement describes the cost of an abstraction?
 
-- [ ] In the choice of a high-level language, before any representation is involved
-- [x] Where abstractions meet the implementation underneath them
-- [ ] Only after a program is rewritten in assembly by hand
+- [ ] The cost is fixed by the language name before any implementation is chosen
+- [x] The cost is the cost of the software or hardware that implements it
+- [ ] The cost appears only after the program has been rewritten by hand in assembly
 
-The opening claim is that every abstraction is implemented by something underneath, and performance starts at that meeting point.
+An abstraction does not have a cost of its own. Its implementation performs instructions and memory accesses, and those operations account for the cost.
 :::
 
-## Three places theory breaks
+## Signed overflow is not modular arithmetic
 
-The same warning covers the integer example and the floating-point example. In Hebrew: לא (תמיד) ניתן לסמוך על כך שמה שאנחנו יודעים בתאוריה מתקיים גם במחשב. What we know from theory does not always hold on the computer, and the programs we write have to live with that. Each case is a limit of the representation.
-
-## A square can come out negative
-
-:::definition id=def-representation-limit title="A limit of the representation" source="Lecture 1 - Introduction.pdf"
-When a machine type cannot hold the mathematical result, the stored result follows the type's representation. That outcome is a limit of the representation.
+:::definition id=def-representation-limit title="Finite representation" source="Lecture 1 - Introduction.pdf"
+A machine integer has a finite width. A mathematical result that does not fit in that width is not automatically reduced modulo the width of a signed C type.
 :::
 
-A 32-bit signed multiplication does this:
+Consider a 32-bit two's-complement calculation, independent of what a C compiler is allowed to do:
 
-$$1410065407 \times 1410065407 \rightarrow -1158137855$$
+$$1410065407 \times 1410065407 = 1988284452018075649 = \mathtt{0x1B97CE2CBAF83801}$$
 
-The mathematical product is $1988284452018075649$, which in hexadecimal is `0x1B97CE2CBAF83801`. A 32-bit cell keeps only the low 32 bits, `0xBAF83801`. The top bit of that pattern is 1, so reading the cell as a signed 32-bit integer yields $-1158137855$. An `int` here is 4 bytes, which is this width.
+The low 32 bits are `0xBAF83801`. Interpreted as a signed 32-bit two's-complement value, that pattern is $-1158137855$. This is a fact about the bit pattern. A signed `int` expression in C is not required to produce it.
 
-:::theorem id=thm-square-sign title="A machine square need not be non-negative" source="Lecture 1 - Introduction.pdf"
-For a 32-bit signed `int`, there exists a value $x$ such that the computed product $x \cdot x$ is negative.
-
-:::proof
-**Intuition.** The mathematical square is far outside the range of a 32-bit signed cell. The cell keeps a slice of the bits, and that slice has its sign bit set.
-
-**Proof.** Take $x = 1410065407$. The integer product is $1988284452018075649 = \mathtt{0x1B97CE2CBAF83801}$. The low 32 bits are $\mathtt{0xBAF83801}$. Interpreted as a two's-complement 32-bit value, the leading 1 means the result is negative, and the stored value is $-1158137855$. So the computed square is negative.
-
-**What the proof used.** The product $1988284452018075649$, the 4-byte `int`, and the reading of a 32-bit pattern whose high bit is 1 as a negative signed value.
-:::
+:::definition id=def-signed-overflow title="Signed overflow" source="c/03-expressions/lesson.md"
+If a signed integer operation has a mathematical result that cannot be represented in the result type, the behavior of the C program is undefined.
 :::
 
-:::problem id=worked-square-overflow title="Square of 1410065407" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-Is $x^2 \ge 0$ when $x = 1410065407$ and the product is computed in a 32-bit signed `int`? The computed product is $-1158137855$. Explain that result as a fact about representation.
+Undefined behavior means the C standard imposes no requirements on that execution. A compiler may assume the overflow does not occur, delete later checks, or produce the low 32 bits. Wrapping is the defined rule for unsigned arithmetic. For a 32-bit demonstration, use `uint32_t` from `<stdint.h>`: conversion to `uint32_t` reduces the value modulo $2^{32}$.
+
+```c
+#include <stdint.h>
+
+uint32_t x = 1410065407u;
+uint32_t product = x * x; /* defined modulo 2^32: 0xBAF83801 */
+```
+
+:::problem id=worked-square-overflow title="Square of 1410065407" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
+Separate the mathematical product, the 32-bit two's-complement reading, and the meaning of the same multiplication in signed C.
 
 :::solution
-The mathematical product is $1988284452018075649$ (`0x1B97CE2CBAF83801`). A 32-bit signed cell stores `0xBAF83801`. That pattern's high bit is 1, so the value read back is $-1158137855$. This is a limit of the representation: the type cannot hold the mathematical square, so the inequality $x^2 \ge 0$ is a statement about mathematical integers, and the program computed a 32-bit product.
+The mathematical product is $1988284452018075649$, or `0x1B97CE2CBAF83801`. Its low 32 bits are `0xBAF83801`, which reads as $-1158137855$ in 32-bit two's complement. A signed `int` multiplication that cannot represent the product is undefined behavior, so a C program is not required to store that pattern. The defined way to keep the low 32 bits is an unsigned operation, such as multiplication in `uint32_t`.
 :::
 :::
 
 :::trap
-Treating a computed `int` product as a mathematical integer. Once the product leaves the range of the type, the bits that remain are a different number, and that number can be negative.
+Testing a signed overflow on one compiler and treating the observed wrap as the language rule. Change optimization level, compiler, or surrounding code, and an undefined operation can produce a different result.
 :::
 
-## Addition of floating values depends on order
+## Rounding makes addition non-associative
 
-The next question is whether $(x + y) + z = x + (y + z)$.
-
-$$
-(1.0\times 10^{20} + (-1.0\times 10^{20})) + 3.14 \rightarrow 3.14
-$$
+A binary floating-point format stores a sign, a biased exponent, and a fraction. Values near $10^{20}$ have a large unit in the last place. Under ordinary IEEE-754 `double` evaluation, adding $3.14$ to a magnitude of $10^{20}$ does not change the stored magnitude.
 
 $$
-1.0\times 10^{20} + ((-1.0\times 10^{20}) + 3.14) \rightarrow 0.0
+(1.0\times 10^{20} + (-1.0\times 10^{20})) + 3.14 = 3.14
 $$
 
-:::theorem id=thm-float-assoc title="Floating-point addition on these values is not associative" source="Lecture 1 - Introduction.pdf"
-For $x = 1.0\times 10^{20}$, $y = -1.0\times 10^{20}$, and $z = 3.14$, the two associations produce different results.
+$$
+1.0\times 10^{20} + ((-1.0\times 10^{20}) + 3.14) = 0.0
+$$
 
-:::proof
-**Intuition.** A floating-point value near $10^{20}$ does not have a digit for a contribution as small as $3.14$. Adding $3.14$ to a huge magnitude can leave the huge magnitude unchanged. Adding the two huge values to each other first cancels them, and then $3.14$ has room to survive.
+The first association cancels the large values while they are exact opposites, then adds $3.14$ to zero. The second adds $3.14$ to $-10^{20}$ first. That addend is below the unit in the last place, so the inner result remains $-10^{20}$ and the following addition cancels it.
 
-**Proof.** In $(x + y) + z$ the sum $x + y$ is $0$, and $0 + 3.14$ is $3.14$. In $x + (y + z)$ the inner sum $y + z$ is still stored as $-1.0\times 10^{20}$, because $3.14$ is below the unit in the last place at that magnitude. Adding $x$ then cancels that value to $0$. Both results are real. They differ, so the two associations are different computations on this representation.
-
-**What the proof used.** The two numeric results, and the fact that a finite floating-point format has a limited significand, so a small addend can be lost beside a much larger magnitude.
-:::
-:::
+An unsuffixed literal such as `1e20` has type `double`. These two results apply to IEEE-754 evaluation in program order. Flags that permit reassociation, including some fast-math modes, can change which association the compiler emits. The algebraic law that fails here is associativity of addition. Commutativity is not the property being tested.
 
 :::problem id=worked-float-associativity title="Two associations of 1e20 and 3.14" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-Compute both associations and say which algebraic law fails for these machine values.
+For $x = 10^{20}$, $y = -10^{20}$, and $z = 3.14$, evaluate both associations under ordinary IEEE-754 `double` arithmetic and name the law that fails.
 
 :::solution
-$(1.0\times 10^{20} + (-1.0\times 10^{20})) + 3.14$ evaluates to $3.14$. The other association evaluates to $0.0$. Associativity of addition fails for these floating-point values. This is again a limit of the representation.
+$(x + y) + z$ evaluates to $3.14$. The other association evaluates to $0.0$. Associativity fails because the format cannot retain $3.14$ beside a magnitude of $10^{20}$. This assumes evaluation in the written order under IEEE-754 rules, without a compiler transformation that reassociates the expression.
 :::
 :::
 
-## Loop order changes which bytes come next
+## Stride decides which bytes are adjacent
 
-A computer has several kinds of memory. Three ways to copy an `int` matrix of side 2049 need not take the same time.
+C stores a two-dimensional array in row-major order: `A[i][j]` and `A[i][j + 1]` are adjacent elements. For an `int` array, adjacent elements are `sizeof(int)` bytes apart. On the LP64 platform used for these examples, that distance is 4 bytes. `A[i][j]` and `A[i + 1][j]` are one row apart, which is $2049$ elements in the arrays below.
 
 ```c
 int i, j;
@@ -143,137 +129,129 @@ for (i = 0; i < 2049; i++)
     }
 ```
 
-In C a two-dimensional array is stored by rows. `A[i][j]` and `A[i][j + 1]` occupy neighboring `int` cells, 4 bytes apart, because an `int` is 4 bytes. `A[i][j]` and `A[i + 1][j]` are one whole row apart: $2049$ ints.
+![Row-major order places consecutive columns in adjacent cells and consecutive rows one row apart.](../assets/figures/loop-stride.svg)
 
-![Row-major order makes the j-inner loop walk neighboring cells, and the i-inner loop jump by a whole row.](../assets/figures/loop-stride.svg)
+The first inner loop advances one element. A hardware cache loads a cache line, commonly 64 bytes, so several consecutive `int` values arrive together and the next iterations reuse that line. The second inner loop advances $2049 \times 4 = 8196$ bytes. Consecutive iterations do not share a cache line, so the pattern has poor spatial locality.
 
-The first loop holds the row fixed and walks `j`. Consecutive iterations touch consecutive cells. The second loop is slower. It holds the column fixed and walks `i`, so consecutive iterations jump $2049 \times 4$ bytes. The machine's faster memory is used well when the next access is near the previous one. A jump of a whole row keeps missing that neighborhood.
-
-The third loop walks the same row-major order and copies three adjacent ints per iteration. Because $2049 = 3 \times 683$, every element is copied once and there is no leftover tail. This version may be faster than the first: the same adjacent bytes are moved, with fewer trips around the loop. How large the gap is depends on the CPU and its memory, which is why cache design is its own topic. The fact already visible here is the stride.
+The third loop uses the same row-major order and copies three adjacent elements per iteration. Because $2049 = 3 \times 683$, every element is visited once. Fewer loop-control instructions execute for the same memory traffic. Whether any version is faster is an empirical question: the compiler may reorder or vectorize the loops, and the machine's caches and prefetcher affect the measurement. The access stride is the fact available before measuring.
 
 :::problem id=worked-row-major title="Which copy walks neighboring ints" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-For the three copy loops on a 2049 by 2049 `int` matrix, name the stride of the inner loop and how the speeds compare.
+For the three copies of a 2049 by 2049 `int` matrix, give the inner-loop stride and the locality consequence. Do not treat a timing result as portable.
 
 :::solution
-With `i` outer and `j` inner, the inner stride is one `int` (4 bytes). With `j` outer and `i` inner, the inner stride is one row, $2049$ ints. The column-wise loop is slower than the row-wise loop. The third loop keeps the row-wise stride and copies three adjacent ints per trip. $2049 = 3 \times 683$, so the unroll covers each row exactly. That version may be faster than the plain row-wise loop.
+With `j` in the inner loop, the stride is one `int`, or 4 bytes on this platform. With `i` in the inner loop, the stride is one row: $2049$ ints, or 8196 bytes. The one-element stride has spatial locality because consecutive accesses share a cache line. The row stride does not. The third loop keeps the one-element stride, visits every element once because $2049$ is divisible by 3, and performs less loop control per element. A compiler or a different cache can change the measured time.
 :::
 :::
 
 :::trap
-Assuming that two loops with the same assignments have the same cost. Here the assignments are the same and the order of addresses is different. The order is the thing the memory system sees.
+Comparing two loops by the number of assignments alone. These copies perform the same number of element assignments. The difference is the distance between successive addresses.
 :::
 
-## What the course will control
+## The scope of this lecture
 
-Five layers of control sit ahead. The work starts with the first two: representation, and the layout of memory.
+Five implementation layers account for most of the performance topics in the course:
 
-- Data representation and layout
-- Memory and cache access
-- CPU execution
-- Multicore parallelism
-- GPU parallelism, at a much larger scale
+- Representation and layout
+- Memory and cache behavior
+- Instruction execution
+- Multicore coordination
+- GPU parallelism
 
-The topics ahead are C programming, interaction with the OS, code optimization, cache design and coherence, C threads, OpenMP, and GPU architecture with an introduction to CUDA.
-
-The tools for the work are Linux (any distribution; Linux Mint is a fine one to try), `gcc`, `gdb`, and an editor. VS Code is one option, and no editor is required. The book is *Computer Systems: A Programmer's Perspective*, Bryant and O'Hallaron, Prentice Hall, 3rd edition (2016).
-
-## How the course is run
-
-Dr. Marina Kogan-Sadetsky (sadetsky@bgu.ac.il) teaches the course. The TAs are עידן מרדכי גולדברג, נור עתאמנה, and סעיד נעאמנה.
-
-Four assignments are 20% of the grade. The final exam is 80%. Passing the course requires an assignments average of at least 56 and an exam grade of at least 56.
-
-Extensions follow the university guidelines (תקנון). Each student has 5 grace days in total. With no grace days left, a hand-in is penalized 10% on the first late day, an additional 20% on the second, and an additional 30% on the third. You do not need to notify the staff. Unused grace days are not a bonus.
-
-Sharing code, by copying, retyping, looking, or supplying a file, is cheating. Sharing assignment answers is cheating. Using AI to solve an assignment is cheating. The minimal punishment is a failing grade. Helping someone use a tool, talking about high-level design, and using AI to debug your own code are allowed.
+This lecture covers the first layer and the address-space model needed to talk about the second. The working environment is Linux, GCC, GDB, and an editor. The reference book is *Computer Systems: A Programmer's Perspective*, Bryant and O'Hallaron, 3rd edition (2016).
 
 ## Practice
 
 :::problem id=prac-square-sign title="When a square is negative" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Multiplying $1410065407$ by itself in a 32-bit signed `int` produces a negative result. Answer from the representation.
+Use $x = 1410065407$. Its mathematical square is `0x1B97CE2CBAF83801`.
 
 :::check id=prac-square-sign-q1
-The low 32 bits of the mathematical product are {{=0xBAF83801|0x1B97CE2C|0x00000000}}.
+The low 32 bits of that product are {{=0xBAF83801|0x1B97CE2C|0x00000000}}.
 
-The full product is `0x1B97CE2CBAF83801`. A 32-bit cell keeps the low half, `0xBAF83801`.
+A 32-bit pattern retains bits 31 through 0. In `0x1B97CE2CBAF83801`, those bits are `0xBAF83801`.
 :::
 
 :::check id=prac-square-sign-q2
-Why is the stored product negative?
+Why does a two's-complement reading of those 32 bits have a negative sign?
 
 - [x] The high bit of the stored 32-bit pattern is 1
-- [ ] Multiplication of odd integers is defined to return a negative `int`
-- [ ] The compiler detected overflow and substituted $-1$
+- [ ] Multiplication of odd integers is defined to return a negative value
+- [ ] The C standard substitutes $-1$ for every signed overflow
 
-`0xBAF83801` has its top bit set, so a signed 32-bit reading is $-1158137855$.
+`0xBAF83801` has bit 31 set. A signed 32-bit two's-complement interpretation is therefore negative. That interpretation is a fact about the pattern, not a C rule for signed overflow.
+:::
+
+:::check id=prac-square-sign-q3
+In ISO C, signed overflow of `int` is {{=undefined behavior|defined reduction modulo 2^32|required to produce this negative value}}.
+
+The standard imposes no requirements on a signed operation whose result cannot be represented. Unsigned arithmetic, including `uint32_t`, has the modular rule.
 :::
 :::
 
 :::problem id=prac-float-add title="Which association keeps 3.14" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-Use $x = 1.0\times 10^{20}$, $y = -1.0\times 10^{20}$, and $z = 3.14$.
+Use $x = 1.0\times 10^{20}$, $y = -1.0\times 10^{20}$, and $z = 3.14$, evaluated as IEEE-754 `double` values in the written order.
 
 :::check id=prac-float-add-q1
 $(x + y) + z$ evaluates to {{=3.14|0.0|1e20}}.
 
-$x + y$ cancels to 0, and then $z$ is added to 0.
+$x + y$ cancels to 0, and adding $z$ to 0 retains $3.14$.
 :::
 
 :::check id=prac-float-add-q2
 $x + (y + z)$ evaluates to {{=0.0|3.14|-3.14}}.
 
-$3.14$ is lost beside $-10^{20}$, so the inner sum is still $-10^{20}$, and adding $x$ cancels it.
+$3.14$ is lost beside $-10^{20}$, so the inner sum remains $-10^{20}$. Adding $x$ then cancels that value.
 :::
 
 :::check id=prac-float-add-q3
 The algebraic property that fails for these machine values is {{=associativity of addition|commutativity of addition|closure of addition}}.
 
-The same three numbers, added, give different results when only the parentheses change.
+The same three numbers produce different results when only the association changes. A fast-math transformation can reassociate the source expression, so the result is tied to the evaluation order.
 :::
 :::
 
-:::problem id=prac-loop-stride title="Stride of the slower copy" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Both loops assign `B[i][j] = A[i][j]` for `i` and `j` from 0 to 2048. `int` is 4 bytes.
+:::problem id=prac-loop-stride title="Stride of the column-wise copy" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+Both loops assign `B[i][j] = A[i][j]` for every `i` and `j` from 0 through 2048. On this platform, `int` is 4 bytes.
 
 :::check id=prac-loop-stride-q1
-In the loop with `j` inner, consecutive inner-loop iterations step {{=4 bytes|2049 bytes|2049 times 4 bytes}}.
+In the loop with `j` inner, consecutive inner-loop iterations step {{=4 bytes|2049 bytes|8196 bytes}}.
 
-`j` and `j + 1` are neighboring columns in the same row, one `int` apart.
+`j` and `j + 1` name adjacent elements of one row. Each element occupies 4 bytes here.
 :::
 
 :::check id=prac-loop-stride-q2
-In the loop with `i` inner, consecutive inner-loop iterations step {{=2049 times 4 bytes|4 bytes|1 byte}}.
+In the loop with `i` inner, consecutive inner-loop iterations step {{=8196 bytes|4 bytes|1 byte}}.
 
-The next row starts 2049 ints later, and each `int` is 4 bytes.
+The next row begins 2049 ints later, and each `int` occupies 4 bytes: $2049 \times 4 = 8196$.
 :::
 
 :::check id=prac-loop-stride-q3
-The column-inner loop is slower because
+The column-wise pattern has worse spatial locality because
 
-- [x] Consecutive accesses jump a whole row instead of visiting neighboring cells
-- [ ] It performs more assignments than the row-inner loop
+- [x] Consecutive accesses are a whole row apart and do not share a cache line
+- [ ] It performs more assignments than the row-wise loop
 - [ ] The index `i` is illegal when it is the inner variable
 
-Both loops perform the same number of assignments. The addresses those assignments touch are in a different order.
+Both loops perform the same assignments. The row-wise addresses are adjacent. The column-wise addresses jump 8196 bytes, which is much larger than a typical 64-byte cache line. Measured time still depends on the compiler and the machine.
 :::
 :::
 
-:::problem id=prac-no-magic title="What C is for in this course" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
+:::problem id=prac-no-magic title="What C exposes in this course" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-no-magic-q1
-C, in this course, is {{=the window into the machine|the language the GPU runs|a replacement for the operating system}}.
+C is used here because it {{=exposes representation, addresses, and layout|is the language every GPU executes|replaces the operating system}}.
 
-C is the window. The machine, the OS, and later the GPU are what the window is for.
+The course studies machine behavior. C can name the widths and addresses involved. A GPU programming model and the operating system are separate layers.
 :::
 
 :::check id=prac-no-magic-q2
-Which of these belong to C, against Python and Java?
+Which statements describe C, as compared with a managed application language?
 
-- [x] Explicit memory management
-- [x] Direct access to addresses
-- [ ] Automatic memory management
-- [ ] Implementation details hidden by default
+- [x] Storage duration is explicit
+- [x] Addresses and object layout are visible
+- [ ] A runtime reclaims every allocation automatically
+- [ ] Object layout is hidden by default
 
-The C column is explicit memory, addresses, control of representation, and a close interaction with the OS and the hardware.
+C gives the program control of allocation and representation. It does not provide the managed object model of Python or Java.
 :::
 :::
 
-This chapter is the reason the rest of the guide watches bytes. It unlocks [Bytes, variables, and pointers](topic:memory-and-pointers), where a variable becomes an address as well as a value.
+The next lesson, [Values and types](topic:c-data-types), fixes the widths and conversions used by the examples above.

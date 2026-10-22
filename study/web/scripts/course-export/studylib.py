@@ -1242,6 +1242,44 @@ def _require(mapping, key, label, errors):
     return mapping[key]
 
 
+def _validate_lectures(course, topic_ids, errors):
+    lectures = course.get("lectures")
+    if not isinstance(lectures, list) or not lectures:
+        errors.append("course.yml lectures must list every available lecture")
+        return
+    seen = []
+    seen_ids = set()
+    for index, lecture in enumerate(lectures):
+        label = f"lectures[{index}]"
+        if not isinstance(lecture, dict):
+            errors.append(f"{label} must be a mapping")
+            continue
+        lecture_id = str(lecture.get("id") or "")
+        if not COURSE_ID_RE.match(lecture_id):
+            errors.append(f"{label}: id must be a lowercase hyphen slug")
+        elif lecture_id in seen_ids:
+            errors.append(f"duplicate lecture id {lecture_id}")
+        seen_ids.add(lecture_id)
+        if not str(lecture.get("title") or "").strip():
+            errors.append(f"{label}: title is required")
+        if not str(lecture.get("summary") or "").strip():
+            errors.append(f"{label}: summary is required")
+        number = lecture.get("number")
+        if not isinstance(number, int) or isinstance(number, bool) or number < 1:
+            errors.append(f"{label}: number must be a positive integer")
+        topics = lecture.get("topics")
+        if not isinstance(topics, list) or not topics:
+            errors.append(f"{label}: topics must be a non-empty list")
+            topics = []
+        for topic_id in topics:
+            topic_id = str(topic_id)
+            if topic_id not in topic_ids:
+                errors.append(f"{label}: unknown topic {topic_id}")
+            seen.append(topic_id)
+    if seen != list(topic_ids):
+        errors.append("lectures must list every topic once, in syllabus order")
+
+
 def validate_content(model) -> list[str]:
     errors = []
     course = model["course"]
@@ -1366,6 +1404,7 @@ def validate_content(model) -> list[str]:
                     f"topic {topic_id}: prerequisite {ref_id} is later in the course. "
                     "List topics in syllabus order."
                 )
+    _validate_lectures(course, topic_ids, errors)
 
     attached = set()
     for topic in model["topics"]:

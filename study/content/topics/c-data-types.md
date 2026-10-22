@@ -1,288 +1,289 @@
 ---
 id: c-data-types
-title: Data types and sizeof
+title: Values and types
 sources:
   - "Lecture 1 - Introduction.pdf"
+  - c/02-types/lesson.md
+  - c/03-expressions/lesson.md
 ---
 
-Pointer arithmetic multiplies by the size of a type, and the process image stores those bytes in `.data`, `.bss`, the stack, or `.rodata`. This chapter fixes the widths, the difference between integer and floating division, and the `scanf` rule that a write needs an address.
+A type determines the size of an object, the meaning of its bits, and the operation a compiler selects. The sizes below, other than `sizeof(char)`, belong to the LP64 platform used in this course: `char` is 1 byte, `short` is 2, `int` is 4, and `long` is 8. Another ABI can give `long` a different width. A program that needs the width uses `sizeof`.
 
-## Integer types
+## Integer representation
 
-On this machine each integer type has a fixed width. The value 42 is stored in the low bits. Every extra bit on the left is 0.
-
-:::definition id=def-int-widths title="Integer widths" source="Lecture 1 - Introduction.pdf"
-`char` is 1 byte, `short` is 2 bytes, `int` is 4 bytes, and `long` is 8 bytes. The result of an integer calculation is an integer.
+:::definition id=def-int-widths title="Integer widths on this platform" source="Lecture 1 - Introduction.pdf"
+`sizeof(char)` is 1 by the C standard. On this platform, `short` occupies 2 bytes, `int` occupies 4, and `long` occupies 8. `unsigned int` has the same width as `int`.
 :::
+
+The non-negative value 42 fits in every one of these widths. In the usual binary representation its significant bits are `101010`, and the unused high bits are zero. That describes this positive value. It is not a rule about negative values, and it says nothing about which byte a machine stores at the lowest address.
 
 ```c
 char a = 42;   /* 00101010 */
 short b = 42;  /* 00000000 00101010 */
-int c = 42;    /* 00000000 00000000 00000000 00101010 */
-long d = 42;   /* eight bytes, the last of them 00101010 */
+int c = 42;    /* four bytes, ending in 00101010 */
+long d = 42;   /* eight bytes, ending in 00101010 */
 ```
 
-`a` sits at address 1000, `b` at 1002, `c` at 1024, and `d` at 1032. Each address labels a separate object, and the address shows that object's width. The gap between 1000 and 1024 holds none of these four objects.
+![The value 42 stored in a char, a short, an int, and a long.](../assets/figures/integer-widths.svg)
 
-![42 stored in a char, a short, an int, and a long, with zero bytes on the left.](../assets/figures/integer-widths.svg)
+Addresses drawn for these objects are examples. The gap between two separately declared objects is not part of either object, and the compiler may place them in registers rather than memory.
+
+:::definition id=def-integer-division title="Integer division" source="c/03-expressions/lesson.md"
+When both operands of `/` have integer type, the result is the algebraic quotient with the fractional part discarded. The result is truncated toward zero.
+:::
 
 ```c
 int x = 5;
 int y = 2;
-x = x / y; /* 5 / 2 = 2 */
+x = x / y; /* 2 */
 ```
 
-:::theorem id=thm-int-div title="Integer division discards the fraction" source="Lecture 1 - Introduction.pdf"
-If `x` and `y` are `int` values 5 and 2, then `x / y` is 2.
+The mathematical quotient is $2.5$. The C result is 2. The same rule gives `-5 / 2 == -2`, not $-3$. The remainder operator satisfies `a == (a / b) * b + (a % b)` when the division is defined, and the remainder takes the sign of `a`. Division by zero is undefined behavior.
 
-:::proof
-**Intuition.** Both operands are integers, so the operation stays inside the integers. There is no place in the result type for the `.5`.
-
-**Proof.** The result of an integer calculation is an integer, and `5 / 2` is `2`. The mathematical quotient is $2.5$. The integer result keeps the whole number of times 2 fits into 5, which is 2.
-
-**What the proof used.** The rule that an integer calculation yields an integer, and the quotient `5 / 2 = 2`.
-:::
-:::
-
-:::problem id=worked-integer-division title="5 divided by 2 in int" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-What is the value of `x` after `int x = 5; int y = 2; x = x / y;`?
+:::problem id=worked-integer-division title="5 divided by 2 in int" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
+What is `x` after `int x = 5; int y = 2; x = x / y;`? State the rule for a negative quotient as well.
 
 :::solution
-`x` is 2. Both operands are `int`, so the division is an integer calculation and the fractional part is discarded.
+`x` is 2. Both operands have integer type, so `/` truncates toward zero. The fractional part of $2.5$ is discarded. The same rule makes `-5 / 2` equal `-2`.
 :::
 :::
 
 :::trap
-A common mistake is to treat these widths as fixed by the C language on every machine. Sizes of data types can vary across architectures and operating systems. These widths are the model used here. `sizeof` is how a program detects the widths of the machine it is running on.
+Copying a width from this page into a program intended for another ABI. `sizeof(char)` is portable. The widths of `int` and `long` are not. `sizeof`, or a fixed-width type such as `int32_t`, is the explicit choice.
 :::
 
-## Characters are small integers
+## Characters and small integers
 
-:::definition id=def-char-code title="char as a small integer" source="Lecture 1 - Introduction.pdf"
-`char` stores a character code, and it also stores a small integer. The code for `'a'` is 97, and `char c2 = 98` is the same cell as `'b'`.
+:::definition id=def-char-code title="Character constant" source="Lecture 1 - Introduction.pdf"
+A character constant such as `'a'` has type `int`. Its value is the numeric code of that character in the execution character set. On an ASCII-compatible machine, `'a'` is 97 and `'b'` is 98.
 :::
 
 ```c
 char c1 = 'a';
-char c2 = 98;          /* same value as 'b' */
+char c2 = 98;          /* same value as 'b' on this machine */
 printf("%c\n", c1);    /* a */
 printf("%d\n", c1);    /* 97 */
 ```
 
-`%c` prints the character. `%d` prints the integer code. Use `char` for characters, and remember that the cell is still an integer width of one byte.
+`%c` prints the character and `%d` prints the promoted integer value. C requires the codes of `'0'` through `'9'` to be contiguous. It does not require the letters to use ASCII codes, so 97 is a property of this execution character set. Plain `char` may be signed or unsigned. A value above 127 can therefore behave differently when promoted to `int`.
 
 :::check id=chk-char-code
-What does `printf("%d\n", c1)` print when `c1` holds `'a'`?
+On an ASCII-compatible machine, what does `printf("%d\n", c1)` print when `c1` holds `'a'`?
 
 - [ ] a
 - [x] 97
 - [ ] 98
 
-`%d` prints the integer code. The code for `'a'` is 97. `%c` would print the letter.
+`%d` prints the integer code. In ASCII, `'a'` is 97. `%c` would print the letter.
 :::
 
-## Floating-point types
+## Floating-point representation
 
 :::definition id=def-float-widths title="float and double" source="Lecture 1 - Introduction.pdf"
-`float` is 4 bytes and `double` is 8 bytes. Their bits are a sign, an exponent field, and a fraction field, which is a different representation from the integer types.
+On this platform `float` occupies 4 bytes and `double` occupies 8. The course machines use IEEE-754 binary32 and binary64: one sign bit, an exponent field, and a fraction field.
 :::
 
-The bits of two literals, grouped as sign, exponent, fraction:
+For the finite normal value 3.61, the binary32 fields are:
 
 ```text
-float x = 3.61;
+float x = 3.61f;
 /* 0 10000000 11001110000101000111101 */
 /* 1 sign bit, 8 exponent bits, 23 fraction bits */
+```
 
+For 42.8 in binary64:
+
+```text
 double y = 42.8;
 /* 0 10000000100 0101011001100110011001100110011001100110011001100110 */
 /* 1 sign bit, 11 exponent bits, 52 fraction bits */
 ```
 
-The sign bit 0 means positive. The exponent field is stored with a bias, 127 for `float` and 1023 for `double`, so the field `10000000` (128) means a true power of $2^1$, and the field `10000000100` (1028) means a true power of $2^5$. The fraction bits fill in the significand. That encoding is why a `float` is not "an integer with a decimal point moved". The first chapter's failure of associativity is this representation running out of fraction bits.
+A sign bit of 0 means positive. The exponent is stored with a bias, 127 for binary32 and 1023 for binary64. The field `10000000` is 128, so the unbiased power is $2^{1}$. The field `10000000100` is 1028, so the unbiased power is $2^{5}$. The fraction supplies the bits after the leading 1. This is not an integer with a decimal point inserted.
 
 ```c
 double x = 5.0;
 double y = 2.0;
-x = x / y; /* 5.0 / 2.0 = 2.5 */
+x = x / y; /* 2.5 */
 ```
 
-This quotient lands on the mathematical result. $5.0$, $2.0$, and $2.5$ are all exact in binary floating point. A different pair of values can round to a representable number that differs from the real quotient. Integer `5 / 2` is defined to be the integer 2. Floating `5.0 / 2.0` rounds a real division, and for these two values the rounding changes nothing.
+Here 5.0, 2.0, and 2.5 are all exact binary fractions, so the rounded result matches the real quotient. Another pair of values can round to a different representable number. Integer division and floating division are different operations: `5 / 2` is the integer 2, while `5.0 / 2.0` is the floating value 2.5.
 
 :::trap
-A `float`'s bits are a sign, an exponent, and a fraction. `3.61` as a `float` uses the sign, exponent, and fraction pattern shown with it. The low bits are a fraction. They are not the integer 361.
+Reading the fraction bits of a `float` as the integer 361. Those bits belong to a sign-exponent-fraction encoding. The associativity example in the previous lesson is this encoding running out of fraction bits.
 :::
 
 ## The sizeof operator
 
 :::definition id=def-sizeof title="sizeof" source="Lecture 1 - Introduction.pdf"
-`sizeof` is a unary operator. It returns the number of bytes required to store its operand. The operand may be a variable or a type.
+`sizeof` is a unary operator. It yields the number of bytes in its operand, which may be an expression or a parenthesized type. The result has type `size_t`.
 :::
 
 ```c
 #include <stdio.h>
 
-int main() {
+int main(void) {
     short x;
     int y;
     long z;
-    printf("%d, %d, %d\n", sizeof(x), sizeof(y), sizeof(z));
-    printf("%d\n", sizeof(int));
+    printf("%zu, %zu, %zu\n", sizeof x, sizeof y, sizeof z);
+    printf("%zu\n", sizeof(int));
     return 0;
 }
 ```
 
-On this machine the two lines print:
+On this platform the lines print:
 
 ```text
 2, 4, 8
 4
 ```
 
-That is `short`, `int`, `long`, and then `sizeof(int)` again. `sizeof` is the measurement you use when the widths might differ on another architecture. The format in the program is `%d`. The number to learn is the byte count it prints.
+`%zu` is the conversion for `size_t`. `%d` expects `int` and is the wrong conversion. `sizeof(char)` is 1 on every platform. The other three numbers are measurements of this one.
 
-:::problem id=worked-sizeof-sample title="sizeof of short, int, and long" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-What does this `sizeof` program print?
+:::problem id=worked-sizeof-sample title="sizeof of short, int, and long" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
+What does the program print on this platform, and which conversion prints a `sizeof` result?
 
 :::solution
-The first `printf` prints `2, 4, 8` for `sizeof(x)`, `sizeof(y)`, and `sizeof(z)` when `x` is `short`, `y` is `int`, and `z` is `long`. The second prints `4`, which is `sizeof(int)`.
+The first call prints `2, 4, 8` for `short`, `int`, and `long`. The second prints `4`, the size of `int`. The conversion is `%zu` because `sizeof` yields `size_t`. These widths, except for `char`, are platform measurements.
 :::
 :::
 
-## Input, output, and control flow
+## Formatted input and output
 
 ```c
 #include <stdio.h>
 
-int main() {
+int main(void) {
     int x;
     float y;
     char z;
 
-    printf("Enter integer number\n");
-    scanf("%d", &x);
-    printf("Enter float point number\n");
-    scanf("%f", &y);
-    printf("Enter character\n");
-    scanf(" %c", &z);
-
+    printf("Enter an integer: ");
+    if (scanf("%d", &x) != 1) {
+        return 1;
+    }
+    printf("Enter a float: ");
+    if (scanf("%f", &y) != 1) {
+        return 1;
+    }
+    printf("Enter a character: ");
+    if (scanf(" %c", &z) != 1) {
+        return 1;
+    }
     printf("x=%d, y=%f, z=%c\n", x, y, z);
     return 0;
 }
 ```
 
-`printf` writes. `scanf` reads. Both require `#include <stdio.h>`. The format string selects the conversion, The calls are `scanf("%…", &variable)` and `printf("%…", variable)`. `scanf` is given an address because it writes into the caller's object. `printf` is given the value.
+`printf` receives values. `scanf` receives pointers because it writes the caller's objects. Each conversion that assigns a value must be checked: `scanf` returns the number of assigned inputs, or `EOF` on input failure. A sample that supplies `5`, `3.5`, and `b` prints `x=5, y=3.500000, z=b` under the default `%f` precision.
 
-The space in `" %c"` is there on purpose. A previous `scanf` leaves the newline in the input. A conversion `%c` would read that newline as the character. The leading space in the format asks `scanf` to skip whitespace first. A sample run reads `5`, then `3.5`, then `b`, and prints `x=5, y=3.5, z=b`. The build is `gcc main.c` and `./a.out`.
+The space in `" %c"` is significant. A prior numeric conversion leaves the following newline unread. `%c` would store that newline. A leading space in the format skips whitespace first.
 
-C's control-flow commands:
-
-| Name | Role |
-| --- | --- |
-| `if`-`else`, `switch`-`case` | decision making |
-| `for`, `while`, `do`-`while` | loops |
-| `break`, `continue`, `return` | branching |
+The basic control statements are `if`/`else` and `switch` for selection, `for`, `while`, and `do`/`while` for iteration, and `break`, `continue`, and `return` for leaving a loop or a function. A condition uses `==` for comparison. A single `=` assigns.
 
 ## Practice
 
-:::problem id=prac-type-widths title="Widths of the four integer types" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-Use these widths.
+:::problem id=prac-type-widths title="Widths of the four integer types" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+Use this course platform for the measurements.
 
 :::check id=prac-type-widths-q1
 `sizeof(char)`, `sizeof(short)`, `sizeof(int)`, and `sizeof(long)` are {{=1, 2, 4, 8|1, 2, 4, 4|4, 4, 4, 8}}.
 
-42 is stored in 1, 2, 4, and 8 bytes, and the `sizeof` program prints 2, 4, 8 for `short`, `int`, and `long`.
+`sizeof(char)` is 1 in standard C. On this LP64 platform the other three sizes are 2, 4, and 8.
 :::
 
 :::check id=prac-type-widths-q2
-The bits to the left of 42 in a `short`, an `int`, or a `long` are {{=zeros|ones|the sign of the type's name}}.
+In the representation of the non-negative value 42, the unused high bits are {{=zeros|ones|part of the byte order}}.
 
-The extra leading bits on the left are filled with zeros.
+The significant bits of 42 are `101010`. Wider positive representations extend that pattern with zero bits. This does not describe a negative value or the order of bytes in memory.
 :::
 
 :::check id=prac-type-widths-q3
-A program should discover widths with `sizeof` because
+A portable program discovers a width with `sizeof` because
 
-- [x] Those widths can vary across architectures and operating systems
+- [x] Widths other than `sizeof(char)` can differ between ABIs
 - [ ] `sizeof` changes a `short` into a `long` at run time
-- [ ] Integer division is only legal on the result of `sizeof`
+- [ ] Integer division is legal only on the result of `sizeof`
 
-The operator reports the storage of its operand on the machine where it is evaluated.
+`sizeof` reports the operand's size in bytes. Fixed-width types such as `int32_t` are the other explicit choice.
 :::
 :::
 
-:::problem id=prac-char-values title="Letter and code" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
+:::problem id=prac-char-values title="Letter and code" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+Assume an ASCII-compatible execution character set.
+
 :::check id=prac-char-values-q1
 `printf("%d\n", c1)` with `char c1 = 'a'` prints {{=97|a|98}}.
 
-`%d` prints the code. The code for `'a'` is 97.
+`%d` prints the code after promotion. ASCII assigns 97 to `'a'`. C does not require that code on every execution character set.
 :::
 
 :::check id=prac-char-values-q2
 `char c2 = 98` stores the same value as {{='b'|'a'|98.0}}.
 
-`char c2 = 98` is equivalent to `c2 = 'b'`.
+On this character set, `'b'` has code 98, so the two initializers store the same byte.
 :::
 :::
 
-:::problem id=prac-two-divisions title="Integer 5/2 and floating 5.0/2.0" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
+:::problem id=prac-two-divisions title="Integer 5/2 and floating 5.0/2.0" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-two-divisions-q1
-`int` division of 5 by 2 yields {{=2|2.5|0}}.
+Integer division of 5 by 2 yields {{=2|2.5|0}}.
 
-The result of an integer calculation is an integer. `5 / 2` is `2`.
+Both operands have integer type, so the result is truncated toward zero.
 :::
 
 :::check id=prac-two-divisions-q2
 `double` division of 5.0 by 2.0 yields {{=2.5|2|5}}.
 
-For the `double` version, `5.0 / 2.0` is `2.5`.
+5.0, 2.0, and 2.5 are exact in binary floating point, so this division does not round away from the real quotient.
 :::
 
 :::check id=prac-two-divisions-q3
-Which statement about floating division is true?
+Which statement about floating division is correct?
 
-- [x] A floating result is a representable value, so a different pair of inputs can fail to match the real quotient
-- [ ] `double` division always truncates the same way `int` division does
+- [x] The result is a representable value, so another pair of inputs can differ from the real quotient
+- [ ] `double` division always truncates toward zero in the same way as `int` division
 - [ ] 2.5 cannot be stored in a `double`
 
-5.0, 2.0, and 2.5 fit exactly, so this division prints 2.5. A floating result is still a representable value, so a different pair of inputs can miss the real quotient.
+Integer division discards a fraction by rule. Floating division rounds to the format. This particular input rounds to the exact value 2.5.
 :::
 :::
 
-:::problem id=prac-scanf-ampersand title="Why scanf receives an address" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
+:::problem id=prac-scanf-ampersand title="Why scanf receives an address" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-scanf-ampersand-q1
-`scanf("%d", &x)` passes `&x` because scanf {{=writes into x|prints x|computes sizeof(x)}}.
+`scanf("%d", &x)` passes `&x` because `scanf` {{=writes the converted input into x|prints x|computes sizeof(x)}}.
 
-The conversion stores the input in the object whose address it was given. `printf` receives the value instead.
+The conversion stores through the pointer it receives. `printf` receives the value to print. The return value should be checked: one successful `%d` conversion returns 1.
 :::
 
 :::check id=prac-scanf-ampersand-q2
-The format `" %c"` has a leading space so that scanf {{=skips whitespace before reading the character|reads two characters|stores the character in a float}}.
+The format `" %c"` has a leading space so that `scanf` {{=skips whitespace before reading one character|reads two characters|stores the character in a float}}.
 
-A previous line of input leaves a newline. `%c` would take that newline. The space skips it. The sample then reads `b`.
+A preceding conversion can leave a newline in the input. `%c` would store it. The space directive skips whitespace first.
 :::
 
 :::check id=prac-scanf-ampersand-q3
 The header required for `printf` and `scanf` is {{=stdio.h|stdlib.h|math.h}}.
 
-`printf` and `scanf` require `#include <stdio.h>`.
+Both functions are declared by `<stdio.h>`.
 :::
 :::
 
 :::problem id=prac-float-bits title="Read the float bit groups" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-`float` 3.61 is encoded as `0 10000000 11001110000101000111101`.
+The IEEE-754 binary32 encoding of 3.61 is `0 10000000 11001110000101000111101`.
 
 :::check id=prac-float-bits-q1
-Those three groups are {{=sign, exponent, fraction|the four bytes of an int 361|MSB padding, then the integer 3.61}}.
+Those three groups are {{=sign, exponent, fraction|the four bytes of the integer 361|padding followed by a decimal}}.
 
-The groups have widths 1, 8, and 23, which fill the 32 bits of a `float`.
+The widths are 1, 8, and 23 bits, which account for all 32 bits of a binary32 value.
 :::
 
 :::check id=prac-float-bits-q2
 The sign bit of that pattern says the value is {{=positive|negative|an integer}}.
 
-The sign bit is 0. A `float` uses the remaining bits for the exponent and the fraction.
+The sign bit is 0. The remaining fields are the biased exponent and the fraction.
 :::
 :::
 
-Structures pack several of these types into one object. [Structures](topic:structures) keeps the field order, the widths, and the address rule for `scanf` together.
+[Memory and pointers](topic:memory-and-pointers) uses these widths as the distances between addresses.

@@ -8,7 +8,8 @@ import { Mixed } from "@/lib/bidi";
 import { readProgress } from "@/lib/progress";
 import type { SearchHit } from "@/lib/types";
 
-type Chapter = { id: string; title: string; practiceIds: string[] };
+type Lesson = { id: string; title: string; lessonNumber: number; practiceIds: string[] };
+type LectureNav = { id: string; number: number; title: string; lessons: Lesson[] };
 
 function samePath(pathname: string, href: string) {
   const trim = (path: string) => (path.length > 1 ? path.replace(/\/+$/, "") : path);
@@ -22,12 +23,12 @@ function narrowScreen() {
 export function Rail({
   courseId,
   title,
-  chapters,
+  lectures,
   hits,
 }: {
   courseId: string;
   title: string;
-  chapters: Chapter[];
+  lectures: LectureNav[];
   hits: SearchHit[];
 }) {
   const pathname = usePathname();
@@ -36,6 +37,7 @@ export function Rail({
   const [mark, setMark] = useState<{ top: number; height: number } | null>(null);
   const [solved, setSolved] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
+  const lessons = lectures.flatMap((lecture) => lecture.lessons);
 
   useLayoutEffect(() => {
     const nav = chaptersRef.current;
@@ -108,9 +110,9 @@ export function Rail({
     };
   }, [courseId]);
 
-  const total = chapters.reduce((sum, chapter) => sum + chapter.practiceIds.length, 0);
-  const done = chapters.reduce(
-    (sum, chapter) => sum + chapter.practiceIds.filter((id) => solved.includes(id)).length,
+  const total = lessons.reduce((sum, lesson) => sum + lesson.practiceIds.length, 0);
+  const done = lessons.reduce(
+    (sum, lesson) => sum + lesson.practiceIds.filter((id) => solved.includes(id)).length,
     0,
   );
 
@@ -142,20 +144,28 @@ export function Rail({
           <Link className={samePath(pathname, "/") ? "is-current" : ""} href="/">Overview</Link>
           <Link className={samePath(pathname, "/glossary") ? "is-current" : ""} href="/glossary">Glossary</Link>
         </nav>
-        <p className="rail-label">Chapters</p>
+        <p className="rail-label">Lectures</p>
         <nav className="chapters-nav" ref={chaptersRef}>
           {mark && <span className="rail-mark" style={{ top: mark.top, height: mark.height }} />}
-          {chapters.map((chapter, index) => {
-            const href = `/topics/${chapter.id}`;
-            const current = samePath(pathname, href);
-            const finished = chapter.practiceIds.length > 0 && chapter.practiceIds.every((id) => solved.includes(id));
-            return (
-              <Link key={chapter.id} href={href} className={current ? "is-current" : ""}>
-                <span className={`dot${finished ? " is-done" : ""}`}>{String(index + 1).padStart(2, "0")}</span>
-                <span><Mixed text={chapter.title} /></span>
-              </Link>
-            );
-          })}
+          {lectures.map((lecture) => (
+            <div className="lecture-group" key={lecture.id}>
+              <p className="lecture-label">
+                <span>Lecture {String(lecture.number).padStart(2, "0")}</span>
+                <Mixed text={lecture.title} />
+              </p>
+              {lecture.lessons.map((lesson) => {
+                const href = `/topics/${lesson.id}`;
+                const current = samePath(pathname, href);
+                const finished = lesson.practiceIds.length > 0 && lesson.practiceIds.every((id) => solved.includes(id));
+                return (
+                  <Link key={lesson.id} href={href} className={current ? "is-current" : ""}>
+                    <span className={`dot${finished ? " is-done" : ""}`}>{String(lesson.lessonNumber).padStart(2, "0")}</span>
+                    <span><Mixed text={lesson.title} /></span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
         <p className="progress-count">{total ? <>{done} / {total} exercises solved</> : ""}</p>
       </div>

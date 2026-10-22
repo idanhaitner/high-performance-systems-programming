@@ -6,7 +6,8 @@ import { Mixed } from "@/lib/bidi";
 import type { SearchHit } from "@/lib/types";
 
 const KINDS: Record<string, string> = {
-  Chapter: "Chapter",
+  Lesson: "Lesson",
+  Chapter: "Lesson",
   Practice: "Practice",
   Glossary: "Term",
 };
