@@ -970,11 +970,15 @@ blockquote {
     background: var(--rail);
   }
   .rail-toggle { display: grid; }
+  body {
+    font-size: 1.28rem;
+    line-height: 1.75;
+  }
   .rail-bar .course-name {
     margin: 0;
     min-width: 0;
     flex: 1;
-    font-size: 1.12rem;
+    font-size: 1.2rem;
   }
   .rail-bar .course-name a {
     display: flex;
@@ -1003,17 +1007,41 @@ blockquote {
     margin-top: 0.4rem;
   }
   .chapters-nav { max-height: none; overflow: visible; }
-  .rail-nav a, .chapters-nav a { min-height: 44px; }
+  .rail-nav a, .chapters-nav a {
+    min-height: 48px;
+    font-size: 1.08rem;
+  }
+  .rail-label { font-size: 0.82rem; }
+  .dot { width: 1.9rem; height: 1.9rem; font-size: 0.85rem; }
+  .progress-count { font-size: 0.98rem; }
   .page {
     padding: 1.35rem max(1rem, env(safe-area-inset-right, 0px)) calc(3.25rem + env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
   }
-  h1 { font-size: clamp(1.85rem, 9vw, 2.15rem); }
-  h2 { font-size: 1.45rem; }
-  .lead { font-size: 1.08rem; }
+  h1 { font-size: clamp(2.35rem, 10vw, 2.85rem); }
+  h2 { font-size: 1.8rem; }
+  h3 { font-size: 1.4rem; }
+  h4 { font-size: 1.18rem; }
+  .lead { font-size: 1.32rem; }
+  .kicker { font-size: 0.9rem; }
   .masthead { column-gap: 0.7rem; }
-  .masthead-num { font-size: clamp(2.15rem, 12vw, 2.8rem); }
+  .masthead-num { font-size: clamp(2.6rem, 13vw, 3.2rem); }
   .continue { width: 100%; }
-  .continue strong { font-size: clamp(1.25rem, 5vw, 1.55rem); }
+  .continue-copy span { font-size: 0.86rem; }
+  .continue strong { font-size: clamp(1.45rem, 6vw, 1.8rem); }
+  .chapter-list .num { font-size: 1.55rem; }
+  .chapter-list strong { font-size: 1.2rem; }
+  .chapter-list span { font-size: 1.05rem; }
+  .lecture-card h2 { font-size: 1.7rem; }
+  .lecture-label { font-size: 0.88rem; }
+  .fold-toggle { font-size: 1.2rem; }
+  .check p, .formal p, .practice p { font-size: 1.12rem; }
+  .figure figcaption { font-size: 1.05rem; }
+  .code-panel { font-size: 1rem; }
+  .glossary-card h3 { font-size: 1.4rem; }
+  .chapter-hop-kicker { font-size: 0.88rem; }
+  .chapter-hop-title { font-size: 1.2rem; }
+  .chapter-hop-go { font-size: 0.95rem; }
+  .outline { font-size: 1.08rem; }
   .parts, .glossary-jump {
     top: var(--rail-bar);
     overscroll-behavior-x: contain;

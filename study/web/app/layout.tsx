@@ -17,7 +17,16 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const course = loadCourse();
-  return { title: course.title, description: course.summary };
+  return {
+    title: course.title,
+    description: course.summary,
+    icons: {
+      icon: [
+        { url: "/favicon.svg", type: "image/svg+xml" },
+        { url: "/favicon.ico", sizes: "any" },
+      ],
+    },
+  };
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

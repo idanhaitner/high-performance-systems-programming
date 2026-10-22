@@ -1,0 +1,29 @@
+---
+description: Always commit and push after every completed change
+alwaysApply: true
+---
+
+# Commit and push after every change
+
+After finishing a coherent unit of work, always create a git commit and push it to `origin` on the current branch. Do not wait for the user to ask.
+
+## When
+
+- After implementing a requested change, fix, or redesign
+- After creating or updating project rules, config, or docs that are part of the task
+- Treat "done enough to leave the working tree" as "commit and push now"
+
+## How
+
+1. Run `git status`, `git diff` (staged and unstaged), and `git log` in parallel
+2. Stage the relevant files (never secrets such as `.env` or credentials)
+3. Commit with a concise message focused on why, using a HEREDOC
+4. Push with `git push -u origin HEAD` when the branch has no upstream, otherwise `git push origin HEAD`
+5. Confirm with `git status` that the branch matches the remote
+
+## Do not
+
+- Skip the push after a successful commit
+- Batch unrelated finished changes across turns to avoid committing
+- Amend unless the user explicitly asks, or a pre-commit hook modified files from a commit you just created that has not been pushed
+- Use `--force` on main/master, or skip hooks, unless the user explicitly asks
