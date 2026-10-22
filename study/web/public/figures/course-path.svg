@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 168" role="img">
 
 <style>
-  .t { font-family: Heebo, system-ui, sans-serif; fill: #1c2740; }
-  .m { font-family: Heebo, system-ui, sans-serif; fill: #5c6b82; }
+  .t { font-family: Heebo, system-ui, sans-serif; fill: #2c2140; }
+  .m { font-family: Heebo, system-ui, sans-serif; fill: #6d6080; }
   .w { font-family: Heebo, system-ui, sans-serif; fill: #ffffff; }
   .mono { font-family: "Source Code Pro", ui-monospace, monospace; }
   .step { opacity: 1; }
@@ -16,35 +16,35 @@
 </style>
 
 
-  <rect width="720" height="168" fill="#f4f7fb"/>
+  <rect width="720" height="168" fill="#f7f4fb"/>
   <text x="24" y="32" class="m" font-size="13">The course walks toward the machine</text>
   <g class="step" style="animation-delay:0.08s">
-    <rect x="24" y="52" width="100" height="64" rx="12" fill="#2f6fed"/>
+    <rect x="24" y="52" width="100" height="64" rx="12" fill="#6d4ad4"/>
     <text x="74" y="90" text-anchor="middle" class="w" font-size="20" font-weight="700">C</text>
   </g>
   <g class="step" style="animation-delay:0.20s">
-    <path d="M132 84 H156" stroke="#8aa4c8" stroke-width="2" fill="none"/>
-    <path d="M150 78 L160 84 L150 90" fill="#8aa4c8"/>
-    <rect x="164" y="52" width="120" height="64" rx="12" fill="#d9e6ff" stroke="#2f6fed"/>
+    <path d="M132 84 H156" stroke="#b09ac8" stroke-width="2" fill="none"/>
+    <path d="M150 78 L160 84 L150 90" fill="#b09ac8"/>
+    <rect x="164" y="52" width="120" height="64" rx="12" fill="#eadcff" stroke="#6d4ad4"/>
     <text x="224" y="90" text-anchor="middle" class="t" font-size="18" font-weight="650">Memory</text>
   </g>
   <g class="step" style="animation-delay:0.32s">
-    <path d="M292 84 H316" stroke="#8aa4c8" stroke-width="2" fill="none"/>
-    <path d="M310 78 L320 84 L310 90" fill="#8aa4c8"/>
-    <rect x="324" y="52" width="140" height="64" rx="12" fill="#d9e6ff" stroke="#2f6fed"/>
+    <path d="M292 84 H316" stroke="#b09ac8" stroke-width="2" fill="none"/>
+    <path d="M310 78 L320 84 L310 90" fill="#b09ac8"/>
+    <rect x="324" y="52" width="140" height="64" rx="12" fill="#eadcff" stroke="#6d4ad4"/>
     <text x="394" y="82" text-anchor="middle" class="t" font-size="16" font-weight="650">Cache / CPU</text>
     <text x="394" y="102" text-anchor="middle" class="m" font-size="12">execution</text>
   </g>
   <g class="step" style="animation-delay:0.44s">
-    <path d="M472 84 H496" stroke="#8aa4c8" stroke-width="2" fill="none"/>
-    <path d="M490 78 L500 84 L490 90" fill="#8aa4c8"/>
-    <rect x="504" y="52" width="90" height="64" rx="12" fill="#d9e6ff" stroke="#2f6fed"/>
+    <path d="M472 84 H496" stroke="#b09ac8" stroke-width="2" fill="none"/>
+    <path d="M490 78 L500 84 L490 90" fill="#b09ac8"/>
+    <rect x="504" y="52" width="90" height="64" rx="12" fill="#eadcff" stroke="#6d4ad4"/>
     <text x="549" y="90" text-anchor="middle" class="t" font-size="15" font-weight="650">Multicore</text>
   </g>
   <g class="step" style="animation-delay:0.56s">
-    <path d="M602 84 H622" stroke="#8aa4c8" stroke-width="2" fill="none"/>
-    <path d="M616 78 L626 84 L616 90" fill="#8aa4c8"/>
-    <rect x="630" y="52" width="66" height="64" rx="12" fill="#1c2740"/>
+    <path d="M602 84 H622" stroke="#b09ac8" stroke-width="2" fill="none"/>
+    <path d="M616 78 L626 84 L616 90" fill="#b09ac8"/>
+    <rect x="630" y="52" width="66" height="64" rx="12" fill="#2c2140"/>
     <text x="663" y="90" text-anchor="middle" class="w" font-size="16" font-weight="700">GPU</text>
   </g>
   <text x="24" y="146" class="m" font-size="13">Closer to the hardware means more control, and more responsibility.</text>

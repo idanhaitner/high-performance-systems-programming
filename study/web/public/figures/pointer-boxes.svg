@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" role="img">
 
 <style>
-  .t { font-family: Heebo, system-ui, sans-serif; fill: #1c2740; }
-  .m { font-family: Heebo, system-ui, sans-serif; fill: #5c6b82; }
+  .t { font-family: Heebo, system-ui, sans-serif; fill: #2c2140; }
+  .m { font-family: Heebo, system-ui, sans-serif; fill: #6d6080; }
   .w { font-family: Heebo, system-ui, sans-serif; fill: #ffffff; }
   .mono { font-family: "Source Code Pro", ui-monospace, monospace; }
   .step { opacity: 1; }
@@ -16,9 +16,9 @@
 </style>
 
 
-  <rect width="720" height="300" fill="#f4f7fb"/>
+  <rect width="720" height="300" fill="#f7f4fb"/>
   <g class="step" style="animation-delay:0.08s">
-    <rect x="48" y="48" width="250" height="150" rx="14" fill="#ffffff" stroke="#2f6fed" stroke-width="2"/>
+    <rect x="48" y="48" width="250" height="150" rx="14" fill="#ffffff" stroke="#6d4ad4" stroke-width="2"/>
     <text x="68" y="80" class="t" font-size="18" font-weight="700">x</text>
     <text x="68" y="114" class="m" font-size="14">address</text>
     <text x="170" y="114" class="mono" font-size="16">0x1000</text>
@@ -27,7 +27,7 @@
     <text x="68" y="180" class="m" font-size="13">int x = 5;</text>
   </g>
   <g class="step" style="animation-delay:0.20s">
-    <rect x="420" y="48" width="250" height="150" rx="14" fill="#ffffff" stroke="#1c2740" stroke-width="2"/>
+    <rect x="420" y="48" width="250" height="150" rx="14" fill="#ffffff" stroke="#2c2140" stroke-width="2"/>
     <text x="440" y="80" class="t" font-size="18" font-weight="700">p</text>
     <text x="440" y="114" class="m" font-size="14">address</text>
     <text x="540" y="114" class="mono" font-size="16">0x2000</text>
@@ -36,8 +36,8 @@
     <text x="440" y="180" class="m" font-size="13">int *p = &amp;x;</text>
   </g>
   <g class="step" style="animation-delay:0.32s">
-    <path d="M420 120 H310" stroke="#2f6fed" stroke-width="2" fill="none"/>
-    <path d="M318 114 L304 120 L318 126" fill="#2f6fed"/>
+    <path d="M420 120 H310" stroke="#6d4ad4" stroke-width="2" fill="none"/>
+    <path d="M318 114 L304 120 L318 126" fill="#6d4ad4"/>
     <text x="300" y="250" class="t" font-size="15">p holds the address of x, so p == &amp;x.</text>
     <text x="300" y="274" class="m" font-size="14">*p follows that address and reaches the value 5.</text>
   </g>
