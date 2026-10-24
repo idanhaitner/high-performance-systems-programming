@@ -1,7 +1,7 @@
 // Lesson 9 exercises.
 // Replace each not_implemented(...) call with your code.
 // These are definitions a .c file would hold. A header would declare them.
-// From this directory:  make try LESSON=09-build
+// From the c folder:  make try LESSON=09-build
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -23,6 +23,7 @@ int scale(int n, int factor) {
 
 int in_range(int n, int lo, int hi) {
     // Return 1 when lo <= n <= hi, otherwise 0. lo is less than or equal to hi.
+    // C cannot chain comparisons: write two of them joined by && ("and").
     not_implemented("in_range");
 }
 

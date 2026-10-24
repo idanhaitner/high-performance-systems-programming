@@ -2,10 +2,12 @@
 
 #include "check.h"
 
+// Both inputs are ints, so / already drops the fraction toward zero.
 int divided(int a, int b) {
     return a / b;
 }
 
+// % already gives a remainder with the sign of a.
 int leftover(int a, int b) {
     return a % b;
 }
@@ -14,12 +16,13 @@ int bumped(int n) {
     return n + 1;
 }
 
+// n++ gives the value n had before the increment. n is this function's own
+// copy of the argument, so the increment is thrown away when we return.
 int yield_then_bump(int n) {
-    int x = n;
-    int y = x++;
-    return y;
+    return n++;
 }
 
+// == gives 1 or 0, which is exactly what this function must return.
 int same(int a, int b) {
     return a == b;
 }

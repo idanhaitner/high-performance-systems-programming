@@ -1,6 +1,6 @@
 // Lesson 10 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=10-structs
+// From the c folder:  make try LESSON=10-structs
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -17,16 +17,19 @@ struct point make_point(int x, int y) {
 
 void point_move(struct point* p, int dx, int dy) {
     // Add dx to p->x and dy to p->y. p is not null.
+    // p->x means the field x of the struct p points at.
     not_implemented("point_move");
 }
 
 struct point moved_copy(struct point p, int dx, int dy) {
-    // Return a point shifted by dx and dy. Do not require the caller to change.
+    // Return a point shifted by dx and dy. The caller's point must not change.
+    // p is already a copy, so you may change p and return it.
     not_implemented("moved_copy");
 }
 
 int same_point(struct point a, struct point b) {
     // Return 1 when a and b have the same coordinates, otherwise 0.
+    // a == b does not compile for structs. Compare the fields.
     not_implemented("same_point");
 }
 

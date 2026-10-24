@@ -1,6 +1,6 @@
 // Lesson 11 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=11-ownership
+// From the c folder:  make try LESSON=11-ownership
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -14,6 +14,7 @@ struct buffer {
 
 struct buffer make_buffer(const int* src, int n) {
     // Return a buffer that owns a fresh copy of the n ints at src.
+    // Allocate a new block with malloc, then copy each int into it.
     // When n is 0, data is null and length is 0.
     // When allocation fails, data is null and length is 0.
     not_implemented("make_buffer");
@@ -22,6 +23,8 @@ struct buffer make_buffer(const int* src, int n) {
 struct buffer copy_buffer(struct buffer src) {
     // Return a buffer that owns its own copy of src's ints.
     // An empty src produces an empty buffer.
+    // Returning src itself is the shallow copy bug. Hint: make_buffer
+    // already copies ints into a new block.
     not_implemented("copy_buffer");
 }
 

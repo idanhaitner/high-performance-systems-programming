@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 
+// The int lives on the heap, so it outlives this function. The caller
+// owns it now and must pass it to free_box.
 int* box_int(int value) {
     int* p = malloc(sizeof(int));
     if (p == 0) {
@@ -13,6 +15,7 @@ int* box_int(int value) {
     return p;
 }
 
+// free(0) does nothing, so a null p needs no special case.
 void free_box(int* p) {
     free(p);
 }
@@ -21,6 +24,7 @@ int* fill_range(int n) {
     if (n == 0) {
         return 0;
     }
+    // n ints need n * sizeof(int) bytes.
     int* p = malloc((size_t)n * sizeof(int));
     if (p == 0) {
         return 0;
@@ -35,20 +39,18 @@ void release_range(int* p) {
     free(p);
 }
 
+// Reuse fill_range to build the numbers, sum them, then free the block.
+// The block is not returned, so this function must free it itself.
 int sum_range(int n) {
-    if (n == 0) {
-        return 0;
-    }
-    int* p = malloc((size_t)n * sizeof(int));
+    int* p = fill_range(n);
     if (p == 0) {
         return 0;
     }
     int sum = 0;
     for (int i = 0; i < n; i = i + 1) {
-        p[i] = i;
         sum = sum + p[i];
     }
-    free(p);
+    release_range(p);
     return sum;
 }
 

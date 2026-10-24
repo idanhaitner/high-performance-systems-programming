@@ -7,6 +7,7 @@ struct point {
     int y;
 };
 
+// The struct is returned by value: the caller gets a copy of p.
 struct point make_point(int x, int y) {
     struct point p;
     p.x = x;
@@ -14,17 +15,21 @@ struct point make_point(int x, int y) {
     return p;
 }
 
+// p points at the caller's struct, so -> changes the caller's fields.
 void point_move(struct point* p, int dx, int dy) {
     p->x = p->x + dx;
     p->y = p->y + dy;
 }
 
+// p is a copy of the argument. Changing it leaves the caller's point
+// alone, and the changed copy is returned.
 struct point moved_copy(struct point p, int dx, int dy) {
     p.x = p.x + dx;
     p.y = p.y + dy;
     return p;
 }
 
+// C cannot compare two structs with ==. Compare the fields one by one.
 int same_point(struct point a, struct point b) {
     return a.x == b.x && a.y == b.y;
 }

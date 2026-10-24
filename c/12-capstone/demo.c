@@ -1,9 +1,10 @@
 // Lesson 12 — a growing stack.
-// From this directory:  make run LESSON=12-capstone
+// From the c folder:  make run LESSON=12-capstone
 
 #include <stdio.h>
 #include <stdlib.h>
 
+// length values are in use; the block has room for capacity values.
 struct int_stack {
     int* data;
     int length;
@@ -17,6 +18,7 @@ static void stack_init(struct int_stack* s) {
 }
 
 static void stack_push(struct int_stack* s, int value) {
+    // Full: move the values into a block with twice the room.
     if (s->length == s->capacity) {
         int next = s->capacity == 0 ? 4 : s->capacity * 2;
         int* grown = malloc((size_t)next * sizeof(int));
@@ -34,6 +36,7 @@ static void stack_push(struct int_stack* s, int value) {
     s->length = s->length + 1;
 }
 
+// The top value is at index length - 1.
 static int stack_pop(struct int_stack* s) {
     s->length = s->length - 1;
     return s->data[s->length];
@@ -52,12 +55,12 @@ int main(void) {
     stack_push(&s, 10);
     stack_push(&s, 20);
     stack_push(&s, 30);
-    printf("size = %d\n", s.length);
+    printf("length = %d\n", s.length);
     printf("capacity = %d\n", s.capacity);
     printf("pop = %d\n", stack_pop(&s));
     printf("pop = %d\n", stack_pop(&s));
     printf("pop = %d\n", stack_pop(&s));
-    printf("size after pops = %d\n", s.length);
+    printf("length after pops = %d\n", s.length);
     stack_free(&s);
     return 0;
 }

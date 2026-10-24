@@ -6,6 +6,8 @@ int plus_one(int n) {
     return n + 1;
 }
 
+// When a and b are equal, a > b is false and b is returned. That is
+// the same value, so the tie needs no special case.
 int bigger(int a, int b) {
     if (a > b) {
         return a;
@@ -20,6 +22,8 @@ int smaller(int a, int b) {
     return b;
 }
 
+// Clamping keeps n inside the range lo..hi: too small becomes lo, too
+// big becomes hi, and anything already inside stays as it is.
 int clamped(int n, int lo, int hi) {
     if (n < lo) {
         return lo;
@@ -34,6 +38,8 @@ int twice(int n) {
     return n * 2;
 }
 
+// Four times n is twice of twice of n. Reusing twice means the
+// multiplication is written in only one place.
 int four_times(int n) {
     return twice(twice(n));
 }

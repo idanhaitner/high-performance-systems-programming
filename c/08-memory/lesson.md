@@ -1,13 +1,18 @@
 # 08 — Memory
 
-Every object lives somewhere. A local variable lives in the function's stack frame and dies when the function returns. A block from `malloc` lives on the heap until you pass it to `free`.
+Lesson 07 showed that every variable lives at an address. This lesson is about **how long** a variable lives. A function's local variables disappear when it returns. When data must outlive the function, or when you only learn how much you need while the program runs, you ask for memory yourself with `malloc` and give it back with `free`.
+
+## Two places for data
 
 ```text
-stack frame of main
-  boxed        a pointer
-heap
-  [ 42 ]       the int boxed points at
+stack (the function's local variables)
+  boxed        a pointer, 8 bytes
+heap (memory you asked for with malloc)
+  [ 42 ]       the int that boxed points at
 ```
+
+- The **stack** holds each function's local variables. When a function is called, it gets a fresh area on the stack, called its **stack frame**. When the function returns, the frame is thrown away, along with every local variable in it. This is automatic.
+- The **heap** is a large pool of memory that you manage by hand. You ask for a block with `malloc`. It stays yours until you hand it back with `free`, no matter which function is running.
 
 ## The stack
 
@@ -18,19 +23,23 @@ int local_year(void) {
 }
 ```
 
-`year` is created when `local_year` is called and destroyed when it returns. The `return` copies the value `2026` back to the caller. The caller's copy is a different object.
+`year` is created when `local_year` starts and destroyed when it returns. That is fine here, because `return year;` copies the **value** 2026 back to the caller. The caller's copy is separate.
 
-Returning the address of `year` would hand the caller an address that no longer refers to a live object. Using that address is **undefined behavior**.
+Returning the **address** of a local variable is a serious bug:
 
 ```c
-/* Do not run this. The returned address dies with the function. */
+/* Bug: year is destroyed when the function returns. */
 int* dangling(void) {
     int year = 2026;
     return &year;
 }
 ```
 
-## The heap
+The caller receives an address of memory that no longer belongs to `year`. Such a pointer is called **dangling**. Using it is **undefined behavior**. The compiler warns about this case.
+
+## The heap: `malloc` and `free`
+
+Both functions are declared in `<stdlib.h>`.
 
 ```c
 int* boxed = malloc(sizeof(int));
@@ -41,13 +50,45 @@ if (boxed == 0) {
 free(boxed);
 ```
 
-`malloc` asks for a number of bytes and returns the address of that block, or a null pointer if it cannot. Check the null pointer before you write through it. `sizeof(int)` is the byte count of one `int` on this machine.
+Line by line:
 
-`free` releases the block. After `free`, the pointer still holds the old address, and that address is no longer yours. Reading or writing through it is **undefined behavior**. So is calling `free` twice on the same block. `free(0)` does nothing, and it is safe.
+- `malloc(sizeof(int))` asks for a block big enough for one `int`. `malloc` takes a number of **bytes**, which is why the code asks `sizeof` instead of writing 4.
+- `malloc` returns the address of the new block. Its return type is `void*`, which means "an address of an unknown type". C converts it to `int*` automatically when you store it in `boxed`.
+- If the computer has no memory to give, `malloc` returns the null pointer. Always check for that before using the block.
+- `*boxed = 42;` writes into the block, exactly as with any pointer.
+- `free(boxed)` hands the block back. You must pass the same address that `malloc` returned.
 
-A block you never `free` is a leak. The program still has the bytes. `make test-asan` reports a leak in a finished solution. The ordinary `make test` does not.
+The new block's contents start as garbage. `malloc` does not set them to zero, so write a value before you read one.
 
-Every `malloc` in a function that does not return the pointer needs a matching `free` on every path that returns, including the path where a later allocation fails.
+For an array of `n` ints, ask for `n` times the size of one:
+
+```c
+int* p = malloc((size_t)n * sizeof(int));
+```
+
+`size_t` is the type `sizeof` gives: a whole number that is never negative, made for sizes. Converting `n` to `size_t` first means the multiplication is done in that type. You then use `p[0]` to `p[n - 1]` like a normal array.
+
+## Rules for `free`
+
+After `free(p)`, the variable `p` still holds the old address, but that memory is no longer yours. The rules:
+
+- Reading or writing through `p` after `free` is undefined behavior. This bug is called **use after free**.
+- Calling `free` twice on the same block is undefined behavior. This bug is called a **double free**.
+- `free(0)`, freeing the null pointer, is allowed and does nothing.
+
+## Leaks
+
+A block you never `free` is a **memory leak**. Nothing crashes, but the program holds memory it can no longer use. A long-running program that leaks a little on every request will eventually run out.
+
+The rule: every `malloc` needs exactly one matching `free`, on every path out of the function. If the function returns the block to its caller, as `box_int` in the exercise does, the duty to `free` passes to the caller.
+
+To check your exercise for leaks, run:
+
+```bash
+make leaks LESSON=08-memory
+```
+
+At the end it prints a line such as `0 leaks for 0 total leaked bytes`. Any other count means some block was never freed.
 
 ## What the demo prints
 
@@ -59,12 +100,13 @@ the heap int was released
 
 ## Exercise
 
-Open `exercise.c`. Each function still calls `not_implemented`. The tests release what your functions allocate. `sum_range` must release its own memory before it returns. Then:
+Open `exercise.c`. Each unfinished function contains a `not_implemented(...)` line. Replace it with your code. The tests release the memory that `box_int` and `fill_range` return. `sum_range` must release its own memory before it returns. Then:
 
 ```bash
 make try LESSON=08-memory
+make leaks LESSON=08-memory
 ```
 
-A `[todo]` line is still the original call. A `[fail]` line ran and returned something else. The finished file is `solution.c`.
+A `[todo]` line means the function still contains `not_implemented`. A `[fail]` line means it ran and returned the wrong value. The finished version is `solution.c`.
 
-Next: [the build](../09-build/lesson.md).
+Next: [the build](../09-build/lesson.md), where a program is split into several files.

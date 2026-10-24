@@ -4,6 +4,8 @@
 
 #include <stdbool.h>
 
+// sizeof gives a size_t. The (int) converts it to the int this function
+// returns. Asking sizeof keeps the answer right on every machine.
 int storage_of_char(void) {
     return (int)sizeof(char);
 }
@@ -20,10 +22,12 @@ int storage_of_pointer(void) {
     return (int)sizeof(void*);
 }
 
+// == already gives 1 or 0, so its result can be returned directly.
 int int_and_unsigned_same_width(void) {
     return sizeof(int) == sizeof(unsigned);
 }
 
+// true converts to the int 1.
 int truth_value(void) {
     return true;
 }

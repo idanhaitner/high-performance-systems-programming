@@ -10,6 +10,7 @@ struct int_stack {
     int capacity;
 };
 
+// An empty stack has no block yet. The first push allocates one.
 void stack_init(struct int_stack* s) {
     s->data = 0;
     s->length = 0;
@@ -18,11 +19,14 @@ void stack_init(struct int_stack* s) {
 
 void stack_push(struct int_stack* s, int value) {
     if (s->length == s->capacity) {
+        // The block is full (or missing): allocate a bigger one.
         int next = s->capacity == 0 ? 4 : s->capacity * 2;
         int* grown = malloc((size_t)next * sizeof(int));
         if (grown == 0) {
-            return;
+            return; // out of memory: leave the stack unchanged
         }
+        // Copy only the length values in use, then free the old block.
+        // free(0) is safe, so the first growth needs no special case.
         for (int i = 0; i < s->length; i = i + 1) {
             grown[i] = s->data[i];
         }
@@ -30,15 +34,19 @@ void stack_push(struct int_stack* s, int value) {
         s->data = grown;
         s->capacity = next;
     }
+    // The first free slot is at index length.
     s->data[s->length] = value;
     s->length = s->length + 1;
 }
 
+// After length shrinks by one, the old top is at index length. The block
+// is kept, so a later push reuses the slot.
 int stack_pop(struct int_stack* s) {
     s->length = s->length - 1;
     return s->data[s->length];
 }
 
+// Read the top without changing length.
 int stack_top(const struct int_stack* s) {
     return s->data[s->length - 1];
 }
@@ -47,6 +55,7 @@ int stack_size(const struct int_stack* s) {
     return s->length;
 }
 
+// Release the block and reset the fields, so the stack is empty again.
 void stack_free(struct int_stack* s) {
     free(s->data);
     s->data = 0;

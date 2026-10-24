@@ -1,6 +1,6 @@
 // Lesson 2 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=02-types
+// From the c folder:  make try LESSON=02-types
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -9,6 +9,7 @@
 
 int storage_of_char(void) {
     // Return how many bytes a char occupies on this machine.
+    // Use sizeof. It gives a size_t, so write (int)sizeof(...) to return it.
     not_implemented("storage_of_char");
 }
 
@@ -29,11 +30,13 @@ int storage_of_pointer(void) {
 
 int int_and_unsigned_same_width(void) {
     // Return 1 when int and unsigned have the same size, otherwise 0.
+    // Hint: == already gives 1 or 0.
     not_implemented("int_and_unsigned_same_width");
 }
 
 int truth_value(void) {
-    // Return the int value of the bool true.
+    // Return the int value of the bool true. Do not type the number;
+    // return true itself and let C convert it.
     not_implemented("truth_value");
 }
 

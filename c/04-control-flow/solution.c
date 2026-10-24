@@ -2,6 +2,7 @@
 
 #include "check.h"
 
+// Each return leaves the function at once, so no else is needed.
 int sign(int n) {
     if (n > 0) {
         return 1;
@@ -12,6 +13,7 @@ int sign(int n) {
     return 0;
 }
 
+// i walks 0, 1, ..., n - 1. When n is 0 the loop body never runs.
 int sum_below(int n) {
     int sum = 0;
     int i = 0;
@@ -22,6 +24,7 @@ int sum_below(int n) {
     return sum;
 }
 
+// The product starts at 1, not 0, because multiplying by 0 would erase it.
 int product_first(int n) {
     int product = 1;
     for (int k = 1; k <= n; k = k + 1) {
@@ -30,6 +33,7 @@ int product_first(int n) {
     return product;
 }
 
+// const char* means "text". Each case returns, so none falls through.
 const char* label_of(int n) {
     switch (n) {
     case 0:

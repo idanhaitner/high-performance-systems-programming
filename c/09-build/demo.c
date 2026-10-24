@@ -1,5 +1,6 @@
 // Lesson 9 — the build.
-// From this directory:  make run LESSON=09-build
+// From the c folder:  make run LESSON=09-build
+// The real two-file example is in split/. Build and run it with:  make split
 
 #include <stdio.h>
 

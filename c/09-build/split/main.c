@@ -1,3 +1,7 @@
+// Calls functions defined in mathx.c. The header gives the compiler their
+// declarations; the linker connects the calls to the definitions.
+// From the c folder:  make split
+
 #include <stdio.h>
 
 #include "mathx.h"

@@ -1,6 +1,6 @@
 // Lesson 6 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=06-arrays-and-strings
+// From the c folder:  make try LESSON=06-arrays-and-strings
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -13,6 +13,7 @@ int sum_array(const int* a, int n) {
 
 int max_array(const int* a, int n) {
     // Return the largest of the n elements starting at a. n is at least 1.
+    // The elements may all be negative, so do not start your answer at 0.
     not_implemented("max_array");
 }
 
@@ -24,6 +25,7 @@ int string_length(const char* s) {
 
 int count_char(const char* s, char c) {
     // Return how many times c appears before the first '\0'.
+    // Example: count_char("ababa", 'a') is 3.
     not_implemented("count_char");
 }
 

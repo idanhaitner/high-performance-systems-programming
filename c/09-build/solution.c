@@ -6,6 +6,7 @@ int rectangle_area(int w, int h) {
     return w * h;
 }
 
+// Two widths plus two heights.
 int rectangle_perimeter(int w, int h) {
     return 2 * (w + h);
 }
@@ -14,6 +15,8 @@ int scale(int n, int factor) {
     return n * factor;
 }
 
+// && is "and": both comparisons must be true. Each gives 1 or 0, and so
+// does &&, so the result can be returned directly.
 int in_range(int n, int lo, int hi) {
     return n >= lo && n <= hi;
 }

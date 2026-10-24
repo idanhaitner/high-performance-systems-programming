@@ -1,6 +1,6 @@
 // Lesson 12 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=12-capstone
+// From the c folder:  make try LESSON=12-capstone
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -14,15 +14,17 @@ struct int_stack {
 };
 
 void stack_init(struct int_stack* s) {
-    // Make an empty stack with no buffer. s is not null.
+    // Make an empty stack with no block: data null, length 0, capacity 0.
+    // s is not null.
     not_implemented("stack_init");
 }
 
 void stack_push(struct int_stack* s, int value) {
-    // Append value.
-    // When length would pass capacity, allocate a larger buffer, copy the
-    // old ints, and free the old buffer. Double a positive capacity.
-    // The first allocation uses capacity 4.
+    // Put value on top of the stack.
+    // When length == capacity, first make room: allocate a new block
+    // (4 ints if capacity is 0, otherwise twice the capacity), copy the
+    // length old ints into it, free the old block, and update data and
+    // capacity. If malloc fails, return without changing the stack.
     not_implemented("stack_push");
 }
 
@@ -42,7 +44,8 @@ int stack_size(const struct int_stack* s) {
 }
 
 void stack_free(struct int_stack* s) {
-    // Release the buffer and leave the stack empty. s is not null.
+    // Free the block and set the fields back to an empty stack.
+    // s is not null.
     not_implemented("stack_free");
 }
 

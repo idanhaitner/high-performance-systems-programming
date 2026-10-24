@@ -1,6 +1,6 @@
 // Lesson 7 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=07-pointers
+// From the c folder:  make try LESSON=07-pointers
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -17,6 +17,7 @@ void set_to(int* p, int value) {
 
 void swap_ints(int* a, int* b) {
     // Exchange the ints a and b point at. Both pointers are not null.
+    // Example: if *a is 1 and *b is 2, afterwards *a is 2 and *b is 1.
     not_implemented("swap_ints");
 }
 

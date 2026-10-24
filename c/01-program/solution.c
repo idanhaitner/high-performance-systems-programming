@@ -2,10 +2,12 @@
 
 #include "check.h"
 
+// a and b are the inputs. The function gives back their sum.
 int add(int a, int b) {
     return a + b;
 }
 
+// Subtraction is in the order written: subtract(10, 3) is 10 - 3.
 int subtract(int a, int b) {
     return a - b;
 }
@@ -14,6 +16,8 @@ int double_of(int n) {
     return n * 2;
 }
 
+// The minus sign in front of a value flips its sign: -(4) is -4, -(0) is 0.
+// Do not confuse it with !n, which means "n is zero" and gives 1 or 0.
 int negate(int n) {
     return -n;
 }

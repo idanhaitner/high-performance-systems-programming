@@ -2,6 +2,8 @@
 
 #include "check.h"
 
+// a is the address of the first element and n is how many there are.
+// When n is 0, the loop body never runs, so a is never read.
 int sum_array(const int* a, int n) {
     int sum = 0;
     for (int i = 0; i < n; i = i + 1) {
@@ -10,6 +12,8 @@ int sum_array(const int* a, int n) {
     return sum;
 }
 
+// Start from the first element instead of 0. Starting from 0 would give
+// the wrong answer when every element is negative.
 int max_array(const int* a, int n) {
     int best = a[0];
     for (int i = 1; i < n; i = i + 1) {
@@ -20,6 +24,7 @@ int max_array(const int* a, int n) {
     return best;
 }
 
+// Count characters until the '\0' terminator.
 int string_length(const char* s) {
     int length = 0;
     while (s[length] != '\0') {
@@ -28,6 +33,7 @@ int string_length(const char* s) {
     return length;
 }
 
+// The loop condition stops at the terminator, so no length is needed.
 int count_char(const char* s, char c) {
     int count = 0;
     for (int i = 0; s[i] != '\0'; i = i + 1) {

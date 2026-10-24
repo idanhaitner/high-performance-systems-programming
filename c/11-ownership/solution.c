@@ -9,6 +9,8 @@ struct buffer {
     int length;
 };
 
+// Allocate a fresh block and copy the ints into it. The returned struct
+// owns that block.
 struct buffer make_buffer(const int* src, int n) {
     struct buffer b;
     if (n == 0) {
@@ -28,10 +30,14 @@ struct buffer make_buffer(const int* src, int n) {
     return b;
 }
 
+// A deep copy is make_buffer applied to src's own ints. Returning src
+// itself would share its block.
 struct buffer copy_buffer(struct buffer src) {
     return make_buffer(src.data, src.length);
 }
 
+// Setting data to null makes a second free_buffer harmless: free(0) does
+// nothing.
 void free_buffer(struct buffer* b) {
     free(b->data);
     b->data = 0;

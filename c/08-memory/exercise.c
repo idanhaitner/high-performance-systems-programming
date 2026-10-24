@@ -1,6 +1,6 @@
 // Lesson 8 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=08-memory
+// From the c folder:  make try LESSON=08-memory
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -20,6 +20,7 @@ void free_box(int* p) {
 
 int* fill_range(int n) {
     // Allocate n ints and store 0, 1, ..., n - 1.
+    // n ints need (size_t)n * sizeof(int) bytes.
     // When n is 0, return null and allocate nothing.
     // Return null if allocation fails.
     not_implemented("fill_range");
@@ -32,7 +33,8 @@ void release_range(int* p) {
 
 int sum_range(int n) {
     // Return 0 + 1 + ... + (n - 1). When n is 0, return 0.
-    // If you allocate, release the memory before returning.
+    // Practice: build the numbers with fill_range, add them up, then
+    // release the block with release_range before returning.
     not_implemented("sum_range");
 }
 

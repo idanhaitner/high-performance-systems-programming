@@ -2,6 +2,7 @@
 
 #include "check.h"
 
+// Check for null before following the pointer.
 int read_or(const int* p, int fallback) {
     if (p == 0) {
         return fallback;
@@ -9,16 +10,19 @@ int read_or(const int* p, int fallback) {
     return *p;
 }
 
+// *p is the caller's int, so this writes into the caller's variable.
 void set_to(int* p, int value) {
     *p = value;
 }
 
+// Save *a first. After *a = *b, the old value of *a would be lost.
 void swap_ints(int* a, int* b) {
     int saved = *a;
     *a = *b;
     *b = saved;
 }
 
+// a[i] is the int i positions after the address a. *(a + i) is the same.
 int nth(const int* a, int i) {
     return a[i];
 }

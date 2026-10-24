@@ -1,6 +1,6 @@
 // Lesson 5 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=05-functions
+// From the c folder:  make try LESSON=05-functions
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -23,6 +23,7 @@ int smaller(int a, int b) {
 int clamped(int n, int lo, int hi) {
     // lo is less than or equal to hi.
     // Return lo when n is below lo, hi when n is above hi, otherwise n.
+    // Example: clamped(10, 0, 3) is 3, and clamped(2, 0, 3) is 2.
     not_implemented("clamped");
 }
 
@@ -32,7 +33,7 @@ int twice(int n) {
 }
 
 int four_times(int n) {
-    // Return n multiplied by 4.
+    // Return n multiplied by 4. Do it by calling twice.
     not_implemented("four_times");
 }
 

@@ -1,19 +1,19 @@
 // Lesson 3 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=03-expressions
+// From the c folder:  make try LESSON=03-expressions
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
 
 int divided(int a, int b) {
     // Return the integer quotient a / b. b is not 0.
-    // Division truncates toward zero.
+    // Integer division drops the fraction, cutting toward zero: -5 / 2 is -2.
     not_implemented("divided");
 }
 
 int leftover(int a, int b) {
     // Return the remainder a % b. b is not 0.
-    // The remainder has the sign of a.
+    // The remainder has the same sign as a: -5 % 2 is -1.
     not_implemented("leftover");
 }
 
@@ -23,12 +23,15 @@ int bumped(int n) {
 }
 
 int yield_then_bump(int n) {
-    // Return the value that n++ yields. That is the value n had on entry.
+    // Return the value that the expression n++ gives.
+    // n++ gives the old value of n, then adds one, so the answer is
+    // the value n had when the function started.
     not_implemented("yield_then_bump");
 }
 
 int same(int a, int b) {
     // Return 1 when a and b are equal, otherwise 0.
+    // Hint: one operator already gives exactly 1 or 0.
     not_implemented("same");
 }
 

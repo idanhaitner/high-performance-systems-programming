@@ -1,6 +1,6 @@
 // Lesson 4 exercises.
 // Replace each not_implemented(...) call with your code.
-// From this directory:  make try LESSON=04-control-flow
+// From the c folder:  make try LESSON=04-control-flow
 // A finished version is in solution.c. Try before you open it.
 
 #include "check.h"
@@ -12,16 +12,19 @@ int sign(int n) {
 
 int sum_below(int n) {
     // Return 0 + 1 + ... + (n - 1). When n is 0, return 0. n is never negative.
+    // Example: sum_below(5) is 0 + 1 + 2 + 3 + 4 = 10.
     not_implemented("sum_below");
 }
 
 int product_first(int n) {
     // Return 1 * 2 * ... * n. When n is 0, return 1. n is never negative.
+    // Example: product_first(4) is 1 * 2 * 3 * 4 = 24.
     not_implemented("product_first");
 }
 
 const char* label_of(int n) {
     // Return "zero" for 0, "one" for 1, and "other" for every other n.
+    // Write the text in double quotes, for example: return "zero";
     not_implemented("label_of");
 }
 
