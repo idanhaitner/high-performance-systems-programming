@@ -37,6 +37,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export async function generateMetadata(): Promise<Metadata> {
   const course = loadCourse();
   return {
@@ -44,8 +46,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description: course.summary,
     icons: {
       icon: [
-        { url: "/favicon.svg", type: "image/svg+xml" },
-        { url: "/favicon.ico", sizes: "any" },
+        { url: `${basePath}/favicon.svg`, type: "image/svg+xml" },
+        { url: `${basePath}/favicon.ico`, sizes: "any" },
       ],
     },
   };

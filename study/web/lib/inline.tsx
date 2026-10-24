@@ -79,7 +79,8 @@ function richText(text: string, keyBase: string): ReactNode[] {
 
 export function Inline({ text }: { text: string }) {
   const nodes: ReactNode[] = [];
-  const pattern = /(`+)([^`]*)\1|\$\$([^$\n]+)\$\$|\$([^$\n]+)\$/g;
+  // Bold may wrap code spans, so it is matched here, before the text is split around code.
+  const pattern = /(`+)([^`]*)\1|\$\$([^$\n]+)\$\$|\$([^$\n]+)\$|\*\*((?:`[^`]*`|[^*`])+?)\*\*/g;
   let last = 0;
   let match: RegExpExecArray | null;
   let index = 0;
@@ -88,6 +89,8 @@ export function Inline({ text }: { text: string }) {
     const key = `k${index++}`;
     if (match[1]) {
       nodes.push(<code key={key}>{match[2]}</code>);
+    } else if (match[5] != null) {
+      nodes.push(<strong key={key}><Inline text={match[5]} /></strong>);
     } else if (match[3] != null) {
       nodes.push(
         <span key={key} className="math-display" dir="ltr" dangerouslySetInnerHTML={{ __html: mathHtml(match[3], true) }} />,
