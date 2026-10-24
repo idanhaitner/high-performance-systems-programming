@@ -711,14 +711,45 @@ p { margin: 0.75rem 0; text-wrap: pretty; }
 .lecture-group.is-open .lecture-label-meta::after { transform: translateY(1px) rotate(-135deg); }
 .lecture-lessons { display: flex; flex-direction: column; gap: 0.15rem; padding-top: 0.15rem; animation: fold-in 0.4s var(--ease) both; }
 .lecture-group:not(.is-open) .lecture-lessons { display: none; }
-.outline {
-  margin: 1.35rem 0 0.4rem;
-  padding: 0.85rem 1rem 0.95rem;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: var(--card);
+.toc {
+  margin: 1.5rem 0 0.5rem;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--line);
 }
-.outline a { text-decoration: none; }
+.toc .kicker { margin-bottom: 0.6rem; }
+.page ol.toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 0.15rem 1rem;
+}
+.page ol.toc-list li { padding: 0; margin: 0; }
+.toc-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  margin-inline: -0.65rem;
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.toc-num {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.toc-list a:hover { background: var(--rail-hover); color: var(--accent-ink); }
+.toc-list a:hover .toc-num { color: var(--accent); }
+.toc-list a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .lesson-section, .practice, .formal, .check { scroll-margin-top: 4.25rem; }
 
 .card, .formal, .callout {
