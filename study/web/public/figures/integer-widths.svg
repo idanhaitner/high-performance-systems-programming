@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img">
 <style>
-  .t { font-family: Heebo, system-ui, sans-serif; fill: #2c2140; }
-  .m { font-family: Heebo, system-ui, sans-serif; fill: #6d6080; }
+  .t { font-family: Heebo, system-ui, sans-serif; fill: #2a1a12; }
+  .m { font-family: Heebo, system-ui, sans-serif; fill: #7a6458; }
   .w { font-family: Heebo, system-ui, sans-serif; fill: #ffffff; }
   .mono { font-family: "Source Code Pro", ui-monospace, monospace; }
   .step { opacity: 1; }
@@ -13,56 +13,56 @@
     .step { animation: none !important; opacity: 1 !important; }
   }
 </style>
-<rect width="720" height="420" fill="#f7f4fb"/>
+<rect width="720" height="420" fill="#fbf6f2"/>
 <text x="24" y="32" class="m" font-size="13">The value 42. Leading bits on the left are zeros. The addresses label these objects.</text>
 
 <g class="step" style="animation-delay:0.08s">
   <text x="24" y="68" class="t" font-size="14" font-weight="700">char a</text>
   <text x="110" y="68" class="m" font-size="13">1 byte · address 1000</text>
-  <rect x="520" y="46" width="176" height="32" rx="6" fill="#6d4ad4"/>
+  <rect x="520" y="46" width="176" height="32" rx="6" fill="#c2531d"/>
   <text x="608" y="67" text-anchor="middle" class="w mono" font-size="13">00101010</text>
 </g>
 
 <g class="step" style="animation-delay:0.20s">
   <text x="24" y="124" class="t" font-size="14" font-weight="700">short b</text>
   <text x="110" y="124" class="m" font-size="13">2 bytes · address 1002</text>
-  <rect x="336" y="102" width="176" height="32" rx="6" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="336" y="102" width="176" height="32" rx="6" fill="#fde3d2" stroke="#c2531d"/>
   <text x="424" y="123" text-anchor="middle" class="mono" font-size="13">00000000</text>
-  <rect x="520" y="102" width="176" height="32" rx="6" fill="#6d4ad4"/>
+  <rect x="520" y="102" width="176" height="32" rx="6" fill="#c2531d"/>
   <text x="608" y="123" text-anchor="middle" class="w mono" font-size="13">00101010</text>
 </g>
 
 <g class="step" style="animation-delay:0.32s">
   <text x="24" y="180" class="t" font-size="14" font-weight="700">int c</text>
   <text x="110" y="180" class="m" font-size="13">4 bytes · address 1024</text>
-  <rect x="24" y="196" width="160" height="32" rx="6" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="24" y="196" width="160" height="32" rx="6" fill="#fde3d2" stroke="#c2531d"/>
   <text x="104" y="217" text-anchor="middle" class="mono" font-size="13">00000000</text>
-  <rect x="192" y="196" width="160" height="32" rx="6" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="192" y="196" width="160" height="32" rx="6" fill="#fde3d2" stroke="#c2531d"/>
   <text x="272" y="217" text-anchor="middle" class="mono" font-size="13">00000000</text>
-  <rect x="360" y="196" width="160" height="32" rx="6" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="360" y="196" width="160" height="32" rx="6" fill="#fde3d2" stroke="#c2531d"/>
   <text x="440" y="217" text-anchor="middle" class="mono" font-size="13">00000000</text>
-  <rect x="528" y="196" width="168" height="32" rx="6" fill="#6d4ad4"/>
+  <rect x="528" y="196" width="168" height="32" rx="6" fill="#c2531d"/>
   <text x="612" y="217" text-anchor="middle" class="w mono" font-size="13">00101010</text>
 </g>
 
 <g class="step" style="animation-delay:0.44s">
   <text x="24" y="268" class="t" font-size="14" font-weight="700">long d</text>
   <text x="110" y="268" class="m" font-size="13">8 bytes · address 1032</text>
-  <rect x="24" y="284" width="80" height="28" rx="4" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="24" y="284" width="80" height="28" rx="4" fill="#fde3d2" stroke="#c2531d"/>
   <text x="64" y="303" text-anchor="middle" class="mono" font-size="9">00000000</text>
-  <rect x="108" y="284" width="80" height="28" rx="4" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="108" y="284" width="80" height="28" rx="4" fill="#fde3d2" stroke="#c2531d"/>
   <text x="148" y="303" text-anchor="middle" class="mono" font-size="9">00000000</text>
-  <rect x="192" y="284" width="80" height="28" rx="4" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="192" y="284" width="80" height="28" rx="4" fill="#fde3d2" stroke="#c2531d"/>
   <text x="232" y="303" text-anchor="middle" class="mono" font-size="9">00000000</text>
-  <rect x="276" y="284" width="80" height="28" rx="4" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="276" y="284" width="80" height="28" rx="4" fill="#fde3d2" stroke="#c2531d"/>
   <text x="316" y="303" text-anchor="middle" class="mono" font-size="9">00000000</text>
-  <rect x="360" y="284" width="80" height="28" rx="4" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="360" y="284" width="80" height="28" rx="4" fill="#fde3d2" stroke="#c2531d"/>
   <text x="400" y="303" text-anchor="middle" class="mono" font-size="9">00000000</text>
-  <rect x="444" y="284" width="80" height="28" rx="4" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="444" y="284" width="80" height="28" rx="4" fill="#fde3d2" stroke="#c2531d"/>
   <text x="484" y="303" text-anchor="middle" class="mono" font-size="9">00000000</text>
-  <rect x="528" y="284" width="80" height="28" rx="4" fill="#eadcff" stroke="#6d4ad4"/>
+  <rect x="528" y="284" width="80" height="28" rx="4" fill="#fde3d2" stroke="#c2531d"/>
   <text x="568" y="303" text-anchor="middle" class="mono" font-size="9">00000000</text>
-  <rect x="612" y="284" width="84" height="28" rx="4" fill="#6d4ad4"/>
+  <rect x="612" y="284" width="84" height="28" rx="4" fill="#c2531d"/>
   <text x="654" y="303" text-anchor="middle" class="w mono" font-size="9">00101010</text>
 </g>
 

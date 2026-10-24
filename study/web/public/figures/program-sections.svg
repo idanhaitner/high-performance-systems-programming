@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" role="img">
 
 <style>
-  .t { font-family: Heebo, system-ui, sans-serif; fill: #2c2140; }
-  .m { font-family: Heebo, system-ui, sans-serif; fill: #6d6080; }
+  .t { font-family: Heebo, system-ui, sans-serif; fill: #2a1a12; }
+  .m { font-family: Heebo, system-ui, sans-serif; fill: #7a6458; }
   .w { font-family: Heebo, system-ui, sans-serif; fill: #ffffff; }
   .mono { font-family: "Source Code Pro", ui-monospace, monospace; }
   .step { opacity: 1; }
@@ -16,7 +16,7 @@
 </style>
 
 
-  <rect width="720" height="340" fill="#f7f4fb"/>
+  <rect width="720" height="340" fill="#fbf6f2"/>
   <g class="step" style="animation-delay:0.08s">
     <text x="36" y="40" class="mono" font-size="15">int x;</text>
     <text x="280" y="40" class="t" font-size="15">.bss — global, no explicit initializer</text>

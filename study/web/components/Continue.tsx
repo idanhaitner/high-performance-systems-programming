@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Mixed } from "@/lib/bidi";
 import { readProgress } from "@/lib/progress";
 
-type Chapter = { id: string; title: string };
+type Chapter = { id: string; title: string; lecture?: string };
 
 export function Continue({ courseId, chapters }: { courseId: string; chapters: Chapter[] }) {
   const first = chapters[0];
@@ -25,7 +25,7 @@ export function Continue({ courseId, chapters }: { courseId: string; chapters: C
   return (
     <Link className="continue" href={`/topics/${target.id}`}>
       <span className="continue-copy">
-        <span>{resuming ? "Continue" : "Start"}</span>
+        <span>{resuming ? "Continue" : "Start"}{target.lecture && ` · ${target.lecture}`}</span>
         <strong><Mixed text={target.title} /></strong>
       </span>
       <span className="continue-arrow" aria-hidden="true" />

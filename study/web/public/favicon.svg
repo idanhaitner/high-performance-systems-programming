@@ -1,6 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="High-Performance Systems Programming">
-  <rect width="32" height="32" rx="8" fill="#402b5f"/>
-  <rect x="7" y="7" width="18" height="5.5" rx="1.6" fill="#6d4ad4"/>
-  <rect x="7" y="14.25" width="14" height="5.5" rx="1.6" fill="#d8c7f9"/>
-  <rect x="7" y="21.5" width="10" height="5.5" rx="1.6" fill="#8f78ba"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b8441a"/>
+      <stop offset="0.55" stop-color="#e0702a"/>
+      <stop offset="1" stop-color="#f2ad62"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#g)"/>
+  <!-- stack frames: bright top frame, fading lower frames -->
+  <rect x="7" y="7" width="18" height="5.5" rx="1.6" fill="#ffffff"/>
+  <rect x="7" y="14.25" width="14" height="5.5" rx="1.6" fill="#ffffff" fill-opacity="0.7"/>
+  <rect x="7" y="21.5" width="10" height="5.5" rx="1.6" fill="#ffffff" fill-opacity="0.45"/>
 </svg>

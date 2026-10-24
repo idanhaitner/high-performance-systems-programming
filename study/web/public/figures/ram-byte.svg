@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" role="img">
 
 <style>
-  .t { font-family: Heebo, system-ui, sans-serif; fill: #2c2140; }
-  .m { font-family: Heebo, system-ui, sans-serif; fill: #6d6080; }
+  .t { font-family: Heebo, system-ui, sans-serif; fill: #2a1a12; }
+  .m { font-family: Heebo, system-ui, sans-serif; fill: #7a6458; }
   .w { font-family: Heebo, system-ui, sans-serif; fill: #ffffff; }
   .mono { font-family: "Source Code Pro", ui-monospace, monospace; }
   .step { opacity: 1; }
@@ -16,16 +16,16 @@
 </style>
 
 
-  <rect width="720" height="360" fill="#f7f4fb"/>
+  <rect width="720" height="360" fill="#fbf6f2"/>
   <text x="36" y="36" class="t" font-size="15" font-weight="700">RAM</text>
   <text x="36" y="58" class="m" font-size="13">An array of bytes, addressed from 0 up to 2^n − 1.</text>
   <g class="step" style="animation-delay:0.08s">
-    <rect x="48" y="84" width="160" height="248" rx="10" fill="#ffffff" stroke="#d2c6e0"/>
+    <rect x="48" y="84" width="160" height="248" rx="10" fill="#ffffff" stroke="#e6d2c4"/>
     <text x="128" y="112" text-anchor="middle" class="mono" font-size="14">2^n − 1</text>
     <text x="128" y="148" text-anchor="middle" class="m" font-size="18">·</text>
     <text x="128" y="168" text-anchor="middle" class="m" font-size="18">·</text>
     <text x="128" y="188" text-anchor="middle" class="m" font-size="18">·</text>
-    <line x1="64" y1="210" x2="192" y2="210" stroke="#e8e0f2"/>
+    <line x1="64" y1="210" x2="192" y2="210" stroke="#f3e4d8"/>
     <text x="128" y="236" text-anchor="middle" class="mono" font-size="14">4</text>
     <text x="128" y="260" text-anchor="middle" class="mono" font-size="14">3</text>
     <text x="128" y="284" text-anchor="middle" class="mono" font-size="14">2</text>
@@ -35,7 +35,7 @@
   </g>
   <g class="step" style="animation-delay:0.20s">
     <text x="280" y="110" class="t" font-size="15" font-weight="700">One byte is 8 bits</text>
-    <rect x="280" y="132" width="44" height="44" rx="6" fill="#eadcff" stroke="#6d4ad4"/><text x="302" y="160" text-anchor="middle" class="mono" font-size="16">7</text><rect x="328" y="132" width="44" height="44" rx="6" fill="#eadcff" stroke="#6d4ad4"/><text x="350" y="160" text-anchor="middle" class="mono" font-size="16">6</text><rect x="376" y="132" width="44" height="44" rx="6" fill="#eadcff" stroke="#6d4ad4"/><text x="398" y="160" text-anchor="middle" class="mono" font-size="16">5</text><rect x="424" y="132" width="44" height="44" rx="6" fill="#eadcff" stroke="#6d4ad4"/><text x="446" y="160" text-anchor="middle" class="mono" font-size="16">4</text><rect x="472" y="132" width="44" height="44" rx="6" fill="#eadcff" stroke="#6d4ad4"/><text x="494" y="160" text-anchor="middle" class="mono" font-size="16">3</text><rect x="520" y="132" width="44" height="44" rx="6" fill="#eadcff" stroke="#6d4ad4"/><text x="542" y="160" text-anchor="middle" class="mono" font-size="16">2</text><rect x="568" y="132" width="44" height="44" rx="6" fill="#eadcff" stroke="#6d4ad4"/><text x="590" y="160" text-anchor="middle" class="mono" font-size="16">1</text><rect x="616" y="132" width="44" height="44" rx="6" fill="#eadcff" stroke="#6d4ad4"/><text x="638" y="160" text-anchor="middle" class="mono" font-size="16">0</text>
+    <rect x="280" y="132" width="44" height="44" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="302" y="160" text-anchor="middle" class="mono" font-size="16">7</text><rect x="328" y="132" width="44" height="44" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="350" y="160" text-anchor="middle" class="mono" font-size="16">6</text><rect x="376" y="132" width="44" height="44" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="398" y="160" text-anchor="middle" class="mono" font-size="16">5</text><rect x="424" y="132" width="44" height="44" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="446" y="160" text-anchor="middle" class="mono" font-size="16">4</text><rect x="472" y="132" width="44" height="44" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="494" y="160" text-anchor="middle" class="mono" font-size="16">3</text><rect x="520" y="132" width="44" height="44" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="542" y="160" text-anchor="middle" class="mono" font-size="16">2</text><rect x="568" y="132" width="44" height="44" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="590" y="160" text-anchor="middle" class="mono" font-size="16">1</text><rect x="616" y="132" width="44" height="44" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="638" y="160" text-anchor="middle" class="mono" font-size="16">0</text>
     <text x="302" y="200" text-anchor="middle" class="m" font-size="12">MSB</text>
     <text x="638" y="200" text-anchor="middle" class="m" font-size="12">LSB</text>
     <text x="280" y="248" class="t" font-size="14">bit — a binary digit, 0 or 1</text>

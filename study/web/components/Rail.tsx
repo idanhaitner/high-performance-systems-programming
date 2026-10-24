@@ -38,6 +38,18 @@ export function Rail({
   const [solved, setSolved] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const lessons = lectures.flatMap((lecture) => lecture.lessons);
+  const currentLecture =
+    lectures.find((lecture) => lecture.lessons.some((lesson) => samePath(pathname, `/topics/${lesson.id}`)))?.id ??
+    lectures[lectures.length - 1]?.id;
+  const [expanded, setExpanded] = useState<string[]>(currentLecture ? [currentLecture] : []);
+
+  useEffect(() => {
+    if (!currentLecture) return;
+    setExpanded((ids) => (ids.includes(currentLecture) ? ids : [...ids, currentLecture]));
+  }, [currentLecture]);
+
+  const toggleLecture = (id: string) =>
+    setExpanded((ids) => (ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id]));
 
   useLayoutEffect(() => {
     const nav = chaptersRef.current;
@@ -57,7 +69,7 @@ export function Rail({
     place();
     window.addEventListener("resize", place);
     return () => window.removeEventListener("resize", place);
-  }, [pathname, open]);
+  }, [pathname, open, expanded]);
 
   useEffect(() => {
     setOpen(false);
@@ -147,25 +159,39 @@ export function Rail({
         <p className="rail-label">Lectures</p>
         <nav className="chapters-nav" ref={chaptersRef}>
           {mark && <span className="rail-mark" style={{ top: mark.top, height: mark.height }} />}
-          {lectures.map((lecture) => (
-            <div className="lecture-group" key={lecture.id}>
-              <p className="lecture-label">
-                <span>Lecture {String(lecture.number).padStart(2, "0")}</span>
-                <Mixed text={lecture.title} />
-              </p>
-              {lecture.lessons.map((lesson) => {
-                const href = `/topics/${lesson.id}`;
-                const current = samePath(pathname, href);
-                const finished = lesson.practiceIds.length > 0 && lesson.practiceIds.every((id) => solved.includes(id));
-                return (
-                  <Link key={lesson.id} href={href} className={current ? "is-current" : ""}>
-                    <span className={`dot${finished ? " is-done" : ""}`}>{String(lesson.lessonNumber).padStart(2, "0")}</span>
-                    <span><Mixed text={lesson.title} /></span>
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
+          {lectures.map((lecture) => {
+            const isOpen = expanded.includes(lecture.id);
+            const ids = lecture.lessons.flatMap((lesson) => lesson.practiceIds);
+            const solvedHere = ids.filter((id) => solved.includes(id)).length;
+            return (
+              <div className={`lecture-group${isOpen ? " is-open" : ""}`} key={lecture.id}>
+                <button
+                  type="button"
+                  className="lecture-label"
+                  aria-expanded={isOpen}
+                  aria-controls={`rail-${lecture.id}`}
+                  onClick={() => toggleLecture(lecture.id)}
+                >
+                  <span className="lecture-label-kicker">Lecture {String(lecture.number).padStart(2, "0")}</span>
+                  <span><Mixed text={lecture.title} /></span>
+                  <span className="lecture-label-meta">{ids.length ? `${solvedHere}/${ids.length}` : lecture.lessons.length}</span>
+                </button>
+                <div className="lecture-lessons" id={`rail-${lecture.id}`}>
+                  {lecture.lessons.map((lesson) => {
+                    const href = `/topics/${lesson.id}`;
+                    const current = samePath(pathname, href);
+                    const finished = lesson.practiceIds.length > 0 && lesson.practiceIds.every((id) => solved.includes(id));
+                    return (
+                      <Link key={lesson.id} href={href} className={current ? "is-current" : ""}>
+                        <span className={`dot${finished ? " is-done" : ""}`}>{String(lesson.lessonNumber).padStart(2, "0")}</span>
+                        <span><Mixed text={lesson.title} /></span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </nav>
         <p className="progress-count">{total ? <>{done} / {total} exercises solved</> : ""}</p>
       </div>

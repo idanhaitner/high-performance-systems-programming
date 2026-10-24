@@ -9,7 +9,9 @@ export default function GlossaryPage() {
     .map((topic) => ({
       id: topic.id,
       title: topic.title,
-      number: String(topic.lessonNumber).padStart(2, "0"),
+      number: course.lectures.length > 1
+        ? `${topic.lectureNumber}.${String(topic.lessonNumber).padStart(2, "0")}`
+        : String(topic.lessonNumber).padStart(2, "0"),
       entries: course.glossary.filter((entry) => entry.topic === topic.id),
     }))
     .filter((group) => group.entries.length > 0);
