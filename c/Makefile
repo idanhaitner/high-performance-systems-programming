@@ -4,6 +4,8 @@
 #   make leaks LESSON=08-memory    run your exercise and report memory leaks
 #   make split                     build and run lesson 09's two-file program
 #   make link-error                show lesson 09's linker error on purpose
+#   make practice LEVEL=01-printing           build and run a practice exercise
+#   make practice-solution LEVEL=01-printing  run that practice set's solution
 #   make test                      run every finished solution
 #   make test-asan                 run every solution with the address sanitizer
 #   make test-leaks                check every solution for memory leaks
@@ -39,7 +41,7 @@ ifeq ($(shell uname -s),Darwin)
 LEAK_CHECK := leaks --quiet --atExit --
 endif
 
-.PHONY: all demos exercises test test-asan test-leaks run try leaks split link-error clean need-lesson
+.PHONY: all demos exercises test test-asan test-leaks run try leaks split link-error practice practice-solution clean need-lesson need-level
 
 all: demos exercises
 
@@ -102,6 +104,20 @@ need-lesson:
 		exit 1; \
 	fi
 
+# The practice sets live in practice/<level>/ and share practice/practice.h.
+practice: need-level $(BUILD)/practice-$(LEVEL)-exercise
+	./$(BUILD)/practice-$(LEVEL)-exercise
+
+practice-solution: need-level $(BUILD)/practice-$(LEVEL)-solution
+	./$(BUILD)/practice-$(LEVEL)-solution
+
+need-level:
+	@if [ -z "$(LEVEL)" ] || [ ! -d "practice/$(LEVEL)" ]; then \
+		echo "Name a practice set, for example:  make $(MAKECMDGOALS) LEVEL=01-printing"; \
+		echo "Practice sets: $$(cd practice && ls -d */ | tr -d /)"; \
+		exit 1; \
+	fi
+
 clean:
 	rm -rf build
 
@@ -117,4 +133,10 @@ $(BUILD)/%-exercise: %/exercise.c $(CHECK_H) | $(BUILD)
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD)/%-solution: %/solution.c $(CHECK_H) | $(BUILD)
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD)/practice-%-exercise: practice/%/exercise.c practice/practice.h $(CHECK_H) | $(BUILD)
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD)/practice-%-solution: practice/%/solution.c practice/practice.h $(CHECK_H) | $(BUILD)
 	$(CC) $(CFLAGS) -o $@ $<
