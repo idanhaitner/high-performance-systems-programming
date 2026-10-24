@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "study-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "study/web", "run", "dev", "--", "-p", "8732"],
+      "port": 8732
+    }
+  ]
+}

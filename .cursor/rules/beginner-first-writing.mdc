@@ -1,0 +1,28 @@
+---
+description: Write all study-site content for a reader who starts from zero
+globs: study/content/**
+alwaysApply: true
+---
+
+# Write for a reader who knows nothing yet
+
+The reader of this site is a student learning the material for the first time. Assume they have never written C, do not know what an "abstraction", a "representation", a "bit pattern", a "cache", or a "process" is, and have not seen the lecture. Every page must be learnable from scratch, in order.
+
+This applies to everything the site shows: lesson files in `study/content/topics/`, and the course, lecture, and lesson summaries and glossary in `study/content/course.yml`.
+
+## Rules
+
+1. **Explain a word before you use it.** The first time a technical term appears, say what it means in plain words, in the same sentence or the next one. If a term belongs to a later lesson, either explain it briefly or leave it out.
+2. **Start from the intuition, then the formal statement.** Open each section with a short everyday picture or a tiny example ("memory is a long row of numbered boxes"), then give the precise rule. `:::definition` blocks come after the plain explanation, not before it.
+3. **One idea per paragraph, short sentences.** Prefer two short sentences to one long one. Avoid stacked clauses and parentheticals.
+4. **Say why it matters.** Each section answers "why should I care?" in one or two sentences, in terms the reader already has.
+5. **Walk through examples step by step.** Show the code, then explain what each line does. Do numeric examples with small, readable numbers first; use the lecture's big numbers only after the idea is clear.
+6. **Plain language over jargon.** Write "the compiler may do anything" before "undefined behavior"; write "the size in bytes" before "width". Avoid phrases like "denotes", "designates", "yields", "imposes no requirements" unless they are explained.
+7. **Keep it correct.** Simpler does not mean wrong. Keep the technical claims accurate, and mark platform-specific facts ("on a typical 64-bit Linux machine").
+8. **Keep the flow coherent.** Each lesson opens by saying what it will teach and how it connects to the previous lesson, and ends by saying what comes next.
+9. **Summaries are for beginners too.** Course, lecture, and lesson summaries in `course.yml` must make sense to someone who has not read the lesson yet: no undefined terms.
+10. **Exercises test the idea, not the vocabulary.** Questions and explanations in `:::check` and `:::problem` blocks use the same plain wording as the lesson.
+
+## Before finishing
+
+Reread each changed page as a beginner and ask: is there any word here I would have to look up? If yes, explain it or remove it.

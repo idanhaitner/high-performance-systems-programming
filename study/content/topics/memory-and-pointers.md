@@ -7,74 +7,89 @@ sources:
   - c/07-pointers/lesson.md
 ---
 
-An object has a type, a value, and, when it occupies memory, an address. A pointer stores an address. An array stores elements of one type in adjacent memory. The addresses in the diagrams are examples; address-space layout randomization changes the numeric values between runs.
+In the last lesson, `scanf` needed `&x`, "the address of `x`". This lesson explains what that means. We picture memory as a long street of numbered boxes, see that every variable lives in one of those boxes, and meet **pointers**: variables that hold a box number. Then we look at **arrays**, which are many boxes in a row. Pointers are the idea most beginners find hardest in C, so we go slowly.
 
-## Bytes and addresses
+## Memory is a long row of numbered boxes
 
 :::definition id=def-bit title="Bit" source="Lecture 1 - Introduction.pdf"
-A bit is a binary digit. Its value is 0 or 1.
+A bit is the smallest piece of information: a single 0 or 1.
 :::
 
 :::definition id=def-byte title="Byte" source="Lecture 1 - Introduction.pdf"
-A byte is the smallest unit of memory that has its own address. On every machine in this course a byte is 8 bits. Diagrams draw the most significant bit on the left and the least significant bit on the right.
+A byte is 8 bits. It is the smallest piece of memory that has its own address. In diagrams, the most important (highest-value) bit is drawn on the left.
 :::
 
+Imagine memory as a very long street. Each house is one byte, and each house has a number. That number is the byte's **address**.
+
 :::definition id=def-ram title="Address" source="Lecture 1 - Introduction.pdf"
-An address is a number that identifies one byte. Memory can be pictured as an array of bytes numbered from 0 to $2^n - 1$, where $n$ is the address width in bits. A C pointer holds an address in the process's virtual address space, not a physical RAM location, and not every number in that range points to usable memory.
+An address is the number of one byte in memory. The bytes are numbered 0, 1, 2, 3, and so on. Not every number is a usable address: a program may only use the parts of memory the operating system has given it.
 :::
 
 ![A byte contains eight bits, with the most significant bit drawn on the left.](../assets/figures/ram-byte.svg)
 
-On this 64-bit platform a pointer occupies 8 bytes. Which addresses may actually be used depends on what the operating system has mapped into the process and with which permissions.
+Addresses are usually written in **hexadecimal** (base 16), with a `0x` in front: `0x1000` is just the number 4096. Hex is used because each hex digit is exactly 4 bits, so it is a compact way to write binary.
+
+Two small notes for later: on the 64-bit machines in this course, an address is 8 bytes long. And the addresses your program sees are not the physical positions on the memory chip; the operating system translates them. For now, just think of them as house numbers.
 
 :::check id=chk-byte
 In the course's byte diagram, which bit is drawn on the left?
 
-- [ ] The least significant bit
-- [x] The most significant bit
+- [ ] The least significant (lowest-value) bit
+- [x] The most significant (highest-value) bit
 - [ ] The sign bit of a C `int`
 
-The diagram places bit 7, the most significant bit of an 8-bit byte, on the left. That drawing convention is separate from the sign bit of a wider integer.
+The bit worth the most (bit 7, worth 128) is drawn on the left, just as we write the biggest digit of a decimal number first.
 :::
 
-## Objects, scope, and storage
+## Every variable has a value and an address
+
+When you write `int x = 5;`, the computer picks 4 bytes somewhere in memory for `x` and stores 5 there. So `x` has two things:
+
+- its **value**: 5
+- its **address**: the number of its first byte, for example `0x1000`
 
 :::definition id=def-object title="Value and address" source="Lecture 1 - Introduction.pdf"
-A variable names an object, and an object has a value. An object in memory also has an address: the address of its first byte. If a program never takes an object's address, the compiler may keep it only in a register or remove it entirely.
+A variable has a value. If it is stored in memory, it also has an address: the address of its first byte. (If a program never asks for a variable's address, the compiler may keep it inside the processor instead of memory.)
 :::
+
+You can print both:
 
 ```c
 int x = 5;
-printf("%d\n", x);          /* value */
-printf("%p\n", (void *)&x); /* address, if x has one */
+printf("%d\n", x);          /* the value: 5 */
+printf("%p\n", (void *)&x); /* the address, e.g. 0x7ffd5c3a1b2c */
 ```
 
-`%d` prints an `int`. `%p` prints a pointer and expects a `void *`, so the address is cast. The address you see will differ from run to run and from the examples here.
+`&x` means "the address of `x`". The placeholder `%p` prints an address. (The `(void *)` in front is a technicality: `%p` wants a general "address of anything", so we convert to it.) The address will be different each time you run the program, because the operating system places things at random positions for security.
+
+### Where a variable lives and how long it exists
+
+Look at this program:
 
 ```c
 #include <stdio.h>
 
-int x = 10; /* file scope, static storage, external linkage */
-int y;      /* file scope, static storage, initialized to zero */
+int x = 10; /* outside any function: a global variable */
+int y;      /* global, and no starting value given, so it starts at 0 */
 
 int main(void) {
-    int z = 5;                   /* block scope, automatic storage */
-    int a[4] = {10, 20, 30, 40}; /* block scope, four adjacent ints */
+    int z = 5;                   /* inside main: a local variable */
+    int a[4] = {10, 20, 30, 40}; /* local: four ints in a row */
     printf("z = %d\n", z);
     return 0;
 }
 ```
 
-Three separate properties describe each variable:
+Variables differ in three ways:
 
-- **Scope** is where the name is visible. `x` and `y` are visible from their declaration to the end of the file. `z` and `a` are visible only inside `main`.
-- **Linkage** decides whether other files can refer to the name. Another file can use `x` by declaring `extern int x;`. Adding `static` to a file-scope declaration hides it from other files.
-- **Storage duration** is how long the object exists. `x` and `y` have static storage duration: they exist for the whole run, and `y`, which has no initializer, starts at zero. `z` and `a` have automatic storage duration: they are created each time `main` is entered and destroyed when it returns, so their addresses are valid only during that time.
+- **Where the name can be used (scope).** `x` and `y` are written outside any function, so any code below them in the file can use them. `z` and `a` are written inside `main`, so only code inside `main` can use them.
+- **Whether other files can see it (linkage).** A big program is split into several `.c` files. Another file can use the global `x` by writing `extern int x;`. If you write `static int x = 10;` instead, `x` becomes private to this file.
+- **How long it exists (lifetime).** Globals `x` and `y` exist for the entire run of the program. A global with no starting value, like `y`, starts at 0. Locals `z` and `a` are created when `main` starts and destroyed when it ends, so their addresses are only valid while `main` is running.
 
-## Pointers
+## Pointers: a variable that holds an address
 
 :::definition id=def-pointer title="Pointer" source="Lecture 1 - Introduction.pdf"
-A pointer object stores the address of an object of a stated type, or a null pointer value.
+A pointer is a variable whose value is an address. It also has a type, which says what kind of value lives at that address. A pointer can also be `NULL`, meaning it points nowhere.
 :::
 
 ```c
@@ -82,50 +97,62 @@ int x = 5;
 int *p = &x;
 ```
 
-In the example, `x` is at `0x1000` and holds 5, while `p` is at `0x2000` and holds `0x1000`. Thus `p == &x`.
+Read the second line as: "make a variable `p` of type `int *` (a pointer to an `int`), and store the address of `x` in it."
+
+So now there are two boxes. Say `x` lives at `0x1000` and holds 5. `p` lives somewhere else, say `0x2000`, and holds `0x1000`. In other words, `p` holds the house number of `x`. We say "`p` **points to** `x`".
 
 ![The pointer object p stores the address of x.](../assets/figures/pointer-boxes.svg)
 
+### Following a pointer: the star
+
+If `p` holds an address, `*p` means "the box at that address". Following a pointer like this is called **dereferencing** it.
+
 :::definition id=def-dereference title="Dereference" source="Lecture 1 - Introduction.pdf"
-If `p` points to an object, `*p` designates that object. Assigning to `*p` stores into it. Dereferencing a null pointer or any other pointer that does not point to an object is undefined behavior.
+If `p` points to a variable, `*p` *is* that variable. You can read it or assign to it. Using `*p` when `p` is `NULL`, or does not point to a real variable, is undefined behavior (usually a crash).
 :::
 
-| Expression | Meaning |
-| --- | --- |
-| `x` | the value stored in `x` |
-| `&x` | the address of `x` |
-| `p` | the address stored in `p` |
-| `*p` | the object at the address stored in `p` |
+| You write | It means | In our example |
+| --- | --- | --- |
+| `x` | the value in `x` | 5 |
+| `&x` | the address of `x` | `0x1000` |
+| `p` | the value in `p`, which is an address | `0x1000` |
+| `*p` | the box `p` points to, that is, `x` | 5 |
+
+Now change `x` through the pointer:
 
 ```c
-*p = 100;
+*p = 100;           /* go to the box p points to, and store 100 there */
 printf("%d\n", x);  /* 100 */
 printf("%d\n", *p); /* 100 */
 ```
 
-Because `p` holds `&x`, the expressions `x` and `*p` name the same object, so both print 100. Writing `p = 100` instead is an error: it tries to store an integer in a pointer, which C does not allow without a cast. Even with a cast it would change where `p` points, not the value of `x`.
+We never wrote `x = 100`, yet `x` changed. That is because `*p` and `x` are the **same box**. This is exactly how `scanf("%d", &x)` fills in your variable: you give it the address, and it writes through it.
+
+A common mistake is writing `p = 100` (without the star). That tries to change the pointer itself, to point at address 100, and C refuses it as an error. Even if forced, it would not change `x`.
 
 :::problem id=worked-dereference title="Write 100 through a pointer" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-Start from `int x = 5; int *p = &x;`. After `*p = 100`, what do `x` and `*p` print, and why are they equal?
+Start from `int x = 5; int *p = &x;`. After `*p = 100;`, what do `x` and `*p` print, and why are they the same?
 
 :::solution
-Both print 100. `p` holds `&x`, so `*p` designates `x`. The assignment stores 100 in that object. The two expressions read it.
+Both print 100. `p` holds the address of `x`, so `*p` is the box `x`. Storing 100 in `*p` stores 100 in `x`. Reading `x` or `*p` reads that same box.
 :::
 :::
 
 :::trap
-Writing `p = 100` to change `x`. That assigns to the pointer itself, and an `int` cannot be assigned to a pointer. To store into the object `p` points to, write `*p = 100`.
+Writing `p = 100` to change `x`. Without the star you are changing the pointer, not the box it points to. To change `x` through `p`, write `*p = 100`.
 :::
 
-## Arrays and pointer arithmetic
+## Arrays: boxes side by side
 
 :::definition id=def-contiguous title="Array" source="Lecture 1 - Introduction.pdf"
-An array is a sequence of elements of one type, stored contiguously in index order. There is no gap between `a[i]` and `a[i + 1]`.
+An array is a list of values of the same type, stored **contiguously**: one right after another in memory, with no gaps.
 :::
 
 ```c
 int a[4] = {10, 20, 30, 40};
 ```
+
+This makes four `int`s in a row. You reach them with an **index** in square brackets, counting from 0: `a[0]` is 10, `a[1]` is 20, and so on. Since each `int` is 4 bytes, if `a[0]` starts at `0x1000`:
 
 | Address | Value | Element |
 | --- | --- | --- |
@@ -134,135 +161,146 @@ int a[4] = {10, 20, 30, 40};
 | 0x1008 | 30 | a[2] |
 | 0x100C | 40 | a[3] |
 
-The distance is 4 because these elements have type `int` and `sizeof(int)` is 4 on this platform. An array name used in an expression converts to a pointer to its first element, except when it is the operand of `sizeof` or unary `&`.
-
-```c
-int *p = a; /* address of a[0] */
-/* p     == 0x1000 */
-/* p + 1 == 0x1004 */
-/* p + 2 == 0x1008 */
-```
-
-If `p` points to an array element, `p + k` points `k` elements later, which is `k * sizeof(*p)` bytes further. For an `int *` on this platform, adding 1 moves 4 bytes. The result must stay inside the same array or point exactly one past its last element. That one-past pointer may be computed and compared, but not dereferenced.
+(`0x100C` is `0x1008 + 4`; in hex, after 9 come A, B, C, D, E, F.)
 
 ![Four int elements at addresses four bytes apart.](../assets/figures/array-layout.svg)
 
+### Adding to a pointer moves by whole elements
+
+When you use the array's name `a` in an expression, C treats it as a pointer to the first element, `&a[0]`. (Two exceptions: inside `sizeof` and after `&`.)
+
+```c
+int *p = a;  /* p holds 0x1000, the address of a[0] */
+/* p + 1 is 0x1004  (a[1]) */
+/* p + 2 is 0x1008  (a[2]) */
+```
+
+Notice: `p + 1` is `0x1004`, not `0x1001`. When you add a number to a pointer, C counts in **elements**, not bytes. Because `p` points to `int`s, which are 4 bytes each, `p + 1` moves 4 bytes. In general, `p + k` moves `k * sizeof(*p)` bytes.
+
+You may only move within the array, or to the spot just one past its end (useful as an "end" marker, but you must not read from it).
+
+### What a[i] really means
+
 :::definition id=def-subscript title="Subscript" source="Lecture 1 - Introduction.pdf"
-By definition, `a[i]` means `*(a + i)`. The index counts elements, and pointer addition scales that count by the element size.
+In C, `a[i]` is defined to mean `*(a + i)`: start at the beginning, move `i` elements forward, and take the value there.
 :::
 
-For this array, `a[2]` and `*(a + 2)` both name the element at `0x1008`, whose value is 30. C does not check bounds: reading `a[4]` or `a[-1]` compiles, but its behavior is undefined. A function that receives an array as `int *a` does not receive its length, so the caller must pass the length separately.
+So `a[2]` and `*(a + 2)` are the same thing: the box at `0x1008`, holding 30.
 
-A string is an array of `char` ending with the null character `'\0'`, whose code is 0. It is not the digit `'0'`, whose ASCII code is 48. Functions such as `printf` with `%s` find the end of a string only by looking for that terminator.
+**C does not check the index.** Writing `a[4]` or `a[-1]` compiles fine, but it reads memory outside the array, which is undefined behavior. Also, when you pass an array to a function, the function only receives a pointer to the first element. It does not know how long the array is, so you must pass the length as a separate argument.
+
+### Strings are arrays of characters
+
+A **string** (text) in C is an array of `char` that ends with a special character `'\0'`, whose code is 0. So `"hi"` is stored as three bytes: `'h'`, `'i'`, `'\0'`. Functions like `printf("%s", ...)` know where the text ends only by finding that 0. (Don't confuse it with the digit `'0'`, whose code is 48.)
 
 :::problem id=worked-index-equivalence title="a[2] and *(a + 2)" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-For `int a[4] = {10, 20, 30, 40}` starting at `0x1000`, give the address and value designated by `a[2]` and by `*(a + 2)`.
+For `int a[4] = {10, 20, 30, 40}` starting at `0x1000`, what address and value do `a[2]` and `*(a + 2)` refer to?
 
 :::solution
-Both expressions designate element 2. Its address is `0x1008` and its value is 30. The addition advances by two elements, not by two bytes.
+Both refer to element number 2. `a + 2` moves 2 elements of 4 bytes each, so the address is $\texttt{0x1000} + 8 = \texttt{0x1008}$. The value there is 30.
 :::
 :::
 
 :::trap
-Adding 1 to an `int *` as though it advanced one byte. The address advances by `sizeof(int)`. The bytes between `0x1000` and `0x1004` belong to `a[0]`.
+Thinking `p + 1` moves one byte. For an `int *`, it moves one whole `int`: 4 bytes. The bytes `0x1001` to `0x1003` are just the rest of `a[0]`.
 :::
 
 ## Practice
 
 :::problem id=prac-value-and-address title="Value, address, and dereference" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-`int x = 5;` and `int *p = &x;`. In this example, `x` is at `0x1000` and `p` is at `0x2000`.
+`int x = 5;` and `int *p = &x;`. In this example, `x` lives at `0x1000` and `p` lives at `0x2000`.
 
 :::check id=prac-value-and-address-q1
 `p == &x` is {{=true|false|true only after *p = 100}}.
 
-`p` was initialized with `&x`, so it stores the address of `x`.
+`p` was given `&x` as its value, so `p` holds the address of `x`.
 :::
 
 :::check id=prac-value-and-address-q2
 After `*p = 100`, the value of `x` is {{=100|5|0x1000}}.
 
-`*p` designates `x`. The assignment writes 100 into that object.
+`*p` is the box `x`, so storing 100 in `*p` stores it in `x`.
 :::
 
 :::check id=prac-value-and-address-q3
-Which reading of `p` matches the example?
+Which description of `p` is correct?
 
-- [x] `p` stores `0x1000`, the address of `x`
-- [ ] `p` is the address of the pointer object, and that address is `0x1000`
-- [ ] `p` stores the `int` value 5
+- [x] `p` holds `0x1000`, the address of `x`
+- [ ] `p` lives at `0x1000`
+- [ ] `p` holds the `int` value 5
 
-The pointer object itself is at `0x2000`. Its contents are the address of `x`.
+`p` itself lives at `0x2000`. What it *holds* is `0x1000`, the address of `x`.
 :::
 :::
 
 :::problem id=prac-pointer-step title="How far p + 1 moves" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-`int a[4] = {10, 20, 30, 40};` and `int *p = a;`, with `a[0]` at `0x1000`. Here `sizeof(int)` is 4.
+`int a[4] = {10, 20, 30, 40};` and `int *p = a;`, with `a[0]` at `0x1000`. Each `int` is 4 bytes.
 
 :::check id=prac-pointer-step-q1
-`p + 1` evaluates to {{=0x1004|0x1001|0x1008}}.
+`p + 1` is {{=0x1004|0x1001|0x1008}}.
 
-The offset is scaled by `sizeof(*p)`, which is 4.
+Adding 1 moves one `int`, which is 4 bytes.
 :::
 
 :::check id=prac-pointer-step-q2
-`p + 2` evaluates to {{=0x1008|0x1002|0x100C}}.
+`p + 2` is {{=0x1008|0x1002|0x100C}}.
 
-Two elements past `0x1000` is `0x1000 + 8`.
+Two `int`s is 8 bytes: `0x1000 + 8 = 0x1008`.
 :::
 
 :::check id=prac-pointer-step-q3
-The scale factor in `p + k` is
+When you write `p + k`, each step of `k` moves
 
-- [x] `sizeof(*p)`, the size of the referenced type
-- [ ] Always 1 byte, regardless of type
-- [ ] The number of elements in the array
+- [x] `sizeof(*p)` bytes: the size of the type `p` points to
+- [ ] Always 1 byte
+- [ ] The length of the whole array
 
-Pointer addition counts elements. The byte distance is that count multiplied by the element size.
+Pointer addition counts elements. Each element is `sizeof(*p)` bytes.
 :::
 :::
 
 :::problem id=prac-array-formula title="The subscript formula" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
 :::check id=prac-array-formula-q1
-The language definition states {{=a[i] == *(a + i)|a[i] == *a + i|a[i] == &(a + i)}}.
+C defines `a[i]` to mean {{=*(a + i)|*a + i|&(a + i)}}.
 
-A subscript dereferences the pointer produced by adding the index to the base.
+Move `i` elements from the start (`a + i`), then take the value there (`*`).
 :::
 
 :::check id=prac-array-formula-q2
 For the array `{10, 20, 30, 40}`, `*(a + 2)` is {{=30|20|0x1008}}.
 
-`a + 2` is the address `0x1008`. The dereference reads the `int` stored there. The address itself is `a + 2`, without the star.
+`a + 2` is the address `0x1008`. The star takes the value stored there, 30.
 :::
 :::
 
 :::problem id=prac-first-program-roles title="Scope and lifetime in the sample" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Use the program with file-scope `x` and `y`, and block-scope `z` and `a[4]` inside `main`.
+Use the program with global `x` and `y`, and local `z` and `a[4]` inside `main`.
 
 :::check id=prac-first-program-roles-q1
-Which objects have file scope in that file?
+Which variables can be used anywhere in the file (below where they are written)?
 
 - [x] `x` and `y`
 - [ ] `z` and `a`
-- [ ] Only `x`, because `y` has no initializer
+- [ ] Only `x`, because `y` has no starting value
 
-Both `x` and `y` are declared outside any function. A missing initializer affects only the initial value (zero), not the scope.
+Both are written outside any function. Having no starting value only means `y` starts at 0.
 :::
 
 :::check id=prac-first-program-roles-q2
 `printf("z = %d\n", z)` prints {{=5|10|the address of z}}.
 
-`z` was initialized to 5, and `%d` prints that `int`.
+`z` was set to 5, and `%d` prints its value.
 :::
 
 :::check id=prac-first-program-roles-q3
 The elements of `a` are stored
 
-- [x] Contiguously, in index order from `a[0]` through `a[3]`
-- [ ] In separate allocations whose gap is chosen by `printf`
-- [ ] On four different devices, one element each
+- [x] Side by side, from `a[0]` to `a[3]`
+- [ ] In four separate places chosen by `printf`
+- [ ] Each on a different device
 
-An array occupies one contiguous sequence. Its lifetime here is the execution of `main`, because `a` has automatic storage duration.
+An array is always one unbroken block. Here it exists while `main` runs, because `a` is a local variable.
 :::
 :::
 
-The next lesson, [Structures](topic:structures), groups members of different types into one object. Their order is fixed, but padding may separate them.
+**Next:** in [Structures](topic:structures) we group values of *different* types, such as a name, an ID, and grades, into a single record.

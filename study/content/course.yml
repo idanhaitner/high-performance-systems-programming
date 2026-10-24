@@ -3,9 +3,12 @@ title: High-Performance Systems Programming
 lang: en
 dir: ltr
 summary: >
-  How a program's data, memory accesses, and instructions turn into running
-  time, from the C representation of values through caches and the CPU to
-  multicore and GPU execution. Study notes and practice, one lecture at a time.
+  Why some programs run fast and others run slow, explained from the ground up.
+  We start with how a computer stores numbers and text in memory, learn just
+  enough C to see that directly, and then build up, lecture by lecture, to
+  caches, the processor, many-core machines, and graphics cards. No prior C or
+  systems knowledge is assumed. Each lesson has short explanations and practice
+  questions.
 
 changelog:
   - date: 2026-10-22
@@ -14,13 +17,17 @@ changelog:
     note: Rewrote Lecture 1 as six lessons, corrected representation and process claims, and grouped the lessons under one lecture.
   - date: 2026-10-24
     note: Edited Lecture 1 for clarity and corrected the struct initializer, pointer addition, process startup, and printf output answers.
+  - date: 2026-10-24
+    note: Rewrote the overview, every Lecture 1 lesson, and the glossary for readers starting from zero, explaining each term before using it.
 
 lectures:
   - id: lecture-1
     number: 1
-    title: Representation and processes
+    title: Data, memory, and running programs
     summary: >
-      Values, memory, structures, translation, and the arguments a process receives.
+      How a computer stores numbers, how memory and addresses work, how to group
+      data into records, how your C code becomes a running program, and how a
+      program reads the words you type after its name.
     topics: [why-low-level, c-data-types, memory-and-pointers, structures, source-to-process, command-line-arguments]
 
 sources:
@@ -477,43 +484,43 @@ sources:
 topics:
   - id: why-low-level
     file: topics/why-low-level.md
-    title: Representation and performance
-    summary: "Finite representation, rounding, and the cost of a memory access."
+    title: Why the machine matters
+    summary: "Why computer arithmetic can differ from school math, and why the order you read memory in can change speed."
     exam_weight: taught
     prerequisites: []
     unlocks: [c-data-types]
   - id: c-data-types
     file: topics/c-data-types.md
     title: Values and types
-    summary: "Widths, numeric conversions, and sizeof."
+    summary: "The basic kinds of values in C, how many bytes each takes, and how division and conversions behave."
     exam_weight: taught
     prerequisites: [why-low-level]
     unlocks: [memory-and-pointers]
   - id: memory-and-pointers
     file: topics/memory-and-pointers.md
     title: Memory and pointers
-    summary: "Addresses, pointers, and contiguous arrays."
+    summary: "Memory as numbered boxes, variables that hold box numbers (pointers), and arrays."
     exam_weight: taught
     prerequisites: [c-data-types]
     unlocks: [structures]
   - id: structures
     file: topics/structures.md
     title: Structures
-    summary: "Named members, initialization, alignment, and padding."
+    summary: "Grouping several values into one record, like a student with a name, an ID, and grades."
     exam_weight: taught
     prerequisites: [memory-and-pointers]
     unlocks: [source-to-process]
   - id: source-to-process
     file: topics/source-to-process.md
     title: Programs and processes
-    summary: "Translation, startup, and the process address space."
+    summary: "The steps that turn your C file into a program, and how the running program's memory is organized."
     exam_weight: taught
     prerequisites: [structures]
     unlocks: [command-line-arguments]
   - id: command-line-arguments
     file: topics/command-line-arguments.md
     title: Command-line arguments
-    summary: "argc, argv, and checked numeric conversion."
+    summary: "How a program receives the words typed after its name, and how to turn them into numbers."
     exam_weight: taught
     prerequisites: [source-to-process]
     unlocks: []
@@ -521,69 +528,68 @@ topics:
 glossary:
   - term: bit
     topic: memory-and-pointers
-    definition: A binary digit whose value is 0 or 1.
+    definition: The smallest piece of information a computer stores. A bit is either 0 or 1, like a light switch that is off or on.
   - term: byte
     topic: memory-and-pointers
-    definition: An addressable unit of 8 bits. In a value diagram, the most significant bit is drawn on the left.
+    definition: A group of 8 bits. Memory is organized in bytes, and each byte has its own address. One byte can hold 256 different values (0 to 255).
   - term: address
     topic: memory-and-pointers
-    definition: A value that identifies a byte in a process address space. Not every integer is a valid object pointer.
+    definition: The number that identifies one byte of memory, like a house number on a very long street.
   - term: pointer
     topic: memory-and-pointers
-    definition: An object that stores the address of another object, or a null pointer.
+    definition: A variable whose value is an address. It tells you where some other value lives in memory. A pointer can also be NULL, which means it points nowhere.
   - term: dereference
     topic: memory-and-pointers
-    definition: The object designated by a pointer, written with a leading star. Dereferencing an invalid pointer is undefined behavior.
+    definition: Following a pointer to the value it points at, written with a star, as in *p. Following a pointer that does not point to a real value is a bug.
   - term: contiguous
     topic: memory-and-pointers
-    definition: Stored with no gap between neighboring array elements. Structure members are ordered, but padding may separate them.
+    definition: Side by side in memory with no gaps. The elements of an array are contiguous.
   - term: undefined behavior
     topic: c-data-types
-    definition: Behavior on which the C standard imposes no requirements, including signed overflow and division by zero.
+    definition: A situation the C rules do not cover, such as dividing by zero or a signed int growing too large. The program may do anything, so you must avoid it.
   - term: sizeof
     topic: c-data-types
-    definition: The operator that yields the number of bytes in a type or object. Its result has type size_t.
+    definition: A C operator that tells you how many bytes a type or variable takes, for example sizeof(int) is 4 on typical machines.
   - term: structure
     topic: structures
-    definition: An object with named members of possibly different types, laid out in declaration order, with possible padding.
+    definition: A record that groups several named values, possibly of different types, into one variable. For example, a student with a name, an ID, and a grade.
   - term: preprocessor
     topic: source-to-process
-    definition: The translation stage that processes include directives and macros before compilation.
+    definition: The first step of building a C program. It pastes in #include files and replaces #define names with their text.
   - term: object file
     topic: source-to-process
-    definition: The relocatable machine-code file produced by the assembler, before the linker builds an executable.
+    definition: A file of machine code made from one C file. It is not runnable yet, because it may still use functions defined elsewhere.
   - term: linker
     topic: source-to-process
-    definition: The stage that combines object files and libraries and resolves external definitions.
+    definition: The tool that joins object files and libraries into one runnable program, connecting each function call to the function's code.
   - term: loader
     topic: source-to-process
-    definition: The operating-system component that maps an executable into an address space and transfers control to its entry point.
+    definition: The part of the operating system that copies a program from disk into memory and starts it running.
   - term: process
     topic: source-to-process
-    definition: A running instance of a program, with its own address space and process identifier.
+    definition: A program that is currently running. Each process has its own memory and its own ID number.
   - term: ".text"
     topic: source-to-process
-    definition: The conventional ELF section that holds machine instructions.
+    definition: The part of a program file that holds the machine instructions, that is, your compiled code.
   - term: ".data"
     topic: source-to-process
-    definition: The conventional ELF section for static objects whose initial bytes are not all zero.
+    definition: The part of a program file that holds global variables that start with a non-zero value, such as int count = 5; at file level.
   - term: ".bss"
     topic: source-to-process
-    definition: The conventional ELF section that reserves zero-initialized static storage without storing those zeros in the file.
+    definition: The part of a program's memory for global variables that start at zero. The file only records how much space is needed, not the zeros themselves.
   - term: ".rodata"
     topic: source-to-process
-    definition: A conventional read-only section for string literals and other immutable static data. const does not require this section.
+    definition: The read-only part of a program file, typically holding fixed text such as the string in printf("hello").
   - term: stack
     topic: source-to-process
-    definition: The conventional region for call frames and automatic objects, commonly drawn at high addresses and growing downward.
+    definition: The memory area for local variables of functions. Each function call gets its own space there, which is freed when the function returns.
   - term: heap
     topic: source-to-process
-    definition: The conventional region for objects created by malloc and released by free.
+    definition: The memory area for values you request at run time with malloc and give back with free.
   - term: argc
     topic: command-line-arguments
-    definition: The count of command-line arguments, including the program name and excluding the terminating null pointer.
+    definition: The number of words on the command line, counting the program name itself. For ./sum 3 4, argc is 3.
   - term: argv
     topic: command-line-arguments
-    definition: The null-terminated array of pointers to the modifiable command-line strings.
-
+    definition: The list of words on the command line, as text. argv[0] is the program name, argv[1] is the first word after it, and so on.
 exams: []
