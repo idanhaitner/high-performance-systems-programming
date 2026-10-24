@@ -8,23 +8,23 @@
 
 int rectangle_area(int w, int h) {
     // Return the area of a w by h rectangle.
-    not_implemented("rectangle_area");
+    return w * h;
 }
 
 int rectangle_perimeter(int w, int h) {
     // Return the perimeter of a w by h rectangle.
-    not_implemented("rectangle_perimeter");
+    return 2 * (w + h);
 }
 
 int scale(int n, int factor) {
     // Return n multiplied by factor.
-    not_implemented("scale");
+    return n * factor;
 }
 
 int in_range(int n, int lo, int hi) {
     // Return 1 when lo <= n <= hi, otherwise 0. lo is less than or equal to hi.
     // C cannot chain comparisons: write two of them joined by && ("and").
-    not_implemented("in_range");
+    return n >= lo && n <= hi;
 }
 
 static void test_area(void) {

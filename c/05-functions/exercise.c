@@ -7,34 +7,46 @@
 
 int plus_one(int n) {
     // Return n + 1.
-    not_implemented("plus_one");
+    return n + 1;
 }
 
 int bigger(int a, int b) {
     // Return the larger of a and b. When they are equal, return that value.
-    not_implemented("bigger");
+    if (a > b) {
+        return a;
+    }
+    return b;
 }
 
 int smaller(int a, int b) {
     // Return the smaller of a and b. When they are equal, return that value.
-    not_implemented("smaller");
+    if (a < b) {
+        return a;
+    }
+    return b;
 }
 
 int clamped(int n, int lo, int hi) {
     // lo is less than or equal to hi.
     // Return lo when n is below lo, hi when n is above hi, otherwise n.
     // Example: clamped(10, 0, 3) is 3, and clamped(2, 0, 3) is 2.
-    not_implemented("clamped");
+    if (n < lo) {
+        return lo;
+    }
+    if (n > hi) {
+        return hi;
+    }
+    return n;
 }
 
 int twice(int n) {
     // Return n multiplied by 2.
-    not_implemented("twice");
+    return n * 2;
 }
 
 int four_times(int n) {
     // Return n multiplied by 4. Do it by calling twice.
-    not_implemented("four_times");
+    return twice(twice(n));
 }
 
 static void test_plus_one(void) {

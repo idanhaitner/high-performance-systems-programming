@@ -8,25 +8,45 @@
 int sum_array(const int* a, int n) {
     // Return the sum of the n elements starting at a.
     // When n is 0, return 0 and do not read a.
-    not_implemented("sum_array");
+    int sum = 0;
+    for (int i = 0; i < n; i = i + 1) {
+        sum = sum + a[i];
+    }
+    return sum;
 }
 
 int max_array(const int* a, int n) {
     // Return the largest of the n elements starting at a. n is at least 1.
     // The elements may all be negative, so do not start your answer at 0.
-    not_implemented("max_array");
+    int best = a[0];
+    for (int i = 1; i < n; i = i + 1) {
+        if (a[i] > best) {
+            best = a[i];
+        }
+    }
+    return best;
 }
 
 int string_length(const char* s) {
     // Return the number of characters before the first '\0'.
     // An empty string has length 0.
-    not_implemented("string_length");
+    int length = 0;
+    while (s[length] != '\0') {
+        length = length + 1;
+    }
+    return length;
 }
 
 int count_char(const char* s, char c) {
     // Return how many times c appears before the first '\0'.
     // Example: count_char("ababa", 'a') is 3.
-    not_implemented("count_char");
+    int count = 0;
+    for (int i = 0; s[i] != '\0'; i = i + 1) {
+        if (s[i] == c) {
+            count = count + 1;
+        }
+    }
+    return count;
 }
 
 static void test_sum(void) {

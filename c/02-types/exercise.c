@@ -7,65 +7,78 @@
 
 #include <stdbool.h>
 
-int storage_of_char(void) {
+int storage_of_char(void)
+{
     // Return how many bytes a char occupies on this machine.
     // Use sizeof. It gives a size_t, so write (int)sizeof(...) to return it.
-    not_implemented("storage_of_char");
+    return (int)sizeof(char);
 }
 
-int storage_of_int(void) {
+int storage_of_int(void)
+{
     // Return how many bytes an int occupies on this machine.
-    not_implemented("storage_of_int");
+    return (int)sizeof(int);
 }
 
-int storage_of_double(void) {
+int storage_of_double(void)
+{
     // Return how many bytes a double occupies on this machine.
-    not_implemented("storage_of_double");
+    return (int)sizeof(double);
 }
 
-int storage_of_pointer(void) {
+int storage_of_pointer(void)
+{
     // Return how many bytes a void* occupies on this machine.
-    not_implemented("storage_of_pointer");
+    return (int)sizeof(void*);
 }
 
-int int_and_unsigned_same_width(void) {
+int int_and_unsigned_same_width(void)
+{
     // Return 1 when int and unsigned have the same size, otherwise 0.
     // Hint: == already gives 1 or 0.
-    not_implemented("int_and_unsigned_same_width");
+    return sizeof(int) == sizeof(unsigned);
 }
 
-int truth_value(void) {
+int truth_value(void)
+{
     // Return the int value of the bool true. Do not type the number;
     // return true itself and let C convert it.
-    not_implemented("truth_value");
+    return true;
 }
 
-static void test_char(void) {
+static void test_char(void)
+{
     expect_int(storage_of_char(), (int)sizeof(char));
 }
 
-static void test_int(void) {
+static void test_int(void)
+{
     expect_int(storage_of_int(), (int)sizeof(int));
 }
 
-static void test_double(void) {
+static void test_double(void)
+{
     expect_int(storage_of_double(), (int)sizeof(double));
 }
 
-static void test_pointer(void) {
-    expect_int(storage_of_pointer(), (int)sizeof(void*));
+static void test_pointer(void)
+{
+    expect_int(storage_of_pointer(), (int)sizeof(void *));
 }
 
-static void test_unsigned_width(void) {
+static void test_unsigned_width(void)
+{
     expect_int(int_and_unsigned_same_width(),
                sizeof(int) == sizeof(unsigned));
 }
 
-static void test_true(void) {
+static void test_true(void)
+{
     expect_int(truth_value(), true);
 }
 
-int main(void) {
+int main(void)
+{
     Score score = {0};
     task(&score, "storage_of_char() is sizeof(char)", test_char);
     task(&score, "storage_of_int() is sizeof(int)", test_int);

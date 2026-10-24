@@ -16,7 +16,9 @@ struct int_stack {
 void stack_init(struct int_stack* s) {
     // Make an empty stack with no block: data null, length 0, capacity 0.
     // s is not null.
-    not_implemented("stack_init");
+    s->data = 0;
+    s->length = 0;
+    s->capacity = 0;
 }
 
 void stack_push(struct int_stack* s, int value) {
@@ -25,28 +27,50 @@ void stack_push(struct int_stack* s, int value) {
     // (4 ints if capacity is 0, otherwise twice the capacity), copy the
     // length old ints into it, free the old block, and update data and
     // capacity. If malloc fails, return without changing the stack.
-    not_implemented("stack_push");
+    if (s->length == s->capacity) {
+        // The block is full (or missing): allocate a bigger one.
+        int next = s->capacity == 0 ? 4 : s->capacity * 2;
+        int* grown = malloc((size_t)next * sizeof(int));
+        if (grown == 0) {
+            return; // out of memory: leave the stack unchanged
+        }
+        // Copy only the length values in use, then free the old block.
+        // free(0) is safe, so the first growth needs no special case.
+        for (int i = 0; i < s->length; i = i + 1) {
+            grown[i] = s->data[i];
+        }
+        free(s->data);
+        s->data = grown;
+        s->capacity = next;
+    }
+    // The first free slot is at index length.
+    s->data[s->length] = value;
+    s->length = s->length + 1;
 }
 
 int stack_pop(struct int_stack* s) {
     // Remove and return the last value. The stack is not empty.
-    not_implemented("stack_pop");
+    s->length = s->length - 1;
+    return s->data[s->length];
 }
 
 int stack_top(const struct int_stack* s) {
     // Return the last value without removing it. The stack is not empty.
-    not_implemented("stack_top");
+    return s->data[s->length - 1];
 }
 
 int stack_size(const struct int_stack* s) {
     // Return how many values the stack holds.
-    not_implemented("stack_size");
+    return s->length;
 }
 
 void stack_free(struct int_stack* s) {
     // Free the block and set the fields back to an empty stack.
     // s is not null.
-    not_implemented("stack_free");
+    free(s->data);
+    s->data = 0;
+    s->length = 0;
+    s->capacity = 0;
 }
 
 static void test_fresh(void) {

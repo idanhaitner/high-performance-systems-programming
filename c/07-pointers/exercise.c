@@ -7,23 +7,28 @@
 
 int read_or(const int* p, int fallback) {
     // Return *p, or fallback when p is null.
-    not_implemented("read_or");
+    if (p == 0) {
+        return fallback;
+    }
+    return *p;
 }
 
 void set_to(int* p, int value) {
     // Write value into the int p points at. p is not null.
-    not_implemented("set_to");
+    *p = value;
 }
 
 void swap_ints(int* a, int* b) {
     // Exchange the ints a and b point at. Both pointers are not null.
     // Example: if *a is 1 and *b is 2, afterwards *a is 2 and *b is 1.
-    not_implemented("swap_ints");
+    int saved = *a;
+    *a = *b;
+    *b = saved;
 }
 
 int nth(const int* a, int i) {
     // Return the element i positions past a. a is not null, and i is in range.
-    not_implemented("nth");
+    return a[i];
 }
 
 static void test_read_null(void) {

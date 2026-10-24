@@ -8,31 +8,31 @@
 int divided(int a, int b) {
     // Return the integer quotient a / b. b is not 0.
     // Integer division drops the fraction, cutting toward zero: -5 / 2 is -2.
-    not_implemented("divided");
+    return a / b;
 }
 
 int leftover(int a, int b) {
     // Return the remainder a % b. b is not 0.
     // The remainder has the same sign as a: -5 % 2 is -1.
-    not_implemented("leftover");
+    return a % b;
 }
 
 int bumped(int n) {
     // Return n + 1.
-    not_implemented("bumped");
+    return n + 1;
 }
 
 int yield_then_bump(int n) {
     // Return the value that the expression n++ gives.
     // n++ gives the old value of n, then adds one, so the answer is
     // the value n had when the function started.
-    not_implemented("yield_then_bump");
+    return n++;
 }
 
 int same(int a, int b) {
     // Return 1 when a and b are equal, otherwise 0.
     // Hint: one operator already gives exactly 1 or 0.
-    not_implemented("same");
+    return a == b;
 }
 
 static void test_half(void) {

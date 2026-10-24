@@ -17,7 +17,22 @@ struct buffer make_buffer(const int* src, int n) {
     // Allocate a new block with malloc, then copy each int into it.
     // When n is 0, data is null and length is 0.
     // When allocation fails, data is null and length is 0.
-    not_implemented("make_buffer");
+    struct buffer b;
+    if (n == 0) {
+        b.data = 0;
+        b.length = 0;
+        return b;
+    }
+    b.data = malloc((size_t)n * sizeof(int));
+    if (b.data == 0) {
+        b.length = 0;
+        return b;
+    }
+    b.length = n;
+    for (int i = 0; i < n; i = i + 1) {
+        b.data[i] = src[i];
+    }
+    return b;
 }
 
 struct buffer copy_buffer(struct buffer src) {
@@ -25,18 +40,20 @@ struct buffer copy_buffer(struct buffer src) {
     // An empty src produces an empty buffer.
     // Returning src itself is the shallow copy bug. Hint: make_buffer
     // already copies ints into a new block.
-    not_implemented("copy_buffer");
+    return make_buffer(src.data, src.length);
 }
 
 void free_buffer(struct buffer* b) {
     // Release b's ints, then set data to null and length to 0.
     // b is not null. An empty buffer is safe to free.
-    not_implemented("free_buffer");
+    free(b->data);
+    b->data = 0;
+    b->length = 0;
 }
 
 int buffer_at(struct buffer b, int i) {
     // Return element i. i is inside the buffer.
-    not_implemented("buffer_at");
+    return b.data[i];
 }
 
 static void test_copies_values(void) {

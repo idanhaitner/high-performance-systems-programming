@@ -12,30 +12,36 @@ struct point {
 
 struct point make_point(int x, int y) {
     // Return a point with these coordinates.
-    not_implemented("make_point");
+    struct point p;
+    p.x = x;
+    p.y = y;
+    return p;
 }
 
 void point_move(struct point* p, int dx, int dy) {
     // Add dx to p->x and dy to p->y. p is not null.
     // p->x means the field x of the struct p points at.
-    not_implemented("point_move");
+    p->x = p->x + dx;
+    p->y = p->y + dy;
 }
 
 struct point moved_copy(struct point p, int dx, int dy) {
     // Return a point shifted by dx and dy. The caller's point must not change.
     // p is already a copy, so you may change p and return it.
-    not_implemented("moved_copy");
+    p.x = p.x + dx;
+    p.y = p.y + dy;
+    return p;
 }
 
 int same_point(struct point a, struct point b) {
     // Return 1 when a and b have the same coordinates, otherwise 0.
     // a == b does not compile for structs. Compare the fields.
-    not_implemented("same_point");
+    return a.x == b.x && a.y == b.y;
 }
 
 int point_bytes(void) {
     // Return how many bytes a struct point occupies on this machine.
-    not_implemented("point_bytes");
+    return (int)sizeof(struct point);
 }
 
 static void test_x(void) {

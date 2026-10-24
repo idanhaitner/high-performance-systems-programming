@@ -5,55 +5,67 @@
 
 #include "check.h"
 
-int add(int a, int b) {
+int add(int a, int b)
+{
     // Return the sum of a and b.
-    not_implemented("add");
+    return a + b;
 }
 
-int subtract(int a, int b) {
+int subtract(int a, int b)
+{
     // Return a minus b.
-    not_implemented("subtract");
+    return a - b;
 }
 
-int double_of(int n) {
+int double_of(int n)
+{
     // Return n multiplied by 2.
-    not_implemented("double_of");
+    return n * 2;
 }
 
-int negate(int n) {
+int negate(int n)
+{
     // Return the negation of n. Negating 0 is 0.
-    not_implemented("negate");
+    return -n;
 }
 
-static void test_add_positive(void) {
+static void test_add_positive(void)
+{
     expect_int(add(2, 3), 5);
 }
 
-static void test_add_to_zero(void) {
+static void test_add_to_zero(void)
+{
     expect_int(add(-1, 1), 0);
 }
 
-static void test_subtract(void) {
+static void test_subtract(void)
+{
     expect_int(subtract(10, 3), 7);
 }
 
-static void test_subtract_negative(void) {
+static void test_subtract_negative(void)
+{
     expect_int(subtract(3, 10), -7);
 }
 
-static void test_double(void) {
+static void test_double(void)
+{
     expect_int(double_of(21), 42);
 }
 
-static void test_negate(void) {
+static void test_negate(void)
+{
     expect_int(negate(4), -4);
 }
 
-static void test_negate_zero(void) {
+static void test_negate_zero(void)
+{
     expect_int(negate(0), 0);
 }
 
-int main(void) {
+int main(void)
+{
     Score score = {0};
     task(&score, "add(2, 3) is 5", test_add_positive);
     task(&score, "add(-1, 1) is 0", test_add_to_zero);
