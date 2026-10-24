@@ -6,6 +6,8 @@
 #   make link-error                show lesson 09's linker error on purpose
 #   make practice LEVEL=01-printing           build and run a practice exercise
 #   make practice-solution LEVEL=01-printing  run that practice set's solution
+#   make practice-leaks LEVEL=08-memory       practice exercise with a leak check
+#   make test-practice                        run every practice solution
 #   make test                      run every finished solution
 #   make test-asan                 run every solution with the address sanitizer
 #   make test-leaks                check every solution for memory leaks
@@ -31,6 +33,19 @@ LESSONS := \
 	11-ownership \
 	12-capstone
 
+# Practice sets, easiest first. See practice/README.md.
+LEVELS := \
+	01-printing \
+	02-arithmetic \
+	03-conditions \
+	04-loops \
+	05-arrays \
+	06-strings \
+	07-pointers \
+	08-memory \
+	09-structs \
+	10-exam
+
 DEMOS     := $(addprefix $(BUILD)/, $(addsuffix -demo, $(LESSONS)))
 EXERCISES := $(addprefix $(BUILD)/, $(addsuffix -exercise, $(LESSONS)))
 SOLUTIONS := $(addprefix $(BUILD)/, $(addsuffix -solution, $(LESSONS)))
@@ -41,7 +56,7 @@ ifeq ($(shell uname -s),Darwin)
 LEAK_CHECK := leaks --quiet --atExit --
 endif
 
-.PHONY: all demos exercises test test-asan test-leaks run try leaks split link-error practice practice-solution clean need-lesson need-level
+.PHONY: all demos exercises test test-asan test-leaks run try leaks split link-error practice practice-solution practice-leaks test-practice clean need-lesson need-level
 
 all: demos exercises
 
@@ -111,10 +126,26 @@ practice: need-level $(BUILD)/practice-$(LEVEL)-exercise
 practice-solution: need-level $(BUILD)/practice-$(LEVEL)-solution
 	./$(BUILD)/practice-$(LEVEL)-solution
 
+ifdef LEAK_CHECK
+practice-leaks: need-level $(BUILD)/practice-$(LEVEL)-exercise
+	$(LEAK_CHECK) ./$(BUILD)/practice-$(LEVEL)-exercise
+else
+practice-leaks: need-level
+	$(MAKE) practice BUILD=build/asan CFLAGS="$(CFLAGS) -fsanitize=address"
+endif
+
+test-practice: $(addprefix $(BUILD)/practice-, $(addsuffix -solution, $(LEVELS)))
+	@fail=0; \
+	for n in $(LEVELS); do \
+		echo; echo "== practice $$n"; \
+		./$(BUILD)/practice-$$n-solution || fail=1; \
+	done; \
+	exit $$fail
+
 need-level:
 	@if [ -z "$(LEVEL)" ] || [ ! -d "practice/$(LEVEL)" ]; then \
 		echo "Name a practice set, for example:  make $(MAKECMDGOALS) LEVEL=01-printing"; \
-		echo "Practice sets: $$(cd practice && ls -d */ | tr -d /)"; \
+		echo "Practice sets: $(LEVELS)"; \
 		exit 1; \
 	fi
 
@@ -135,8 +166,10 @@ $(BUILD)/%-exercise: %/exercise.c $(CHECK_H) | $(BUILD)
 $(BUILD)/%-solution: %/solution.c $(CHECK_H) | $(BUILD)
 	$(CC) $(CFLAGS) -o $@ $<
 
+# -lm links the math library, for sqrt in practice 09. Linux needs it; macOS
+# links it anyway.
 $(BUILD)/practice-%-exercise: practice/%/exercise.c practice/practice.h $(CHECK_H) | $(BUILD)
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< -lm
 
 $(BUILD)/practice-%-solution: practice/%/solution.c practice/practice.h $(CHECK_H) | $(BUILD)
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< -lm

@@ -41,7 +41,30 @@ static inline void expect_char(char got, char want) {
 static FILE* practice_capture;
 static int practice_saved_stdout = -1;
 
+/* Point standard output back at the terminal, and copy what was caught into
+   buf. Returns the number of characters caught. */
+static inline size_t practice_capture_end(char* buf, size_t size) {
+    size_t n;
+    fflush(stdout);
+    dup2(practice_saved_stdout, fileno(stdout));
+    close(practice_saved_stdout);
+    practice_saved_stdout = -1;
+    rewind(practice_capture);
+    n = fread(buf, 1, size - 1, practice_capture);
+    buf[n] = '\0';
+    fclose(practice_capture);
+    practice_capture = NULL;
+    return n;
+}
+
 static inline void capture_begin(void) {
+    // If an earlier task stopped while it was capturing, its result line
+    // went into the capture. Print it now, so nothing is lost.
+    if (practice_saved_stdout != -1) {
+        char lost[2048];
+        practice_capture_end(lost, sizeof lost);
+        fputs(lost, stdout);
+    }
     fflush(stdout);
     practice_capture = tmpfile();
     if (practice_capture == NULL) {
@@ -66,17 +89,7 @@ static inline void practice_describe(char* out, size_t size, const char* line) {
 
 static inline void expect_printed(const char* want, const char* exercise) {
     char got[2048];
-    size_t n;
-
-    fflush(stdout);
-    dup2(practice_saved_stdout, fileno(stdout));
-    close(practice_saved_stdout);
-    practice_saved_stdout = -1;
-    rewind(practice_capture);
-    n = fread(got, 1, sizeof got - 1, practice_capture);
-    got[n] = '\0';
-    fclose(practice_capture);
-    practice_capture = NULL;
+    size_t n = practice_capture_end(got, sizeof got);
 
     // A function that printed nothing has not been written yet.
     if (n == 0) {

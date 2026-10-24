@@ -48,6 +48,14 @@ Every exercise ends with a small checker. It calls your functions with known inp
 
 Everything from the first `static void test_...` function down to the end of the file is the checker. Do not change it. Write only inside the functions above it.
 
+## Practice
+
+The [practice](practice/README.md) folder has ten levels of exercises for writing C yourself, from printing your name to exam-style questions such as binary search and linked lists. Start with:
+
+```bash
+make practice LEVEL=01-printing
+```
+
 ## Other commands
 
 | Command | What it does |

@@ -63,7 +63,7 @@ void rectangle(int width, int height) {
     //   ****
     //   ****
     // Hint: one loop inside another. You may call stars.
-    not_implemented("rectangle");
+    // Write your code here.
 }
 
 void triangle(int n) {
@@ -72,7 +72,7 @@ void triangle(int n) {
     //   *
     //   **
     //   ***
-    not_implemented("triangle");
+    // Write your code here.
 }
 
 void countdown(int n) {
