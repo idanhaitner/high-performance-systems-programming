@@ -81,14 +81,6 @@ The `%` operator gives the **remainder**: `7 % 3` is 1, because $7 = 2 \times 3 
 
 Dividing by zero, with `/` or `%`, is **undefined behavior**: the program may crash or produce garbage. Always check that the divisor is not zero.
 
-:::problem id=worked-integer-division title="5 divided by 2 in int" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-What is `x` after `int x = 5; int y = 2; x = x / y;`? What would `-5 / 2` be?
-
-:::solution
-`x` is 2. Both numbers are `int`, so C throws away the fractional part of $2.5$. For `-5 / 2`, the true answer is $-2.5$, and throwing away the fraction (moving toward zero) gives `-2`.
-:::
-:::
-
 :::trap
 Assuming every computer uses the sizes in the table. Only `char` is guaranteed to be 1 byte. Use `sizeof` or a fixed-size type such as `int32_t` when the size matters.
 :::
@@ -119,13 +111,13 @@ printf("%d\n", c1);    /* prints: 97 */
 A few extra facts, for later: C only promises that the digits `'0'` to `'9'` have codes in a row; the code 97 for `'a'` comes from ASCII. And whether a plain `char` can be negative depends on the machine.
 
 :::check id=chk-char-code
-On a normal ASCII machine, what does `printf("%d\n", c1)` print when `c1` holds `'a'`?
+On a normal ASCII machine, `'a'` is 97 and the letters follow in order. What does `printf("%d\n", 'c')` print?
 
-- [ ] a
-- [x] 97
-- [ ] 98
+- [ ] c
+- [x] 99
+- [ ] 97
 
-`%d` prints the number. The code of `'a'` is 97. `%c` would print the letter `a`.
+`%d` prints the number. `'a'` is 97, `'b'` is 98, so `'c'` is 99. `%c` would print the letter `c`.
 :::
 
 ## Numbers with a decimal point: float and double
@@ -216,14 +208,6 @@ On this course's machines it prints:
 
 To print a `sizeof` answer, use the placeholder `%zu` (the placeholder for `size_t`). Using `%d` here is a mistake, because `%d` expects an `int`.
 
-:::problem id=worked-sizeof-sample title="sizeof of short, int, and long" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-What does the program above print on this course's machines, and which placeholder should print a `sizeof` result?
-
-:::solution
-The first line is `2, 4, 8`: the sizes of `short`, `int`, and `long`. The second line is `4`, the size of `int`. Use `%zu`, because `sizeof` gives a `size_t`. (Only the size of `char` is the same on every machine.)
-:::
-:::
-
 ## Reading input with scanf
 
 `printf` prints. Its partner `scanf` reads what the user types. Here is a program that asks for three values:
@@ -277,9 +261,9 @@ One classic mistake: to compare, write `==`. A single `=` means "store". So `if 
 Answer for this course's machines (64-bit Linux).
 
 :::check id=prac-type-widths-q1
-`sizeof(char)`, `sizeof(short)`, `sizeof(int)`, and `sizeof(long)` are {{=1, 2, 4, 8|1, 2, 4, 4|4, 4, 4, 8}}.
+How many bytes do `int a[10]` and `long b[10]` take together? {{=120|80|20}}
 
-`char` is always 1 byte. On these machines `short`, `int`, and `long` are 2, 4, and 8 bytes.
+Ten `int`s are $10 \times 4 = 40$ bytes, and ten `long`s are $10 \times 8 = 80$ bytes: 120 in total.
 :::
 
 :::check id=prac-type-widths-q2
@@ -300,67 +284,73 @@ A program that must work on any computer should use `sizeof` because
 :::
 
 :::problem id=prac-char-values title="Letter and code" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Assume a normal ASCII machine.
+Assume a normal ASCII machine, where `'A'` is 65 and `'a'` is 97.
 
 :::check id=prac-char-values-q1
-`printf("%d\n", c1)` with `char c1 = 'a'` prints {{=97|a|98}}.
+`printf("%c\n", 66)` prints {{=B|66|b}}.
 
-`%d` prints the number. In ASCII, `'a'` has code 97.
+`%c` shows the number as a character. 65 is `'A'`, so 66 is `'B'`.
 :::
 
 :::check id=prac-char-values-q2
-`char c2 = 98` stores the same value as {{='b'|'a'|98.0}}.
+`printf("%d\n", 'a' - 'A')` prints {{=32|0|1}}.
 
-In ASCII, `'b'` has code 98, so both store the same byte.
+Characters are numbers, so you can subtract them: $97 - 65 = 32$. Every lowercase letter is 32 more than its uppercase partner.
 :::
 :::
 
-:::problem id=prac-two-divisions title="Integer 5/2 and floating 5.0/2.0" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+:::problem id=prac-two-divisions title="Integer 7/2 and floating 7.0/2.0" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-two-divisions-q1
-`5 / 2` with two `int`s gives {{=2|2.5|0}}.
+`7 / 2` with two `int`s gives {{=3|3.5|4}}.
 
-Both are whole numbers, so the fractional part is thrown away.
+$7 \div 2 = 3.5$, and the fractional part is thrown away. C does not round up to 4.
 :::
 
 :::check id=prac-two-divisions-q2
-`5.0 / 2.0` with two `double`s gives {{=2.5|2|5}}.
+`-7 / 2` with two `int`s gives {{=-3|-4|-3.5}}.
 
-With `double`, the fraction is kept. 2.5 can be stored exactly.
+The true answer is $-3.5$. Throwing away the fraction moves toward zero, so the result is $-3$, not $-4$.
 :::
 
 :::check id=prac-two-divisions-q3
-Which statement about `double` division is correct?
+`7 % 2` gives {{=1|3|0}}.
 
-- [x] The result is rounded to the closest number a `double` can hold, so it is not always exact
-- [ ] It throws away the fraction, just like `int` division
-- [ ] 2.5 cannot be stored in a `double`
+$7 = 3 \times 2 + 1$, so the remainder is 1.
+:::
 
-`double` division keeps the fraction, but it must round to a number the type can store. For `5.0 / 2.0` that is exactly 2.5; for `1.0 / 3.0` it is only close.
+:::check id=prac-two-divisions-q4
+`7.0 / 2.0` with two `double`s gives {{=3.5|3|4}}.
+
+With `double`, the fraction is kept.
 :::
 :::
 
 :::problem id=prac-scanf-ampersand title="Why scanf receives an address" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-scanf-ampersand-q1
-`scanf("%d", &x)` uses `&x` because `scanf` {{=writes the number it reads into x|prints x|computes sizeof(x)}}.
+Someone writes `scanf("%d", n)`, forgetting the `&`. What goes wrong?
 
-To write into `x`, `scanf` needs to know where `x` is in memory. `&x` is that address.
+- [x] `scanf` receives the value in `n` instead of where `n` is, so it writes to the wrong place
+- [ ] Nothing: `scanf` adds the `&` itself
+- [ ] `scanf` prints `n` instead of reading it
+
+`scanf` treats whatever it receives as an address. Without `&`, it gets a number that is not `n`'s address, which is undefined behavior. Compilers usually warn about it.
 :::
 
 :::check id=prac-scanf-ampersand-q2
-The format `" %c"` starts with a space so that `scanf` {{=skips spaces and newlines before reading one character|reads two characters|stores the character in a float}}.
+A program reads `scanf("%d", &n)` and then `scanf("%c", &answer)` (no space before `%c`). The user types `5`, presses Enter, then types `y`. `answer` holds {{=a newline character|y|5}}.
 
-The Enter key from the previous input leaves a newline behind. Without the space, `%c` would read it.
+The Enter after `5` is still waiting, and `%c` reads any character, including that newline. Writing `" %c"` would skip it and read `y`.
 :::
 
 :::check id=prac-scanf-ampersand-q3
-To use `printf` and `scanf`, you must include {{=stdio.h|stdlib.h|math.h}}.
+If the user types `abc` for `scanf("%d", &n)`, the call returns {{=0|1|-1}}.
 
-`stdio.h` ("standard input/output") is where both are declared.
+`scanf` returns how many values it read. `abc` is not a number, so it read none.
 :::
 :::
 
 :::problem id=prac-float-bits title="Read the float bit groups" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-The `float` 3.61 is stored as `0 10000000 11001110000101000111101`.
+The lesson showed the bits of `3.61f`. Here are the bits of `-3.61f`: `1 10000000 11001110000101000111101`.
 
 :::check id=prac-float-bits-q1
 The three groups are {{=sign, exponent, fraction|the four bytes of the integer 361|padding followed by a decimal}}.
@@ -369,9 +359,9 @@ The three groups are {{=sign, exponent, fraction|the four bytes of the integer 3
 :::
 
 :::check id=prac-float-bits-q2
-The sign bit says the number is {{=positive|negative|an integer}}.
+Compared with `3.61f`, the only bit that changed is {{=the sign bit|the last fraction bit|the first exponent bit}}.
 
-The first bit is 0, which means positive.
+$3.61$ and $-3.61$ have the same size, so the exponent and fraction are the same. Only the first bit, the sign, flips from 0 to 1.
 :::
 :::
 

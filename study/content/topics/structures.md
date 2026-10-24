@@ -61,19 +61,6 @@ The values in the braces are given to the members **in order**: the first value 
 struct Student s1 = {"Eden"}; /* id is 0; the unused bytes of name are 0 */
 ```
 
-:::problem id=worked-moshe-layout title="Bytes of Moshe and 1111" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-`struct Student s = {"Moshe", 1111}` starts at address 1000. `name` is 8 `char`s and `id` is an `int` placed right after it. What is in `name[0]` to `name[7]`, and where is `id`?
-
-:::solution
-- `name[0]` to `name[4]`: `'M'`, `'o'`, `'s'`, `'h'`, `'e'`
-- `name[5]`: `'\0'`, the end of the string
-- `name[6]` and `name[7]`: 0, unused
-- `id`: right after the 8 bytes of `name`, at address 1008, holding 1111
-
-On an unfamiliar machine, `offsetof(struct Student, id)` (from `<stddef.h>`) tells you exactly how far `id` is from the start.
-:::
-:::
-
 ## A shorter name with typedef
 
 Writing `struct Student` every time is long. `typedef` gives a type a new name.
@@ -207,104 +194,101 @@ Adding up the member sizes to get the structure's size. Padding can make it bigg
 
 ## Practice
 
-:::problem id=prac-sizeof-two-ints title="sizeof of a two-int struct" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+:::problem id=prac-struct-padding title="Padding in a three-member struct" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 ```c
-struct st {
+struct trio {
+    char a;
+    int b;
+    char c;
+};
+```
+On this machine, `int` is 4 bytes and must start at a multiple of 4. The whole structure's size is also rounded up to a multiple of 4, so that every element of an array of `trio`s stays aligned.
+
+:::check id=prac-struct-padding-q1
+`b` starts at offset {{=4|1|2}}.
+
+`a` takes byte 0. Bytes 1, 2, and 3 are padding, because `b` must start at a multiple of 4.
+:::
+
+:::check id=prac-struct-padding-q2
+`c` starts at offset {{=8|5|6}}.
+
+`b` takes bytes 4 to 7, so the next free byte is 8. A `char` can start anywhere.
+:::
+
+:::check id=prac-struct-padding-q3
+`sizeof(struct trio)` is {{=12|6|9}}.
+
+The members end at byte 8, so 9 bytes are used. Rounding up to a multiple of 4 gives 12. The members themselves add up to only 6.
+:::
+:::
+
+:::problem id=prac-struct-copy title="Copying and comparing structures" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+```c
+struct point {
     int x;
     int y;
 };
-```
-A program prints `sizeof(struct st)` with `%zu`. On this machine, `int` is 4 bytes and must start at a multiple of 4.
-
-:::check id=prac-sizeof-two-ints-q1
-The program prints {{=8|4|a compiler error}}.
-
-Two 4-byte members, both at multiples of 4 (offsets 0 and 4), so no padding: 8 bytes.
-:::
-
-:::check id=prac-sizeof-two-ints-q2
-Why is the answer 8?
-
-- [x] There are two 4-byte `int` members and no padding is needed
-- [ ] `sizeof` always gives the size of one member
-- [ ] A structure with two members causes a run-time error
-
-`sizeof` gives the full size, including any padding. Here there is none.
-:::
-:::
-
-:::problem id=prac-struct-sum title="Adding two struct values" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-```c
-struct number {
-    float x;
-};
 
 int main(void) {
-    struct number n1, n2, n3;
-    n1.x = 4;
-    n2.x = 3;
-    n3 = n1 + n2;
-    printf("%f", n3.x);
+    struct point p1 = {1, 2};
+    struct point p2 = p1;
+    p2.x = 5;
+    printf("%d %d\n", p1.x, p2.x);
     return 0;
 }
 ```
 
-:::check id=prac-struct-sum-q1
-As written, the program {{=does not compile|prints 7.000000|prints an unspecified float}}.
+:::check id=prac-struct-copy-q1
+The program prints {{=1 5|5 5|1 1}}.
 
-`+` does not work on whole structures, so the compiler reports an error.
+`p2 = p1` copies every member into `p2`. Changing `p2.x` afterwards does not touch `p1`.
 :::
 
-:::check id=prac-struct-sum-q2
-The correct line is {{=n3.x = n1.x + n2.x|n3 = n1.x + n2.x|n3 = sizeof(n1) + sizeof(n2)}}.
+:::check id=prac-struct-copy-q2
+Adding the line `if (p1 == p2) { ... }` {{=does not compile|compares every member|compares the addresses}}.
 
-Add the `float` members, and store the result in the member of `n3`.
-:::
-
-:::check id=prac-struct-sum-q3
-After that fix, `printf("%f", n3.x)` prints {{=7.000000|7|4.000000}}.
-
-$4 + 3 = 7$, and `%f` shows six digits after the decimal point.
+`==` does not work on whole structures. Compare the members instead: `p1.x == p2.x && p1.y == p2.y`.
 :::
 :::
 
-:::problem id=prac-initializer-order title="Brace lists and typedef names" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-The type is `struct Student { char name[8]; int id; }`.
+:::problem id=prac-initializer-order title="Brace lists and typedef names" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+A new type: `struct Item { char code[4]; int qty; double price; };`.
 
 :::check id=prac-initializer-order-q1
-`struct Student s1 = {"Eden"};` sets `id` to {{=0|an indeterminate value|1111}}.
+`struct Item it = {"AB", 3};` sets `price` to {{=0|an indeterminate value|3}}.
 
-Members you leave out at the end are set to 0.
+Members you leave out at the end are set to 0. `code` gets `"AB"` and `qty` gets 3.
 :::
 
 :::check id=prac-initializer-order-q2
-`struct Student s2 = {2222, "Omer"};` {{=does not compile|sets id to 2222 and name to Omer|swaps the members at run time}}.
+`struct Item it = {3, "AB"};` {{=does not compile|sets qty to 3 and code to AB|swaps the members at run time}}.
 
-Values go to members in order. 2222 goes into `name[0]`, then `"Omer"` would go into `name[1]`, a single character, which cannot hold text.
+Values go to members in order. 3 goes into `code[0]`, then `"AB"` would go into `code[1]`, a single character, which cannot hold text.
 :::
 
 :::check id=prac-initializer-order-q3
-After `typedef struct { char name[8]; int id; } Student;`, which line is valid?
+After `typedef struct { char code[4]; int qty; } Item;`, which line is valid?
 
-- [x] `Student s = {"Moshe", 1111};`
-- [ ] `struct Student s1 = {"Omer", 2222};`
-- [ ] A `static` member inside the structure
+- [x] `Item it = {"AB", 3};`
+- [ ] `struct Item it = {"AB", 3};`
+- [ ] `Item it = {qty = 3};`
 
-The new name is `Student`. The structure itself has no name after `struct`, so `struct Student` does not exist. C structures never have `static` members.
+The new name is `Item`. The structure itself has no name after `struct`, so `struct Item` does not exist.
 :::
 :::
 
 :::problem id=prac-field-scanf title="Addresses passed to scanf" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-`Student` has `char name[8]` and `int id`.
+A new type: `typedef struct { char city[12]; int zip; } Address;` and a variable `Address a;`.
 
 :::check id=prac-field-scanf-q1
-The safe, correct call is {{=scanf("%7s %d", s.name, &s.id)|scanf("%s %d", &s.name, s.id)|scanf("%s %d", &s.name, &s.id)}}.
+The safe, correct call is {{=scanf("%11s %d", a.city, &a.zip)|scanf("%12s %d", &a.city, a.zip)|scanf("%s %d", &a.city, &a.zip)}}.
 
-`s.name` is an array, so it is already an address. `%7s` leaves room for the `'\0'`. `s.id` is an `int`, so it needs `&`.
+`a.city` is an array, so it is already an address. It has 12 bytes, so `%11s` leaves room for the `'\0'`. `a.zip` is an `int`, so it needs `&`.
 :::
 
 :::check id=prac-field-scanf-q2
-`%s` prints `s.name` up to {{=the ending '\0'|exactly 8 characters, including bytes after the name|the id member}}.
+`printf("%s", a.city)` prints up to {{=the ending '\0'|exactly 12 characters|the zip member}}.
 
 `%s` does not know the array's size. It stops when it finds `'\0'`.
 :::

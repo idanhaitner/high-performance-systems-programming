@@ -132,58 +132,45 @@ If both checks pass, the whole word was a number. For `./a.out Omer 2 3` the pro
 
 (A fully careful program would also catch numbers too big to fit in a `long`, using a variable called `errno`. You do not need that yet.)
 
-:::problem id=worked-omer-sum title="Walk of ./a.out Omer 2 3" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-For `./a.out Omer 2 3`: what is `argc`, what are the four words, and what does the program print? Why can't you just add `argv[2]` and `argv[3]`?
-
-:::solution
-- `argc` is 4.
-- The words are `"./a.out"`, `"Omer"`, `"2"`, and `"3"`. `argv[4]` is `NULL`.
-- `strtol` turns `"2"` into 2 and `"3"` into 3.
-- The program prints `Hi Omer`, then `2+3=5`.
-
-`argv[2]` and `argv[3]` are pointers to text, not numbers. C does not allow adding two pointers, so `argv[2] + argv[3]` does not compile.
-:::
-:::
-
 :::check id=chk-argv0
-For `./a.out Omer 2 3`, what does `argv[0]` point to?
+For `./calc 7`, what is `argc`?
 
-- [ ] `Omer`
-- [x] `./a.out`
-- [ ] `2`
+- [ ] 1
+- [x] 2
+- [ ] 7
 
-`argv[0]` is always the program name. `Omer` is `argv[1]`.
+There are two words: `./calc` (in `argv[0]`) and `7` (in `argv[1]`). `argc` counts words, not the number typed.
 :::
 
 ## Practice
 
-:::problem id=prac-argc-count title="What argc counts" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-The command is `./a.out Omer 2 3`.
+:::problem id=prac-argc-count title="What argc counts" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+A new command: `./avg 10 20 30 40`.
 
 :::check id=prac-argc-count-q1
-`argc` is {{=4|3|5}}.
+`argc` is {{=5|4|6}}.
 
-Four words, counting the program name. The `NULL` at the end is not counted.
+Five words, counting the program name. The `NULL` at the end is not counted.
 :::
 
 :::check id=prac-argc-count-q2
-`argv[1]` points to {{=Omer|./a.out|2}}.
+`argv[4]` points to {{=40|30|nothing, it is NULL}}.
 
-Position 0 is the program name. Position 1 is the first word after it.
+`argv[0]` is `./avg`, so the numbers are in `argv[1]` to `argv[4]`. The last one, `"40"`, is `argv[4]`.
 :::
 
 :::check id=prac-argc-count-q3
-`argv[4]` is {{=a null pointer|3|Omer}}.
+`argv[5]` is {{=a null pointer|40|out of range and must not be read}}.
 
-The last word, `"3"`, is `argv[3]`. `argv[argc]`, here `argv[4]`, is always `NULL`.
+`argv[argc]`, here `argv[5]`, is always `NULL`. It marks the end, and it is safe to read.
 :::
 :::
 
 :::problem id=prac-atoi-role title="From the string 2 to the integer 2" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-atoi-role-q1
-`atoi("2")` returns {{=2|the pointer to the character array|only the code of the character 2}}.
+`atoi("12abc")` returns {{=12|0|an error code}}.
 
-`atoi` reads the digits and returns the number. Its weakness: bad text like `"abc"` also returns 0, just like `"0"`.
+`atoi` reads digits until it meets something that is not a digit, and quietly ignores the rest. It never tells you the text was not a clean number. `strtol` would stop at `a`, so the `*end != '\0'` check catches it.
 :::
 
 :::check id=prac-atoi-role-q2
@@ -200,33 +187,29 @@ It checks `argc` first, before printing or converting anything. A bad number als
 :::
 
 :::problem id=prac-argv-shape title="Pointers and argument strings" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Use the example memory picture of `./a.out Omer 2 3`.
+A new command: `./p hello 42`. As in the lesson's picture, the words are stored one right after another; say `"./p"` starts at address 200.
 
 :::check id=prac-argv-shape-q1
-On Linux, the `argv` array and the words are placed {{=at the top of the initial stack|on the heap|in the .text section}}.
+`"hello"` starts at address {{=204|203|205}}.
 
-The loader puts them there before `main` starts. C itself does not say where they go.
+`"./p"` is 3 characters plus `'\0'`: 4 bytes, so the next word starts at $200 + 4 = 204$.
 :::
 
 :::check id=prac-argv-shape-q2
-The address goes up by 5 from `"Omer"` to `"2"` because
+`"42"` starts at address {{=210|209|206}}.
 
-- [x] `"Omer"` has 4 letters plus the ending `'\0'`
-- [ ] `argc` is 5
-- [ ] Every word takes 5 bytes
-
-Each word takes its length plus one byte for `'\0'`. The earlier jump of 8 is the same for `"./a.out"` (7 + 1).
+`"hello"` is 5 characters plus `'\0'`: 6 bytes, so $204 + 6 = 210$.
 :::
 
 :::check id=prac-argv-shape-q3
 Which statements are true?
 
-- [x] `argv[i]` is a pointer; the letters are stored somewhere else
+- [x] `argv[2]` is a pointer to the text `"42"`; the number 42 exists only after `strtol` or `atoi`
 - [x] The program is allowed to change the argument words
-- [ ] `argv[2]` holds the number 2 directly
+- [ ] `argv[2]` holds the number 42 directly
 - [ ] The words must be stored in `.rodata`
 
-`argv[2]` points to the text `"2"`. The number 2 only exists after converting with `strtol` or `atoi`. The words are not read-only.
+Every argument arrives as text. The words sit at the top of the stack on Linux and are not read-only.
 :::
 :::
 

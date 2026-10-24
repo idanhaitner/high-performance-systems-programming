@@ -36,39 +36,28 @@ sources:
     status: incorporated
     note: "Finite representation, object layout, translation, and process startup."
     problems:
-      - worked-square-overflow
-      - worked-float-associativity
-      - worked-row-major
       - prac-square-sign
       - prac-float-add
       - prac-loop-stride
       - prac-no-magic
-      - worked-dereference
-      - worked-index-equivalence
       - prac-value-and-address
       - prac-pointer-step
       - prac-array-formula
       - prac-first-program-roles
-      - worked-stop-the-pipeline
-      - worked-place-each-variable
       - prac-pipeline-order
       - prac-section-quiz
       - prac-lifecycle
       - prac-who-fetches
-      - worked-integer-division
-      - worked-sizeof-sample
       - prac-type-widths
       - prac-char-values
       - prac-two-divisions
       - prac-scanf-ampersand
       - prac-float-bits
-      - worked-moshe-layout
-      - prac-sizeof-two-ints
-      - prac-struct-sum
+      - prac-struct-padding
+      - prac-struct-copy
       - prac-initializer-order
       - prac-field-scanf
       - prac-three-students
-      - worked-omer-sum
       - prac-argc-count
       - prac-atoi-role
       - prac-argv-shape

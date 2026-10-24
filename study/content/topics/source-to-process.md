@@ -91,17 +91,6 @@ You do not need to memorize this. The idea: a program cannot print to the screen
 
 In normal C, you call `printf("Hello\n")`. `printf` is ordinary library code, and deep inside it eventually makes this same "write" system call.
 
-:::problem id=worked-stop-the-pipeline title="Which flag stops where" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-Which `gcc` option stops after preprocessing? After producing assembly? After producing an object file?
-
-:::solution
-- `gcc -E main.c -o main.i` stops after **preprocessing**.
-- `gcc -S main.c -o main.s` stops after producing **assembly**.
-- `gcc -c main.c -o main.o` stops after producing an **object file**.
-- `gcc main.o -o main` then **links** the object file into a program.
-:::
-:::
-
 ## Where each variable lives in the program file
 
 The executable is not one big blob. It is divided into **sections**, each holding one kind of thing. (The names below are from **ELF**, the executable file format Linux uses.) Let's place each variable of this program:
@@ -161,19 +150,6 @@ Memory you ask for while the program runs, with `malloc` (and give back with `fr
 
 These are the usual choices, not strict C rules. For example, `const` does not *force* the compiler to use `.rodata`; it just usually does.
 
-:::problem id=worked-place-each-variable title="Place x, y, z, and a" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-In the program above, where does each of `x`, `y`, `z`, the text `"z = %d"`, `a`, and the code of `main` usually go?
-
-:::solution
-- `x`: global starting at zero → `.bss`
-- `y`: global starting at 10 → `.data`
-- `z`: `const` global → usually `.rodata`
-- `"z = %d"`: fixed text → `.rodata`
-- `a`: local variable → the stack (or a register)
-- code of `main` → `.text`
-:::
-:::
-
 :::trap
 Putting every global in `.data`. A global with no starting value, or starting at 0, goes to `.bss`. And a local variable lives on the stack even if it has a starting value.
 :::
@@ -217,13 +193,13 @@ While the program runs, the CPU repeats one simple cycle over and over: **fetch*
 **3. Termination.** When `main` returns (or the program calls `exit`), the process ends, and the operating system frees all of its memory.
 
 :::check id=chk-bss
-A global `int x;` with no starting value usually goes where?
+A global written as `int count = 0;` usually goes where?
 
-- [ ] On the stack, next to the local variables of `main`
-- [x] In `.bss`, the area for globals that start at zero
-- [ ] In `.data`, because every global goes there
+- [ ] In `.data`, because it has a starting value
+- [x] In `.bss`, because its starting value is zero
+- [ ] On the stack, because 0 means "nothing"
 
-`x` is a global that starts at 0, so it goes to `.bss`. `.data` is for globals with a non-zero starting value, and the stack is for local variables.
+What matters is whether the starting value is zero, not whether you wrote one. `int count = 0;` and `int count;` both start at 0, so both usually go to `.bss`.
 :::
 
 ## Practice
@@ -249,29 +225,41 @@ The compiler produces assembly, and the assembler turns it into machine code. Th
 :::
 
 :::problem id=prac-section-quiz title="Region of each object" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Use the program with `int x;`, `int y = 10;`, `const int z = 5;`, a local `int a = 12;`, and `printf("z = %d", z)`.
+A new program:
+
+```c
+int hits;                 /* global */
+double rate = 1.5;        /* global */
+const int limit = 100;    /* global */
+
+int main(void) {
+    int i = 0;            /* local */
+    puts("done");         /* prints the text "done" */
+    return 0;
+}
+```
 
 :::check id=prac-section-quiz-q1
-`y` usually goes to {{=.data|.bss|.text}}.
+`rate` usually goes to {{=.data|.bss|.rodata}}.
 
-`y` is a global with a non-zero starting value (10).
+`rate` is a global with a non-zero starting value (1.5).
 :::
 
 :::check id=prac-section-quiz-q2
-`z` usually goes to {{=.rodata|.data|the stack}}.
+`hits` usually goes to {{=.bss|.data|the stack}}.
 
-`z` is a read-only (`const`) global. Compilers usually put it in the read-only section, though C does not strictly require it.
+`hits` is a global with no starting value, so it starts at 0.
 :::
 
 :::check id=prac-section-quiz-q3
 Which of these are correct?
 
-- [x] `a` is a local variable, so it usually lives on the stack
-- [x] The code of `main` is in `.text`
-- [ ] `x` is a local variable because it has no starting value
-- [ ] The text `"z = %d"` is in `.bss` because it never changes
+- [x] `i` is a local variable, so it usually lives on the stack (or in a register)
+- [x] The text `"done"` and `limit` usually go to `.rodata`
+- [ ] `i` goes to `.bss` because it starts at 0
+- [ ] `limit` goes to `.data` because it has a non-zero starting value
 
-`x` is a global (it is outside any function) that starts at 0. Fixed text goes to `.rodata`. (The compiler may keep `a` in a register instead of the stack.)
+The zero rule is only for globals; a local is on the stack whatever its value. `limit` is `const`, so it usually goes with the fixed text to `.rodata`.
 :::
 :::
 

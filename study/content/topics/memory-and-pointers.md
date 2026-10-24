@@ -130,14 +130,6 @@ We never wrote `x = 100`, yet `x` changed. That is because `*p` and `x` are the 
 
 A common mistake is writing `p = 100` (without the star). That tries to change the pointer itself, to point at address 100, and C refuses it as an error. Even if forced, it would not change `x`.
 
-:::problem id=worked-dereference title="Write 100 through a pointer" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-Start from `int x = 5; int *p = &x;`. After `*p = 100;`, what do `x` and `*p` print, and why are they the same?
-
-:::solution
-Both print 100. `p` holds the address of `x`, so `*p` is the box `x`. Storing 100 in `*p` stores 100 in `x`. Reading `x` or `*p` reads that same box.
-:::
-:::
-
 :::trap
 Writing `p = 100` to change `x`. Without the star you are changing the pointer, not the box it points to. To change `x` through `p`, write `*p = 100`.
 :::
@@ -193,69 +185,57 @@ So `a[2]` and `*(a + 2)` are the same thing: the box at `0x1008`, holding 30.
 
 A **string** (text) in C is an array of `char` that ends with a special character `'\0'`, whose code is 0. So `"hi"` is stored as three bytes: `'h'`, `'i'`, `'\0'`. Functions like `printf("%s", ...)` know where the text ends only by finding that 0. (Don't confuse it with the digit `'0'`, whose code is 48.)
 
-:::problem id=worked-index-equivalence title="a[2] and *(a + 2)" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-For `int a[4] = {10, 20, 30, 40}` starting at `0x1000`, what address and value do `a[2]` and `*(a + 2)` refer to?
-
-:::solution
-Both refer to element number 2. `a + 2` moves 2 elements of 4 bytes each, so the address is $\texttt{0x1000} + 8 = \texttt{0x1008}$. The value there is 30.
-:::
-:::
-
 :::trap
 Thinking `p + 1` moves one byte. For an `int *`, it moves one whole `int`: 4 bytes. The bytes `0x1001` to `0x1003` are just the rest of `a[0]`.
 :::
 
 ## Practice
 
-:::problem id=prac-value-and-address title="Value, address, and dereference" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-`int x = 5;` and `int *p = &x;`. In this example, `x` lives at `0x1000` and `p` lives at `0x2000`.
+:::problem id=prac-value-and-address title="Value, address, and dereference" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+A new pair: `int n = 7;` and `int *q = &n;`. In this example, `n` lives at `0x3000` and `q` lives at `0x3008`.
 
 :::check id=prac-value-and-address-q1
-`p == &x` is {{=true|false|true only after *p = 100}}.
+`q` holds {{=0x3000|0x3008|7}}.
 
-`p` was given `&x` as its value, so `p` holds the address of `x`.
+`q` was given `&n`, the address of `n`. Where `q` itself lives (`0x3008`) is a different thing.
 :::
 
 :::check id=prac-value-and-address-q2
-After `*p = 100`, the value of `x` is {{=100|5|0x1000}}.
+After `*q = *q + 1;`, the value of `n` is {{=8|7|0x3001}}.
 
-`*p` is the box `x`, so storing 100 in `*p` stores it in `x`.
+`*q` is the box `n`. The line reads 7 from it, adds 1, and stores 8 back into the same box.
 :::
 
 :::check id=prac-value-and-address-q3
-Which description of `p` is correct?
+After `q = q + 1;` (no star), which is true?
 
-- [x] `p` holds `0x1000`, the address of `x`
-- [ ] `p` lives at `0x1000`
-- [ ] `p` holds the `int` value 5
+- [x] `n` is still 7; `q` now holds the address just after `n`
+- [ ] `n` becomes 8
+- [ ] `q` now holds the value 8
 
-`p` itself lives at `0x2000`. What it *holds* is `0x1000`, the address of `x`.
+Without the star you change the pointer, not the box it points to. `n` is untouched.
 :::
 :::
 
-:::problem id=prac-pointer-step title="How far p + 1 moves" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-`int a[4] = {10, 20, 30, 40};` and `int *p = a;`, with `a[0]` at `0x1000`. Each `int` is 4 bytes.
+:::problem id=prac-pointer-step title="How far d + 1 moves" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+A different array: `double d[3] = {1.5, 2.5, 3.5};`, with `d[0]` at `0x2000`. Each `double` is 8 bytes.
 
 :::check id=prac-pointer-step-q1
-`p + 1` is {{=0x1004|0x1001|0x1008}}.
+`d + 1` is {{=0x2008|0x2001|0x2004}}.
 
-Adding 1 moves one `int`, which is 4 bytes.
+Adding 1 moves one `double`, which is 8 bytes.
 :::
 
 :::check id=prac-pointer-step-q2
-`p + 2` is {{=0x1008|0x1002|0x100C}}.
+`d + 2` is {{=0x2010|0x2002|0x2016}}.
 
-Two `int`s is 8 bytes: `0x1000 + 8 = 0x1008`.
+Two `double`s is 16 bytes. 16 in hex is `0x10`, so `0x2000 + 0x10 = 0x2010`.
 :::
 
 :::check id=prac-pointer-step-q3
-When you write `p + k`, each step of `k` moves
+`*(d + 2)` is {{=3.5|2.5|0x2010}}.
 
-- [x] `sizeof(*p)` bytes: the size of the type `p` points to
-- [ ] Always 1 byte
-- [ ] The length of the whole array
-
-Pointer addition counts elements. Each element is `sizeof(*p)` bytes.
+`d + 2` is the address of `d[2]`, and the star takes the value stored there.
 :::
 :::
 
@@ -267,39 +247,43 @@ Move `i` elements from the start (`a + i`), then take the value there (`*`).
 :::
 
 :::check id=prac-array-formula-q2
-For the array `{10, 20, 30, 40}`, `*(a + 2)` is {{=30|20|0x1008}}.
+For `int a[4] = {10, 20, 30, 40}`, what is `*a + 1`? {{=11|20|0x1004}}
 
-`a + 2` is the address `0x1008`. The star takes the value stored there, 30.
+The star comes first: `*a` is `a[0]`, which is 10, and then 1 is added. To get the next element you need the parentheses: `*(a + 1)` is 20.
 :::
 :::
 
-:::problem id=prac-first-program-roles title="Scope and lifetime in the sample" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Use the program with global `x` and `y`, and local `z` and `a[4]` inside `main`.
+:::problem id=prac-first-program-roles title="Scope and lifetime in a new program" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+```c
+int total;              /* written outside any function */
+
+void add(int n) {
+    int doubled = n * 2;
+    total = total + doubled;
+}
+
+int main(void) {
+    add(3);
+    add(4);
+    printf("%d\n", total);
+    return 0;
+}
+```
 
 :::check id=prac-first-program-roles-q1
-Which variables can be used anywhere in the file (below where they are written)?
+The program prints {{=14|0|8}}.
 
-- [x] `x` and `y`
-- [ ] `z` and `a`
-- [ ] Only `x`, because `y` has no starting value
-
-Both are written outside any function. Having no starting value only means `y` starts at 0.
+`total` is a global, so it starts at 0 and keeps its value between calls: $0 + 6 + 8 = 14$.
 :::
 
 :::check id=prac-first-program-roles-q2
-`printf("z = %d\n", z)` prints {{=5|10|the address of z}}.
+Can `main` use `doubled`?
 
-`z` was set to 5, and `%d` prints its value.
-:::
+- [ ] Yes, every variable can be used anywhere in the file
+- [x] No, `doubled` is written inside `add`, so only code inside `add` can use it
+- [ ] Only after `add` has been called once
 
-:::check id=prac-first-program-roles-q3
-The elements of `a` are stored
-
-- [x] Side by side, from `a[0]` to `a[3]`
-- [ ] In four separate places chosen by `printf`
-- [ ] Each on a different device
-
-An array is always one unbroken block. Here it exists while `main` runs, because `a` is a local variable.
+`doubled` is a local variable of `add`. It is created each time `add` starts and destroyed when `add` returns.
 :::
 :::
 

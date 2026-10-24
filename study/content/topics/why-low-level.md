@@ -106,16 +106,6 @@ uint32_t x = 1410065407u;   /* the u at the end means "unsigned" */
 uint32_t product = x * x;   /* always 0xBAF83801: wrap-around is guaranteed */
 ```
 
-:::problem id=worked-square-overflow title="Square of 1410065407" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-Separate three things: the true mathematical answer, what the lowest 32 bits look like, and what C promises for a signed `int`.
-
-:::solution
-1. **True answer:** $1988284452018075649$, which is `0x1B97CE2CBAF83801` in hexadecimal.
-2. **Lowest 32 bits:** `0xBAF83801`. Its leftmost bit is 1, so read as a signed 32-bit number it is $-1158137855$.
-3. **What C promises for `int`:** nothing. The answer does not fit, so this is undefined behavior. If you need the wrapped result, use `uint32_t`, where wrap-around is guaranteed.
-:::
-:::
-
 :::trap
 Running an overflow once, seeing a negative number, and concluding "that's what C does". A different compiler, a different optimization setting, or a small change nearby can give a different result.
 :::
@@ -147,18 +137,6 @@ The $3.14$ is too small to change $-10^{20}$, so it is lost. Then the big number
 In school math, $(a + b) + c = a + (b + c)$ always. This rule is called **associativity**. With floating-point numbers it can fail, because each step rounds. (Swapping the two numbers in a single addition, $a + b = b + a$, is called commutativity, and that one still holds.)
 
 One note: this assumes the computer adds in the order written. Some compiler settings, such as `-ffast-math`, allow the compiler to regroup additions to go faster, which can change the result.
-
-:::problem id=worked-float-associativity title="Two associations of 1e20 and 3.14" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
-For $x = 10^{20}$, $y = -10^{20}$, and $z = 3.14$, compute $(x + y) + z$ and $x + (y + z)$ with `double` numbers. Which rule of school math fails?
-
-:::solution
-$(x + y) + z = 0 + 3.14 = 3.14$.
-
-$x + (y + z)$: the inner sum $-10^{20} + 3.14$ rounds back to $-10^{20}$, because a `double` that large cannot hold the small part. Then $10^{20} + (-10^{20}) = 0$.
-
-Same numbers, different grouping, different answer, so **associativity** fails.
-:::
-:::
 
 ## Surprise 3: the order you visit memory changes the speed
 
@@ -223,18 +201,6 @@ for (i = 0; i < 2049; i++)
 
 The exact speed must be measured on a real machine, because the compiler may rearrange loops and every processor's cache is different. But the distance between consecutive reads, called the **stride**, is something you can work out just by reading the code.
 
-:::problem id=worked-row-major title="Which copy walks neighboring ints" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-For the three loops above (a 2049 by 2049 table of `int`), how far apart in memory are two consecutive reads of the inner loop, and what does that mean for the cache?
-
-:::solution
-- **Loop 1** (`j` inside): consecutive reads are neighbors, 4 bytes apart. They share cache lines, so locality is good.
-- **Loop 2** (`i` inside): consecutive reads are a row apart, $2049 \times 4 = 8196$ bytes. They never share a cache line, so locality is poor.
-- **Loop 3**: same 4-byte steps as Loop 1, every number copied once (because 2049 is divisible by 3), and less loop bookkeeping per number.
-
-The actual timing still depends on the compiler and the machine.
-:::
-:::
-
 :::trap
 Comparing the loops by counting the copies. All three do exactly the same number of copies. What differs is how far apart in memory the consecutive reads are.
 :::
@@ -255,77 +221,77 @@ This lecture covers the first layer, plus a picture of how a running program's m
 
 ## Practice
 
-:::problem id=prac-square-sign title="When a square is negative" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Use $x = 1410065407$. Its true square, in hexadecimal, is `0x1B97CE2CBAF83801`. Each hex digit is 4 bits, so 32 bits is the last 8 hex digits.
+:::problem id=prac-square-sign title="Squaring 50000" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+A new number this time: $x = 50000$, stored in a 32-bit `int`. Its true square is $2\,500\,000\,000$, which is `0x9502F900` in hexadecimal.
 
 :::check id=prac-square-sign-q1
-The lowest 32 bits of that product are {{=0xBAF83801|0x1B97CE2C|0x00000000}}.
+Does $2\,500\,000\,000$ fit in an `int`? {{=No, it is bigger than 2147483647|Yes, it is less than 4.3 billion|Yes, every square of an int fits}}
 
-The lowest 32 bits are the last 8 hex digits: `0xBAF83801`.
+The largest `int` is $2\,147\,483\,647$. About 4.3 billion is how many bit patterns 32 bits have, but half of them are used for negative numbers.
 :::
 
 :::check id=prac-square-sign-q2
-Why do those 32 bits read as a negative number?
+`0x9502F900` is exactly 8 hex digits, so all 32 bits are kept. Read as a signed 32-bit number, those bits are
 
-- [x] The leftmost of the 32 bits is 1
-- [ ] Multiplying two odd numbers always gives a negative number
-- [ ] C replaces every overflow with $-1$
+- [x] negative, because the first hex digit `9` is `1001` in binary, so the leftmost bit is 1
+- [ ] positive, because nothing was thrown away
+- [ ] zero, because the answer overflowed
 
-The first hex digit is `B`, which is `1011` in binary, so the leftmost bit is 1. In two's complement, a leftmost 1 means negative. This is a fact about the bits, not a promise from C.
+A leftmost bit of 1 means negative. (The value is $2\,500\,000\,000 - 2^{32} = -1\,794\,967\,296$.) Nothing was cut off here, yet the sign still flipped.
 :::
 
 :::check id=prac-square-sign-q3
-In C, overflow of a signed `int` is {{=undefined behavior|guaranteed to wrap around|guaranteed to give this negative value}}.
+In C, `int x = 50000; int y = x * x;` is {{=undefined behavior|guaranteed to give -1794967296|guaranteed to give 2500000000}}.
 
-C makes no promise at all for signed overflow. Only unsigned types, such as `uint32_t`, are guaranteed to wrap around.
+The true answer does not fit in an `int`, so this is signed overflow. Use `uint32_t` if you want the guaranteed wrap-around.
 :::
 :::
 
-:::problem id=prac-float-add title="Which association keeps 3.14" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
-Use $x = 10^{20}$, $y = -10^{20}$, and $z = 3.14$, as `double` numbers added in the order written.
+:::problem id=prac-float-add title="Where does the 1 go?" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+New numbers: $x = 1$, $y = 10^{20}$, and $z = -10^{20}$, as `double` numbers added in the order written. Remember that near $10^{20}$, neighboring `double` values are 16384 apart.
 
 :::check id=prac-float-add-q1
-$(x + y) + z$ equals {{=3.14|0.0|1e20}}.
+$(x + y) + z$ equals {{=0.0|1.0|1e20}}.
 
-$x + y$ is exactly 0, and $0 + 3.14 = 3.14$.
+$1 + 10^{20}$ rounds back to $10^{20}$, because 1 is much smaller than the gap of 16384. Then $10^{20} + (-10^{20}) = 0$.
 :::
 
 :::check id=prac-float-add-q2
-$x + (y + z)$ equals {{=0.0|3.14|-3.14}}.
+$x + (y + z)$ equals {{=1.0|0.0|-1e20}}.
 
-$3.14$ is too small to change $-10^{20}$, so $y + z$ stays $-10^{20}$. Adding $x$ then gives 0.
+$y + z$ is exactly 0, and $1 + 0 = 1$.
 :::
 
 :::check id=prac-float-add-q3
-The school-math rule that fails here is {{=associativity of addition|commutativity of addition|closure of addition}}.
+To keep a small number from being lost, you should
 
-Only the grouping (which pair is added first) changed, and the answer changed. The rule about grouping is associativity.
+- [x] Add the numbers that cancel each other first, then add the small one
+- [ ] Always add from left to right
+- [ ] Switch from `double` to `int`
+
+The small number survives when it is added to something of similar size. Adding it to a huge number first rounds it away.
 :::
 :::
 
-:::problem id=prac-loop-stride title="Stride of the column-wise copy" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-Both loops do `B[i][j] = A[i][j]` for every `i` and `j` from 0 to 2048. Each `int` is 4 bytes, and each row has 2049 of them.
+:::problem id=prac-loop-stride title="Stride in a table of doubles" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
+A different table this time: `double M[1000][1000]`. Each `double` is 8 bytes, and each row has 1000 of them. Both loops do `sum += M[i][j]` for every `i` and `j`.
 
 :::check id=prac-loop-stride-q1
-When `j` is the inner loop, each step moves {{=4 bytes|2049 bytes|8196 bytes}} in memory.
+When `j` is the inner loop, each step moves {{=8 bytes|4 bytes|8000 bytes}} in memory.
 
-Increasing `j` by 1 moves to the next number in the same row: one `int`, 4 bytes.
+Increasing `j` by 1 moves to the next `double` in the same row: 8 bytes.
 :::
 
 :::check id=prac-loop-stride-q2
-When `i` is the inner loop, each step moves {{=8196 bytes|4 bytes|1 byte}} in memory.
+When `i` is the inner loop, each step moves {{=8000 bytes|8 bytes|1000 bytes}} in memory.
 
-Increasing `i` by 1 moves down a full row: $2049 \times 4 = 8196$ bytes.
+Increasing `i` by 1 moves down a full row: $1000 \times 8 = 8000$ bytes.
 :::
 
 :::check id=prac-loop-stride-q3
-Why is the column-by-column loop usually slower?
+How many `double`s arrive together in one 64-byte cache line? {{=8|16|64}}
 
-- [x] Consecutive reads are a whole row apart, so they never share a cache line
-- [ ] It copies more numbers than the row-by-row loop
-- [ ] C does not allow `i` to be the inner loop
-
-Both loops copy the same numbers. The row-by-row loop reads neighbors, which arrive together in one cache line. The column-by-column loop jumps 8196 bytes each time, far more than a 64-byte cache line.
+$64 / 8 = 8$. The row-by-row loop uses all 8; the column-by-column loop uses one and then jumps 8000 bytes away.
 :::
 :::
 
