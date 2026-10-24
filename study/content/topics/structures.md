@@ -6,12 +6,12 @@ sources:
   - c/10-structs/lesson.md
 ---
 
-An array is a contiguous sequence of one element type. A structure is one object with named members, and those members may have different types. Members are allocated in declaration order at increasing addresses. The compiler may insert padding so a member satisfies its alignment, and it may add trailing padding so the structure's size is a multiple of that alignment. `sizeof` is the size of the whole object. It is not always the sum of the member sizes.
+An array holds elements of one type. A structure is a single object made of named members, which may have different types. The members are stored in declaration order, at increasing addresses. Between members the compiler may insert padding so that each member starts at an address suited to its type (its alignment), and it may add padding at the end so that arrays of the structure stay aligned. `sizeof` gives the size of the whole object, padding included, so it can be larger than the sum of the member sizes.
 
 ## Layout
 
 :::definition id=def-struct title="Structure" source="Lecture 1 - Introduction.pdf"
-A structure type declares named members. An object of that type stores those members in declaration order. Their offsets are implementation-defined and can be measured with `offsetof` from `<stddef.h>`.
+A structure type declares named members. An object of that type stores the members in declaration order. Their exact byte offsets depend on the platform and can be measured with `offsetof` from `<stddef.h>`.
 :::
 
 ```c
@@ -26,9 +26,9 @@ int main(void) {
 }
 ```
 
-`name` is an array of 8 `char`. On this platform `int` has size and alignment 4. Eight is a multiple of 4, so `id` can begin immediately after `name`, at offset 8. If `s` begins at address 1000, `name[0]` is at 1000 and `id` is at 1008. `sizeof(struct Student)` is 12 on this platform: 8 bytes, followed by a 4-byte `int`, with no extra padding. Another ABI can choose a different alignment and size.
+`name` is an array of 8 `char`. On this platform an `int` is 4 bytes and must start at an address that is a multiple of 4. Offset 8 is already a multiple of 4, so `id` starts right after `name`. If `s` begins at address 1000, `name[0]` is at 1000 and `id` is at 1008. `sizeof(struct Student)` is therefore 12: 8 bytes of `name` and 4 bytes of `id`, with no padding.
 
-A member sequence that does not already meet the next alignment is different:
+When a member would start at a misaligned offset, padding appears:
 
 ```c
 struct tagged {
@@ -37,32 +37,7 @@ struct tagged {
 };
 ```
 
-With 4-byte alignment for `int`, a compiler commonly inserts 3 padding bytes after `tag`. The size is then 8, not 5. The padding bytes are not members.
-
-```c
-struct Student s = {"Moshe", 1111};
-```
-
-`"Moshe"` initializes the array with `'M'`, `'o'`, `'s'`, `'h'`, `'e'`, and a terminating `'\0'`. The two bytes not covered by that initializer are zero. `id` holds 1111.
-
-![One possible layout of Student at address 1000: eight name bytes followed by id.](../assets/figures/struct-moshe.svg)
-
-A brace initializer assigns members in order. `{"Moshe", 1111}` matches `name` and then `id`. `{2222, "Omer"}` supplies an `int` where a `char[8]` is expected, which is a constraint violation. Omitted trailing members are initialized as if they had static storage duration, so they become zero.
-
-```c
-struct Student s = {"Moshe", 1111};
-struct Student s1 = {"Eden"}; /* id is 0; the rest of name is 0 */
-```
-
-`"Eden"` includes its terminator. The remaining bytes of `name` are zero, and `s1.id` is 0.
-
-:::problem id=worked-moshe-layout title="Bytes of Moshe and 1111" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
-`struct Student s = {"Moshe", 1111}` begins at address 1000. `name` is `char[8]` and `id` is `int`. On a platform where `id` has offset 8, list `name[0]` through `name[5]` and the address of `id`.
-
-:::solution
-`name[0]` through `name[4]` are `'M'`, `'o'`, `'s'`, `'h'`, and `'e'`. `name[5]` is `'\0'`. The other two bytes of `name` are 0. With no padding before `id`, its address is 1008 and its value is 1111. `offsetof(struct Student, id)` is the measurement if the platform is unknown.
-:::
-:::
+`tag` occupies offset 0, but `value` cannot start at offset 1, so the compiler inserts 3 padding bytes and places `value` at offset 4. The size is 8, not 5. The padding bytes belong to no member.
 
 ```c
 #include <stdio.h>
@@ -78,16 +53,40 @@ int main(void) {
 }
 ```
 
-On this platform each `int` occupies 4 bytes and has 4-byte alignment, so this structure has no padding and the program prints 8. The result is `sizeof(struct st)`, not a sum written by hand. The conversion is `%zu`.
+Each `int` is 4 bytes with 4-byte alignment, so this structure needs no padding and the program prints 8.
 
 :::trap
-Adding member widths and using the sum as the object size. Padding can make `sizeof` larger. For the two-`int` structure on this platform the sum and `sizeof` happen to agree at 8.
+Adding up member sizes and using the sum as the structure's size. Padding can make `sizeof` larger, as with `struct tagged` (5 bytes of members, size 8). For `struct st` the two happen to agree.
+:::
+
+## Initialization
+
+```c
+struct Student s = {"Moshe", 1111};
+```
+
+`"Moshe"` fills `name` with `'M'`, `'o'`, `'s'`, `'h'`, `'e'`, and a terminating `'\0'`. The two remaining bytes of `name` are set to zero, and `id` holds 1111.
+
+![One possible layout of Student at address 1000: eight name bytes followed by id.](../assets/figures/struct-moshe.svg)
+
+The values in braces are matched to the members in declaration order: `{"Moshe", 1111}` gives `name` and then `id`. Order matters. In `{2222, "Omer"}`, the value 2222 is matched to `name`, and because it is not a string, it initializes `name[0]` alone. `"Omer"` then lands on `name[1]`, a single `char`, which cannot be initialized from a string, so the compiler rejects the line (GCC 14 reports an error). Members left out at the end are set to zero:
+
+```c
+struct Student s1 = {"Eden"}; /* id is 0; the unused bytes of name are 0 */
+```
+
+:::problem id=worked-moshe-layout title="Bytes of Moshe and 1111" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
+`struct Student s = {"Moshe", 1111}` begins at address 1000. `name` is `char[8]` and `id` is `int`. On a platform where `id` has offset 8, list `name[0]` through `name[5]` and the address of `id`.
+
+:::solution
+`name[0]` through `name[4]` are `'M'`, `'o'`, `'s'`, `'h'`, and `'e'`. `name[5]` is `'\0'`, and `name[6]` and `name[7]` are 0. With no padding before `id`, its address is 1008 and its value is 1111. On an unknown platform, `offsetof(struct Student, id)` gives the offset.
+:::
 :::
 
 ## Names
 
 :::definition id=def-typedef-struct title="Structure typedef" source="Lecture 1 - Introduction.pdf"
-`typedef` creates an alias. After `typedef struct { ... } Student;`, the name `Student` denotes that structure type.
+`typedef` gives an existing type a new name. After `typedef struct { ... } Student;`, the single word `Student` names that structure type.
 :::
 
 ```c
@@ -102,7 +101,7 @@ int main(void) {
 }
 ```
 
-This struct has no tag, so `struct Student` is not a type. Naming the tag provides both spellings:
+This structure has no tag (no name after the word `struct`), so `struct Student` does not refer to it. Giving it a tag makes both spellings work:
 
 ```c
 typedef struct Student {
@@ -111,7 +110,7 @@ typedef struct Student {
 } Student;
 ```
 
-Both `Student s` and `struct Student s1` are then valid. C does not allow a member to be initialized in the type declaration, and it does not have `static` members. Both of the following are constraint violations:
+Both `Student s` and `struct Student s1` are then valid. Unlike C++ or Java, C does not let a structure declaration give its members default values, and it has no `static` members. The compiler rejects both of these:
 
 ```c
 struct Student {
@@ -134,9 +133,9 @@ Student s = {"Moshe", 1111};
 printf("%s, %d\n", s.name, s.id);
 ```
 
-`%s` writes characters until the terminating NUL. Passing a `char` array that is not terminated is undefined behavior.
+`%s` prints characters until it reaches the terminating `'\0'`. Passing a `char` array with no terminator is undefined behavior.
 
-A structure value can be assigned or passed as an argument. The assignment copies the representation, including padding. There is no `+` operator for structure values. This program is rejected:
+A whole structure can be assigned to another of the same type, passed to a function, or returned from one; each of these copies every member. Arithmetic and comparison operators do not apply to structures, so this program is rejected:
 
 ```c
 struct number {
@@ -152,9 +151,9 @@ int main(void) {
 }
 ```
 
-The addition has to name the numeric member: `n3.x = n1.x + n2.x`. That stores 7.
+The addition has to use the members: `n3.x = n1.x + n2.x;` stores 7.0.
 
-`scanf` needs a pointer to the object it writes. An array member converts to the address of its first element, so `s.name` is already a `char *`. An `int` member does not convert to a pointer, so `s.id` needs `&`. The string conversion also needs a field width. `%7s` stores at most 7 characters plus a NUL, which fits in `char name[8]`.
+`scanf` needs the address of each object it fills. An array used as an argument becomes a pointer to its first element, so `s.name` is already a `char *`. `s.id` is a plain `int`, so it needs `&`. A string conversion also needs a width: `%7s` stores at most 7 characters plus the `'\0'`, which fits `char name[8]`.
 
 ```c
 Student s;
@@ -164,10 +163,10 @@ if (scanf("%7s %d", s.name, &s.id) != 2) {
 printf("name: %s, id: %d\n", s.name, s.id);
 ```
 
-Without the width, `%s` can write past the array. A token longer than 7 characters is truncated by `%7s`; checking the return value does not by itself reject that truncation, but it does reject missing input.
+Without the width, a long name makes `%s` write past the end of the array. With `%7s`, a longer name is cut after 7 characters and the rest stays in the input for the next conversion. The return-value check catches missing or non-numeric input.
 
 :::trap
-Writing `&s.name` because every `scanf` argument appears to need an ampersand. `s.name` is an array and already decays to the required pointer. `&s.name` has type pointer-to-array. `s.id` is an `int`, so it still needs `&`.
+Writing `&s.name` because "every `scanf` argument needs `&`". `s.name` already becomes the `char *` that `%s` expects; `&s.name` has the different type `char (*)[8]`, a pointer to the whole array. `s.id` is an `int`, so it does need `&`.
 :::
 
 ## Practice
@@ -194,7 +193,7 @@ The result is 8 on this platform because
 - [ ] `sizeof` always returns the size of one member
 - [ ] A structure with two members is a run-time error
 
-The program is valid. The printed size includes any padding the ABI inserts; for these two members that amount is zero.
+The program is valid. `sizeof` always includes padding; for these two members there is none.
 :::
 :::
 
@@ -215,9 +214,9 @@ int main(void) {
 ```
 
 :::check id=prac-struct-sum-q1
-The program as written {{=is a constraint violation|prints 7|prints an unspecified float}}.
+The program as written {{=does not compile|prints 7.000000|prints an unspecified float}}.
 
-The compiler diagnoses invalid operands to `+`. A structure type has no arithmetic operators merely because one of its members does.
+The compiler reports invalid operands to `+`. A structure does not gain arithmetic operators because one of its members has them.
 :::
 
 :::check id=prac-struct-sum-q2
@@ -227,9 +226,9 @@ The addition must use the `float` members. Assignment of one whole structure to 
 :::
 
 :::check id=prac-struct-sum-q3
-After that repair, `printf("%f", n3.x)` prints {{=7|4|0}}.
+After that repair, `printf("%f", n3.x)` prints {{=7.000000|7|4.000000}}.
 
-The member calculation is `4 + 3`.
+The sum is `4 + 3`, and `%f` prints six digits after the decimal point by default.
 :::
 :::
 
@@ -243,9 +242,9 @@ A trailing omitted member is zero-initialized. The initializer means `{"Eden", 0
 :::
 
 :::check id=prac-initializer-order-q2
-`struct Student s2 = {2222, "Omer"};` {{=is a constraint violation|sets id to 2222 and name to Omer|swaps the members at run time}}.
+`struct Student s2 = {2222, "Omer"};` {{=does not compile|sets id to 2222 and name to Omer|swaps the members at run time}}.
 
-The first initializer is matched with `name`, whose type is `char[8]`. An `int` does not match that member.
+Values are matched to members in order. 2222 goes to `name[0]`, and `"Omer"` then goes to `name[1]`, a single `char` that cannot hold a string.
 :::
 
 :::check id=prac-initializer-order-q3
@@ -323,7 +322,7 @@ How many grades does the inner loop read for each student? {{=5|3|10}}
 :::
 
 :::trap
-`faculty` can hold 4 characters plus `'\0'`. A conversion of `%s` with no width can write beyond either array. The loop shape reads three records of five grades; the widths `%9s` and `%4s` are what make those reads fit.
+Using `%s` without a width for `name` or `faculty`. `faculty` holds only 4 characters plus `'\0'`, so a 5-letter faculty name would overflow it. The widths `%9s` and `%4s` keep each string inside its array.
 :::
 
 [Programs and processes](topic:source-to-process) places objects with static and automatic storage into the address space of a running program.

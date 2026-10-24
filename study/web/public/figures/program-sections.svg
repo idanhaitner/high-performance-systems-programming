@@ -42,7 +42,7 @@
     <text x="280" y="260" class="t" font-size="15">.text — the code of main</text>
   </g>
   <g class="step" style="animation-delay:0.80s">
-    <text x="36" y="312" class="m" font-size="14">Heap is the region for dynamic allocation. malloc and free fill it.</text>
+    <text x="36" y="312" class="m" font-size="14">Heap is the region for dynamic allocation. malloc allocates there; free releases.</text>
   </g>
 
 </svg>

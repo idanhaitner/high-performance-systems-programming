@@ -7,7 +7,7 @@ sources:
   - c/03-expressions/lesson.md
 ---
 
-A type determines the size of an object, the meaning of its bits, and the operation a compiler selects. The sizes below, other than `sizeof(char)`, belong to the LP64 platform used in this course: `char` is 1 byte, `short` is 2, `int` is 4, and `long` is 8. Another ABI can give `long` a different width. A program that needs the width uses `sizeof`.
+A type determines three things: how many bytes an object occupies, what its bits mean, and which machine operation the compiler uses on it. The sizes in this lesson are those of the course platform, 64-bit Linux (the LP64 model): `char` is 1 byte, `short` is 2, `int` is 4, and `long` is 8. Only `sizeof(char) == 1` is guaranteed everywhere; 64-bit Windows, for example, makes `long` 4 bytes. A program that needs a width asks `sizeof`.
 
 ## Integer representation
 
@@ -15,7 +15,7 @@ A type determines the size of an object, the meaning of its bits, and the operat
 `sizeof(char)` is 1 by the C standard. On this platform, `short` occupies 2 bytes, `int` occupies 4, and `long` occupies 8. `unsigned int` has the same width as `int`.
 :::
 
-The non-negative value 42 fits in every one of these widths. In the usual binary representation its significant bits are `101010`, and the unused high bits are zero. That describes this positive value. It is not a rule about negative values, and it says nothing about which byte a machine stores at the lowest address.
+The value 42 fits in every one of these widths. In binary it is `101010`, and a wider type fills the extra high bits with zeros. That holds for non-negative values only: a negative value in two's complement fills them with ones. The comments below write the bits from most to least significant; they say nothing about which byte the machine stores at the lowest address.
 
 ```c
 char a = 42;   /* 00101010 */
@@ -26,7 +26,7 @@ long d = 42;   /* eight bytes, ending in 00101010 */
 
 ![The value 42 stored in a char, a short, an int, and a long.](../assets/figures/integer-widths.svg)
 
-Addresses drawn for these objects are examples. The gap between two separately declared objects is not part of either object, and the compiler may place them in registers rather than memory.
+The addresses in the figure are examples. Separately declared variables need not be adjacent, and the compiler may keep them in registers instead of memory.
 
 :::definition id=def-integer-division title="Integer division" source="c/03-expressions/lesson.md"
 When both operands of `/` have integer type, the result is the algebraic quotient with the fractional part discarded. The result is truncated toward zero.
@@ -38,7 +38,7 @@ int y = 2;
 x = x / y; /* 2 */
 ```
 
-The mathematical quotient is $2.5$. The C result is 2. The same rule gives `-5 / 2 == -2`, not $-3$. The remainder operator satisfies `a == (a / b) * b + (a % b)` when the division is defined, and the remainder takes the sign of `a`. Division by zero is undefined behavior.
+The mathematical quotient is $2.5$, so the C result is 2. Truncation toward zero gives `-5 / 2 == -2`, not $-3$. The remainder operator `%` is defined so that `a == (a / b) * b + a % b`; as a result, `a % b` has the sign of `a` (for example, `-5 % 2 == -1`). Division or remainder by zero is undefined behavior.
 
 :::problem id=worked-integer-division title="5 divided by 2 in int" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
 What is `x` after `int x = 5; int y = 2; x = x / y;`? State the rule for a negative quotient as well.
@@ -65,7 +65,7 @@ printf("%c\n", c1);    /* a */
 printf("%d\n", c1);    /* 97 */
 ```
 
-`%c` prints the character and `%d` prints the promoted integer value. C requires the codes of `'0'` through `'9'` to be contiguous. It does not require the letters to use ASCII codes, so 97 is a property of this execution character set. Plain `char` may be signed or unsigned. A value above 127 can therefore behave differently when promoted to `int`.
+A `char` passed to `printf` is promoted to `int`. `%c` prints that number as a character, and `%d` prints it as a decimal integer. C guarantees only that the digits `'0'` through `'9'` have consecutive codes; the value 97 for `'a'` comes from ASCII, not from the C standard. Whether plain `char` is signed or unsigned is up to the platform, so a byte above 127 may promote to a negative `int` on one machine and a positive one on another.
 
 :::check id=chk-char-code
 On an ASCII-compatible machine, what does `printf("%d\n", c1)` print when `c1` holds `'a'`?
@@ -99,7 +99,7 @@ double y = 42.8;
 /* 1 sign bit, 11 exponent bits, 52 fraction bits */
 ```
 
-A sign bit of 0 means positive. The exponent is stored with a bias, 127 for binary32 and 1023 for binary64. The field `10000000` is 128, so the unbiased power is $2^{1}$. The field `10000000100` is 1028, so the unbiased power is $2^{5}$. The fraction supplies the bits after the leading 1. This is not an integer with a decimal point inserted.
+A sign bit of 0 means positive. The exponent is stored with a bias: 127 for binary32 and 1023 for binary64. The field `10000000` is 128, so the exponent is $128 - 127 = 1$ and $3.61 = 1.805 \times 2^{1}$. The field `10000000100` is 1028, so the exponent is $1028 - 1023 = 5$ and $42.8 = 1.3375 \times 2^{5}$. The fraction field holds the binary digits after the leading 1, which is implied and not stored. Neither 3.61 nor 42.8 has a finite binary expansion, so both stored values are the nearest representable numbers, not the exact decimals.
 
 ```c
 double x = 5.0;
@@ -107,10 +107,10 @@ double y = 2.0;
 x = x / y; /* 2.5 */
 ```
 
-Here 5.0, 2.0, and 2.5 are all exact binary fractions, so the rounded result matches the real quotient. Another pair of values can round to a different representable number. Integer division and floating division are different operations: `5 / 2` is the integer 2, while `5.0 / 2.0` is the floating value 2.5.
+Here 5.0, 2.0, and 2.5 are all exactly representable in binary, so the result equals the real quotient. For other values, such as `1.0 / 3.0`, the result is rounded to the nearest representable number. Integer division and floating division are different operations: `5 / 2` is the integer 2, while `5.0 / 2.0` is the floating value 2.5.
 
 :::trap
-Reading the fraction bits of a `float` as the integer 361. Those bits belong to a sign-exponent-fraction encoding. The associativity example in the previous lesson is this encoding running out of fraction bits.
+Reading the bits of the `float` 3.61 as if they stored the digits 3, 6, 1. They hold a sign, an exponent, and a binary fraction. The lost $3.14$ in the previous lesson is this encoding running out of fraction bits.
 :::
 
 ## The sizeof operator
@@ -139,7 +139,7 @@ On this platform the lines print:
 4
 ```
 
-`%zu` is the conversion for `size_t`. `%d` expects `int` and is the wrong conversion. `sizeof(char)` is 1 on every platform. The other three numbers are measurements of this one.
+`%zu` is the `printf` conversion for `size_t`. Using `%d`, which expects an `int`, is undefined behavior. The parentheses are required only around a type name: `sizeof x` and `sizeof(int)` are both correct.
 
 :::problem id=worked-sizeof-sample title="sizeof of short, int, and long" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
 What does the program print on this platform, and which conversion prints a `sizeof` result?
@@ -176,11 +176,13 @@ int main(void) {
 }
 ```
 
-`printf` receives values. `scanf` receives pointers because it writes the caller's objects. Each conversion that assigns a value must be checked: `scanf` returns the number of assigned inputs, or `EOF` on input failure. A sample that supplies `5`, `3.5`, and `b` prints `x=5, y=3.500000, z=b` under the default `%f` precision.
+`printf` receives values to print. `scanf` receives pointers, because it must write into the caller's variables. `scanf` returns the number of items it stored, or `EOF` if input ends first, so comparing the result with the expected count catches bad or missing input. For the input `5`, `3.5`, and `b`, the program prints `x=5, y=3.500000, z=b`; `%f` shows six digits after the decimal point by default.
 
-The space in `" %c"` is significant. A prior numeric conversion leaves the following newline unread. `%c` would store that newline. A leading space in the format skips whitespace first.
+The space in `" %c"` matters. After `%f` reads `3.5`, the newline typed after it is still waiting in the input. `%c` reads any character, whitespace included, so without the space it would store that newline. A space in the format tells `scanf` to skip whitespace first. (`%d` and `%f` already skip leading whitespace on their own.)
 
-The basic control statements are `if`/`else` and `switch` for selection, `for`, `while`, and `do`/`while` for iteration, and `break`, `continue`, and `return` for leaving a loop or a function. A condition uses `==` for comparison. A single `=` assigns.
+### Control statements
+
+C's control statements are `if`/`else` and `switch` for choosing, `for`, `while`, and `do`/`while` for repeating, and `break`, `continue`, and `return` for leaving a loop or a function early. A condition compares with `==`; a single `=` is assignment, so `if (x = 0)` assigns 0 and is always false.
 
 ## Practice
 
@@ -196,7 +198,7 @@ Use this course platform for the measurements.
 :::check id=prac-type-widths-q2
 In the representation of the non-negative value 42, the unused high bits are {{=zeros|ones|part of the byte order}}.
 
-The significant bits of 42 are `101010`. Wider positive representations extend that pattern with zero bits. This does not describe a negative value or the order of bytes in memory.
+42 is `101010` in binary. A wider type extends a non-negative value with zero bits; a negative value would be extended with ones.
 :::
 
 :::check id=prac-type-widths-q3
@@ -242,11 +244,11 @@ Both operands have integer type, so the result is truncated toward zero.
 :::check id=prac-two-divisions-q3
 Which statement about floating division is correct?
 
-- [x] The result is a representable value, so another pair of inputs can differ from the real quotient
+- [x] The result is rounded to a representable value, so for other inputs it can differ from the exact quotient
 - [ ] `double` division always truncates toward zero in the same way as `int` division
 - [ ] 2.5 cannot be stored in a `double`
 
-Integer division discards a fraction by rule. Floating division rounds to the format. This particular input rounds to the exact value 2.5.
+Integer division discards the fraction by rule. Floating division rounds to the nearest representable value; for 5.0 / 2.0 that value is exactly 2.5.
 :::
 :::
 

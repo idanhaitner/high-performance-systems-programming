@@ -16,16 +16,16 @@ A bit is a binary digit. Its value is 0 or 1.
 :::
 
 :::definition id=def-byte title="Byte" source="Lecture 1 - Introduction.pdf"
-A byte is an addressable unit of 8 bits. In a value diagram the most significant bit is drawn on the left and the least significant bit on the right.
+A byte is the smallest unit of memory that has its own address. On every machine in this course a byte is 8 bits. Diagrams draw the most significant bit on the left and the least significant bit on the right.
 :::
 
 :::definition id=def-ram title="Address" source="Lecture 1 - Introduction.pdf"
-An address identifies a byte. A pointer value is an address in the process address space, or a null pointer. C does not require every integer from 0 through $2^n-1$ to be a valid object pointer, and it does not identify a C address with a physical RAM location.
+An address is a number that identifies one byte. Memory can be pictured as an array of bytes numbered from 0 to $2^n - 1$, where $n$ is the address width in bits. A C pointer holds an address in the process's virtual address space, not a physical RAM location, and not every number in that range points to usable memory.
 :::
 
 ![A byte contains eight bits, with the most significant bit drawn on the left.](../assets/figures/ram-byte.svg)
 
-The address width is a property of the ABI. On this LP64 platform a pointer occupies 8 bytes. Virtual memory, permissions, and unmapped ranges determine which pointer values may be dereferenced.
+On this 64-bit platform a pointer occupies 8 bytes. Which addresses may actually be used depends on what the operating system has mapped into the process and with which permissions.
 
 :::check id=chk-byte
 In the course's byte diagram, which bit is drawn on the left?
@@ -40,7 +40,7 @@ The diagram places bit 7, the most significant bit of an 8-bit byte, on the left
 ## Objects, scope, and storage
 
 :::definition id=def-object title="Value and address" source="Lecture 1 - Introduction.pdf"
-An object has a value. If the object is in memory, it also has an address for its first byte. An object may instead live only in a register, or be removed by optimization, when its address is never taken.
+A variable names an object, and an object has a value. An object in memory also has an address: the address of its first byte. If a program never takes an object's address, the compiler may keep it only in a register or remove it entirely.
 :::
 
 ```c
@@ -49,7 +49,7 @@ printf("%d\n", x);          /* value */
 printf("%p\n", (void *)&x); /* address, if x has one */
 ```
 
-`%d` prints an `int`. `%p` prints a pointer and requires a `void *` argument, so the address is cast. The numeric address will differ from any address in these notes.
+`%d` prints an `int`. `%p` prints a pointer and expects a `void *`, so the address is cast. The address you see will differ from run to run and from the examples here.
 
 ```c
 #include <stdio.h>
@@ -65,9 +65,11 @@ int main(void) {
 }
 ```
 
-Scope, linkage, and storage duration are different properties. `x` and `y` are visible from their declarations to the end of this file. Another file can refer to `x` only through a compatible declaration. Declaring either name `static` at file scope gives it internal linkage, so other files cannot name it. A declaration inside `main` hides a file-scope name only inside that block.
+Three separate properties describe each variable:
 
-`x` and `y` have static storage duration: they exist for the whole execution. `y` is zero-initialized because it has no explicit initializer. `z` and `a` have automatic storage duration and are created for each entry to `main`. Their addresses are valid only during that lifetime.
+- **Scope** is where the name is visible. `x` and `y` are visible from their declaration to the end of the file. `z` and `a` are visible only inside `main`.
+- **Linkage** decides whether other files can refer to the name. Another file can use `x` by declaring `extern int x;`. Adding `static` to a file-scope declaration hides it from other files.
+- **Storage duration** is how long the object exists. `x` and `y` have static storage duration: they exist for the whole run, and `y`, which has no initializer, starts at zero. `z` and `a` have automatic storage duration: they are created each time `main` is entered and destroyed when it returns, so their addresses are valid only during that time.
 
 ## Pointers
 
@@ -101,7 +103,7 @@ printf("%d\n", x);  /* 100 */
 printf("%d\n", *p); /* 100 */
 ```
 
-`p = &x` makes `x` and `*p` designate the same object, so both reads return 100. The assignment `p = 100` is a constraint violation: an integer is not a pointer. Converting an integer to a pointer requires a cast, and the result is implementation-defined. It is not the way to store 100 into `x`.
+Because `p` holds `&x`, the expressions `x` and `*p` name the same object, so both print 100. Writing `p = 100` instead is an error: it tries to store an integer in a pointer, which C does not allow without a cast. Even with a cast it would change where `p` points, not the value of `x`.
 
 :::problem id=worked-dereference title="Write 100 through a pointer" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
 Start from `int x = 5; int *p = &x;`. After `*p = 100`, what do `x` and `*p` print, and why are they equal?
@@ -112,13 +114,13 @@ Both print 100. `p` holds `&x`, so `*p` designates `x`. The assignment stores 10
 :::
 
 :::trap
-Using `p = 100` to change the value of `x`. That assignment does not have pointer type on the right. The store into the referenced object is `*p = 100`.
+Writing `p = 100` to change `x`. That assigns to the pointer itself, and an `int` cannot be assigned to a pointer. To store into the object `p` points to, write `*p = 100`.
 :::
 
 ## Arrays and pointer arithmetic
 
 :::definition id=def-contiguous title="Array" source="Lecture 1 - Introduction.pdf"
-An array is a sequence of elements of one type, stored contiguously in declaration order. There is no gap between `a[i]` and `a[i + 1]`.
+An array is a sequence of elements of one type, stored contiguously in index order. There is no gap between `a[i]` and `a[i + 1]`.
 :::
 
 ```c
@@ -141,7 +143,7 @@ int *p = a; /* address of a[0] */
 /* p + 2 == 0x1008 */
 ```
 
-If `p` points at an element of an array, `p + k` points `k` elements later, which is `k * sizeof(*p)` bytes past `p`. For an `int` pointer on this platform, adding 1 adds 4 bytes. Pointer arithmetic is defined only for pointers into the same array object, including a pointer one past the last element. That one-past pointer may be computed and compared, but it must not be dereferenced.
+If `p` points to an array element, `p + k` points `k` elements later, which is `k * sizeof(*p)` bytes further. For an `int *` on this platform, adding 1 moves 4 bytes. The result must stay inside the same array or point exactly one past its last element. That one-past pointer may be computed and compared, but not dereferenced.
 
 ![Four int elements at addresses four bytes apart.](../assets/figures/array-layout.svg)
 
@@ -149,9 +151,9 @@ If `p` points at an element of an array, `p + k` points `k` elements later, whic
 By definition, `a[i]` means `*(a + i)`. The index counts elements, and pointer addition scales that count by the element size.
 :::
 
-For this array, `a[2]` and `*(a + 2)` both designate the object at `0x1008`, whose value is 30. Reading `a[4]`, a negative index, or any element outside the four objects is undefined behavior. A function that receives `int *a` does not receive the length; the caller must pass it.
+For this array, `a[2]` and `*(a + 2)` both name the element at `0x1008`, whose value is 30. C does not check bounds: reading `a[4]` or `a[-1]` compiles, but its behavior is undefined. A function that receives an array as `int *a` does not receive its length, so the caller must pass the length separately.
 
-A string is an array of `char` terminated by the character `'\0'`, whose code is 0. The terminator is not the character `'0'`. A conversion such as `%s` stops at the terminator and does not know a separate length.
+A string is an array of `char` ending with the null character `'\0'`, whose code is 0. It is not the digit `'0'`, whose ASCII code is 48. Functions such as `printf` with `%s` find the end of a string only by looking for that terminator.
 
 :::problem id=worked-index-equivalence title="a[2] and *(a + 2)" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
 For `int a[4] = {10, 20, 30, 40}` starting at `0x1000`, give the address and value designated by `a[2]` and by `*(a + 2)`.
@@ -243,7 +245,7 @@ Which objects have file scope in that file?
 - [ ] `z` and `a`
 - [ ] Only `x`, because `y` has no initializer
 
-Both `x` and `y` are declared outside `main`. The missing initializer changes initialization, not the scope. A block-scope declaration would hide either name inside that block.
+Both `x` and `y` are declared outside any function. A missing initializer affects only the initial value (zero), not the scope.
 :::
 
 :::check id=prac-first-program-roles-q2
@@ -263,4 +265,4 @@ An array occupies one contiguous sequence. Its lifetime here is the execution of
 :::
 :::
 
-[Structures](topic:structures) groups members of different types in one object. Their order is fixed, but padding may separate them.
+The next lesson, [Structures](topic:structures), groups members of different types into one object. Their order is fixed, but padding may separate them.

@@ -6,9 +6,9 @@ sources:
   - c/03-expressions/lesson.md
 ---
 
-Performance work starts from a concrete machine model. A mathematical expression names a value. A C expression names an operation on a finite representation, and the generated code then reads and writes memory. Those two steps explain the results in this lesson: a signed overflow, a rounding difference, and an access pattern that walks memory in a different order.
+Performance work starts from a concrete model of the machine. A mathematical expression denotes an exact value. A C expression is an operation on a finite representation, and the compiled code carries it out by reading and writing memory. Each result in this lesson comes from one of those two facts: a multiplication that overflows, an addition that rounds, and a loop whose memory accesses are far apart.
 
-The later lectures move from this model to cache behavior, CPU execution, multicore programs, and GPUs. C is the course language because a C program can name widths, addresses, and layout directly.
+Later lectures build on this model to study caches, CPU execution, multicore programs, and GPUs. The course uses C because a C program can state widths, addresses, and layout directly.
 
 ![The course proceeds from C to memory, cache and the CPU, multicore execution, and the GPU.](../assets/figures/course-path.svg)
 
@@ -18,7 +18,7 @@ The later lectures move from this model to cache behavior, CPU execution, multic
 An abstraction has an implementation in software or hardware. The cost of an operation is the cost of that implementation.
 :::
 
-Python and Java hide allocation, object layout, and parts of numeric representation. C leaves allocation and layout under the program's control and maps most operations closely to machine instructions. That difference is a design tradeoff. It does not mean that every higher-level implementation is written in C: a runtime may use C, another language, or a JIT. The useful boundary is which decisions the language lets the program make.
+Python and Java hide allocation, object layout, and parts of numeric representation. C leaves allocation and layout to the program, and most C operations map closely onto machine instructions. Neither choice is better in general; they are different tradeoffs. The useful question is which decisions a language lets the program make.
 
 ![Application code uses explicit C operations, which become instructions and memory accesses.](../assets/figures/abstraction-stack.svg)
 
@@ -28,7 +28,7 @@ Python and Java hide allocation, object layout, and parts of numeric representat
 | Layout | Hidden by the object model | Chosen by declarations and the ABI |
 | Numeric result | A language-defined numeric model | The C type and its representation |
 
-The same algorithm can have different running times once the representation or the memory traffic changes. Compilers, operating systems, embedded software, and reverse engineering all depend on that fact.
+The same algorithm can run at very different speeds once its data representation or its memory traffic changes. Work on compilers, operating systems, and embedded software depends on understanding that.
 
 :::check id=chk-no-magic
 Which statement describes the cost of an abstraction?
@@ -46,7 +46,7 @@ An abstraction does not have a cost of its own. Its implementation performs inst
 A machine integer has a finite width. A mathematical result that does not fit in that width is not automatically reduced modulo the width of a signed C type.
 :::
 
-Consider a 32-bit two's-complement calculation, independent of what a C compiler is allowed to do:
+First, look only at the bits, setting aside what a C compiler is allowed to do:
 
 $$1410065407 \times 1410065407 = 1988284452018075649 = \mathtt{0x1B97CE2CBAF83801}$$
 
@@ -56,7 +56,7 @@ The low 32 bits are `0xBAF83801`. Interpreted as a signed 32-bit two's-complemen
 If a signed integer operation has a mathematical result that cannot be represented in the result type, the behavior of the C program is undefined.
 :::
 
-Undefined behavior means the C standard imposes no requirements on that execution. A compiler may assume the overflow does not occur, delete later checks, or produce the low 32 bits. Wrapping is the defined rule for unsigned arithmetic. For a 32-bit demonstration, use `uint32_t` from `<stdint.h>`: conversion to `uint32_t` reduces the value modulo $2^{32}$.
+Undefined behavior means the C standard places no requirements on what happens. A compiler may assume the overflow never occurs and delete checks that depend on it, or it may simply produce the low 32 bits. Wrapping is the defined rule only for unsigned arithmetic. To get a well-defined 32-bit result, use `uint32_t` from `<stdint.h>`: unsigned arithmetic is reduced modulo $2^{32}$.
 
 ```c
 #include <stdint.h>
@@ -79,7 +79,7 @@ Testing a signed overflow on one compiler and treating the observed wrap as the 
 
 ## Rounding makes addition non-associative
 
-A binary floating-point format stores a sign, a biased exponent, and a fraction. Values near $10^{20}$ have a large unit in the last place. Under ordinary IEEE-754 `double` evaluation, adding $3.14$ to a magnitude of $10^{20}$ does not change the stored magnitude.
+A binary floating-point number stores a sign, a biased exponent, and a fraction. The gap between neighboring `double` values grows with magnitude: near $10^{20}$ it is 16384. Adding $3.14$ to a value of that size therefore rounds back to the same value.
 
 $$
 (1.0\times 10^{20} + (-1.0\times 10^{20})) + 3.14 = 3.14
@@ -89,9 +89,9 @@ $$
 1.0\times 10^{20} + ((-1.0\times 10^{20}) + 3.14) = 0.0
 $$
 
-The first association cancels the large values while they are exact opposites, then adds $3.14$ to zero. The second adds $3.14$ to $-10^{20}$ first. That addend is below the unit in the last place, so the inner result remains $-10^{20}$ and the following addition cancels it.
+The first grouping cancels the two large values exactly, then adds $3.14$ to zero. The second adds $3.14$ to $-10^{20}$ first. That sum rounds back to $-10^{20}$, so $3.14$ is lost, and the final addition cancels to zero.
 
-An unsuffixed literal such as `1e20` has type `double`. These two results apply to IEEE-754 evaluation in program order. Flags that permit reassociation, including some fast-math modes, can change which association the compiler emits. The algebraic law that fails here is associativity of addition. Commutativity is not the property being tested.
+The algebraic law that fails here is associativity of addition; the order of the operands (commutativity) never changes. An unsuffixed literal such as `1e20` has type `double`, and both results assume the compiler evaluates the expression as written. Options that allow reassociation, such as `-ffast-math`, can change the grouping and therefore the result.
 
 :::problem id=worked-float-associativity title="Two associations of 1e20 and 3.14" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
 For $x = 10^{20}$, $y = -10^{20}$, and $z = 3.14$, evaluate both associations under ordinary IEEE-754 `double` arithmetic and name the law that fails.
@@ -131,9 +131,9 @@ for (i = 0; i < 2049; i++)
 
 ![Row-major order places consecutive columns in adjacent cells and consecutive rows one row apart.](../assets/figures/loop-stride.svg)
 
-The first inner loop advances one element. A hardware cache loads a cache line, commonly 64 bytes, so several consecutive `int` values arrive together and the next iterations reuse that line. The second inner loop advances $2049 \times 4 = 8196$ bytes. Consecutive iterations do not share a cache line, so the pattern has poor spatial locality.
+The first loop's inner index advances one element at a time. The cache fetches memory in lines, commonly 64 bytes, so one fetch brings in 16 consecutive `int` values and the next iterations reuse that line. The second loop's inner index advances a whole row, $2049 \times 4 = 8196$ bytes. Consecutive iterations never share a cache line, so this pattern has poor spatial locality.
 
-The third loop uses the same row-major order and copies three adjacent elements per iteration. Because $2049 = 3 \times 683$, every element is visited once. Fewer loop-control instructions execute for the same memory traffic. Whether any version is faster is an empirical question: the compiler may reorder or vectorize the loops, and the machine's caches and prefetcher affect the measurement. The access stride is the fact available before measuring.
+The third loop keeps the row-wise order and copies three adjacent elements per iteration. Because $2049 = 3 \times 683$, every element is copied exactly once. It moves the same data with fewer loop-control instructions (this technique is called loop unrolling). How much faster any version runs must be measured: the compiler may reorder or vectorize the loops, and the cache and prefetcher affect the timing. The access stride is what you can know before measuring.
 
 :::problem id=worked-row-major title="Which copy walks neighboring ints" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
 For the three copies of a 2049 by 2049 `int` matrix, give the inner-loop stride and the locality consequence. Do not treat a timing result as portable.
@@ -205,7 +205,7 @@ $3.14$ is lost beside $-10^{20}$, so the inner sum remains $-10^{20}$. Adding $x
 :::check id=prac-float-add-q3
 The algebraic property that fails for these machine values is {{=associativity of addition|commutativity of addition|closure of addition}}.
 
-The same three numbers produce different results when only the association changes. A fast-math transformation can reassociate the source expression, so the result is tied to the evaluation order.
+The same three numbers give different results when only the grouping changes. That is a failure of associativity. Swapping two operands of one addition would not change either result.
 :::
 :::
 

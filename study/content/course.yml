@@ -3,15 +3,17 @@ title: High-Performance Systems Programming
 lang: en
 dir: ltr
 summary: >
-  Lecture 1 explains how C represents values, how objects occupy memory,
-  how structures are laid out, how a program becomes a process, and how
-  that process receives command-line arguments.
+  How a program's data, memory accesses, and instructions turn into running
+  time, from the C representation of values through caches and the CPU to
+  multicore and GPU execution. Study notes and practice, one lecture at a time.
 
 changelog:
   - date: 2026-10-22
     note: Opening guide on representation, memory, the process image, and the C that makes them visible.
   - date: 2026-10-22
     note: Rewrote Lecture 1 as six lessons, corrected representation and process claims, and grouped the lessons under one lecture.
+  - date: 2026-10-24
+    note: Edited Lecture 1 for clarity and corrected the struct initializer, pointer addition, process startup, and printf output answers.
 
 lectures:
   - id: lecture-1

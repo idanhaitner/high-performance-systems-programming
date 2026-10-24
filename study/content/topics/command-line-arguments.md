@@ -5,12 +5,12 @@ sources:
   - "Lecture 1 - Introduction.pdf"
 ---
 
-`int main(void)` does not receive command-line parameters. The hosted form `int main(int argc, char *argv[])` does. Each argument is a modifiable string. A number typed after the program name remains text until the program converts it.
+A program declared with `int main(void)` ignores its command line. To read the arguments, declare `int main(int argc, char *argv[])`. Every argument arrives as a string, even one that looks like a number: `2` arrives as the characters `'2'` and `'\0'`, and the program must convert it before doing arithmetic.
 
 ## The argument vector
 
 :::definition id=def-argv title="argc and argv" source="Lecture 1 - Introduction.pdf"
-`argc` is the number of command-line arguments, including the program name. `argv` is an array of pointers to those argument strings. `argv[argc]` is a null pointer.
+`argc` (argument count) is the number of command-line strings, including the program name. `argv` (argument vector) is an array of pointers to those strings. After the last one, `argv[argc]` is a null pointer.
 :::
 
 ```c
@@ -19,9 +19,9 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-The strings pointed to by `argv` can be modified by the program. They are not string literals and are not required to occupy `.rodata`. The C standard does not assign them to the stack either. On a typical Unix process, the initial argument vector and its character arrays are placed in the initial stack mapping, but that is a host convention. The addresses below are an example of the pointer relationships, not stable addresses.
+The program may modify these strings; unlike string literals, they are not in `.rodata`. On Linux, the loader places both the `argv` array and the strings at the top of the initial stack, before `main` runs. That placement is an operating-system convention, not a C rule.
 
-For this invocation:
+For this command:
 
 ```text
 ./a.out Omer 2 3
@@ -36,14 +36,14 @@ For this invocation:
 | `argv[3]` | pointer to `"3"` |
 | `argv[4]` | null pointer |
 
-`argc` counts the four strings. It does not count the terminating null pointer. The valid argument indexes are therefore 0 through `argc - 1`, and a loop may also stop when it reads the null pointer at `argv[argc]`.
+`argc` counts the four strings but not the null pointer after them. The valid indexes are therefore 0 through `argc - 1`. A loop over the arguments can stop either at `argc` or at the null pointer.
 
-In the example drawing, the pointer vector is at address 1000. The strings occupy 100, 108, 113, and 115. `"./a.out"` contains 8 bytes including its NUL, so the next example string starts at 108. `"Omer"` contains 5 bytes, so the next starts at 113. `"2"` contains 2 bytes, so `"3"` starts at 115.
+In the figure, the pointer array starts at address 1000 and the strings start at 100, 108, 113, and 115 (example addresses). Each gap is the length of the previous string plus its `'\0'`: `"./a.out"` takes 8 bytes, `"Omer"` 5, and `"2"` 2.
 
 ![An example argument vector. The strings are modifiable, and the addresses are illustrative.](../assets/figures/argv-layout.svg)
 
 :::trap
-Treating `argc` as the count of words after the program name. For `./a.out Omer 2 3`, `argc` is 4 because `argv[0]` refers to the invocation name. A check for a name and two numeric arguments is `argc == 4`.
+Treating `argc` as the number of words after the program name. For `./a.out Omer 2 3`, `argc` is 4, because `argv[0]` is the program name. A program that expects a name and two numbers checks `argc == 4`.
 :::
 
 ## Conversion
@@ -56,7 +56,7 @@ Hi Omer
 2+3=5
 ```
 
-`atoi`, declared in `<stdlib.h>`, converts a decimal string to `int`. It has no reliable way to report malformed input: it returns 0 both for the text `"0"` and for text that is not an integer. `strtol` reports the unconverted suffix through its end pointer and can report range errors through `errno`.
+The lecture converts the numbers with `atoi` from `<stdlib.h>`, which turns a decimal string into an `int`. `atoi` cannot report bad input: it returns 0 both for `"0"` and for `"abc"`. The safer `strtol`, also in `<stdlib.h>`, stores in an end pointer the place where conversion stopped, so the program can check that the whole string was a number. The version below uses it.
 
 ```c
 #include <stdio.h>
@@ -84,15 +84,15 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-`argv[2]` has type `char *`. It is not an `int`. Printing it with `%d`, or applying integer `+` to the pointer, uses the pointer value rather than the number represented by the characters. The conversion has to happen first. For this input, the converted values are 2 and 3, and their sum is 5.
+`argv[2]` has type `char *`: it points to text, it is not a number. `argv[2] + argv[3]` does not even compile, because C cannot add two pointers, and printing `argv[2]` with `%d` is undefined behavior. The strings must be converted first; here they become 2 and 3, and the sum is 5.
 
-A complete range check also tests `errno` for `ERANGE` after clearing it before the call. The end-pointer test above is the part that rejects an empty conversion and trailing characters such as `"2x"`.
+The test `end == argv[2]` rejects an empty or non-numeric string, and `*end != '\0'` rejects trailing characters such as `"2x"`. A fully robust program would also detect numbers too large for `long` by setting `errno` to 0 before the call and checking it for `ERANGE` afterwards.
 
 :::problem id=worked-omer-sum title="Walk of ./a.out Omer 2 3" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
 Give `argc`, the four strings, and the lines printed for a successful conversion. State why `argv[2]` cannot be added directly.
 
 :::solution
-`argc` is 4. The strings are `"./a.out"`, `"Omer"`, `"2"`, and `"3"`, and `argv[4]` is a null pointer. `argv[2]` points at characters; `strtol` converts those characters to the value 2, and `argv[3]` converts to 3. The program prints `Hi Omer` and then `2+3=5`. Adding the pointers themselves would be pointer arithmetic, not addition of the integers they describe.
+`argc` is 4. The strings are `"./a.out"`, `"Omer"`, `"2"`, and `"3"`, and `argv[4]` is a null pointer. `strtol` converts the characters of `argv[2]` to 2 and those of `argv[3]` to 3. The program prints `Hi Omer` and then `2+3=5`. `argv[2] + argv[3]` would not compile, because both operands are pointers.
 :::
 :::
 
@@ -134,7 +134,7 @@ Index 0 is the invocation name. Index 1 is the next argument.
 :::check id=prac-atoi-role-q1
 `atoi("2")` yields {{=2|the pointer to the character array|only the code of the character 2}}.
 
-`atoi` converts the decimal text to an `int`. It is a weak parser because `"0"` and invalid text can both produce 0.
+`atoi` converts the decimal text to an `int`. Its weakness is that `"0"` and invalid text both produce 0.
 :::
 
 :::check id=prac-atoi-role-q2
@@ -156,7 +156,7 @@ Use the example layout of `./a.out Omer 2 3`.
 :::check id=prac-argv-shape-q1
 On a typical Unix process, the initial `argv` pointers and strings are placed in the {{=initial stack mapping|heap|.text section}}.
 
-That is a host convention. C guarantees the pointer array, the modifiable strings, and the terminating null pointer. It does not assign those strings to `.rodata` or to the heap.
+The loader writes them there before `main` starts. C itself guarantees only the pointer array, the modifiable strings, and the final null pointer, not where they live.
 :::
 
 :::check id=prac-argv-shape-q2
@@ -177,8 +177,8 @@ Which statements are true?
 - [ ] `argv[2]` stores the `int` 2 directly
 - [ ] The argument strings are required to reside in `.rodata`
 
-The integer used in arithmetic is the result of a conversion such as `strtol`. The pointer cell does not store that integer. `.rodata` is a common place for string literals, not for `argv` strings.
+`argv[2]` holds a pointer to the text `"2"`; the integer 2 exists only after a conversion such as `strtol`. `.rodata` holds the program's string literals, not its arguments.
 :::
 :::
 
-This lecture now connects representation, type width, pointers, structure layout, translation, and process startup. Allocated storage uses the heap region from [Programs and processes](topic:source-to-process). The rules for ownership and lifetime come with `malloc` and `free` in a later lecture.
+That completes Lecture 1: how values are represented, how wide each type is, how pointers and arrays address memory, how structures are laid out, and how a C file becomes a running process that receives its arguments. The heap from [Programs and processes](topic:source-to-process), with `malloc` and `free`, comes in a later lecture.

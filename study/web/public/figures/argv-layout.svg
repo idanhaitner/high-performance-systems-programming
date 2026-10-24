@@ -45,7 +45,7 @@
     <text x="396" y="288" class="mono" font-size="14">115   "3"</text>
   </g>
   <text x="36" y="360" class="t" font-size="14">The gaps are the string lengths, including the terminating NUL.</text>
-  <text x="36" y="384" class="m" font-size="13">"./a.out" is 8 bytes, "Omer" is 5, "2" is 2. argc counts words and does not count the NULL.</text>
+  <text x="36" y="384" class="m" font-size="13">"./a.out" is 8 bytes, "Omer" is 5, "2" is 2. argc counts the 4 strings, not the NULL.</text>
   <text x="36" y="408" class="m" font-size="13">100, 108, 113, 115, and 1000 are example addresses.</text>
 
 </svg>

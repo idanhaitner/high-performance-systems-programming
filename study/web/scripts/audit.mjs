@@ -115,14 +115,19 @@ async function checkView(page, where, failures, seenSvg) {
         }
       }
     }
-    const align = (selector, label) => {
-      const lefts = [...document.querySelectorAll(selector)].map((node) => node.getBoundingClientRect().left);
+    // Home lessons are cards in a grid, so their numbers are compared within each card.
+    const align = (selector, label, within) => {
+      const lefts = [...document.querySelectorAll(selector)].map((node) => {
+        const left = node.getBoundingClientRect().left;
+        const frame = within && node.closest(within);
+        return frame ? left - frame.getBoundingClientRect().left : left;
+      });
       if (lefts.length < 2) return;
       const drift = Math.max(...lefts) - Math.min(...lefts);
       if (drift > 1.5) problems.push(`${label} drift by ${drift.toFixed(1)}px`);
     };
     align(".chapters-nav .dot", "chapter numbers");
-    align(".chapter-list .num", "home chapter numbers");
+    align(".chapter-list .num", "home chapter numbers", "a");
     for (const row of document.querySelectorAll(".actions, .card-head")) {
       const buttons = [...row.querySelectorAll("button")].map((button) => ({
         box: button.getBoundingClientRect(),

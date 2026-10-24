@@ -7,20 +7,20 @@ sources:
   - c/09-build/lesson.md
 ---
 
-`gcc main.c -o main` is a driver command. It runs several translators and then the linker. The resulting executable is a file. A process is an execution of that file, with its own virtual address space and a process identifier. The section names in this lesson are the usual ELF names. C defines storage durations and linkage, not section names.
+`gcc main.c -o main` looks like one step, but `gcc` is a driver that runs four tools in turn. The result is an executable file. A process is that file being run: it has its own virtual address space and a process identifier (PID). The section names in this lesson (`.text`, `.data`, and so on) are those of ELF, the executable format used by Linux; the C standard itself speaks only of storage durations and linkage.
 
 ## Translation
 
 :::definition id=def-pipeline title="Translation and linking" source="Lecture 1 - Introduction.pdf"
-For one C source file, preprocessing produces a translation unit, translation produces assembly or another intermediate form, assembly produces an object file, and linking combines object files and libraries into an executable.
+For each C source file, the preprocessor produces a translation unit, the compiler turns it into assembly, and the assembler turns that into an object file. The linker then combines the object files and libraries into one executable.
 :::
 
 | Stage | Result |
 | --- | --- |
-| Preprocessor | A translation unit, after header inclusion and macro expansion |
-| Compiler | Assembly or an equivalent intermediate representation |
-| Assembler | A relocatable object file |
-| Linker | An executable or another linked image |
+| Preprocessor | C source with headers included and macros expanded (the translation unit) |
+| Compiler | Assembly code for the target CPU |
+| Assembler | A relocatable object file of machine code |
+| Linker | An executable, with every external reference resolved |
 
 ![Preprocessing, compilation, assembly, and linking, with the GCC options that stop after each stage.](../assets/figures/compile-pipeline.svg)
 
@@ -33,13 +33,13 @@ gcc -c main.c -o main.o
 gcc main.o -o main
 ```
 
-`-E` stops after preprocessing, `-S` after assembly text is written, and `-c` after the object file is written. The last command links. `gcc main.c -o main` performs the whole sequence and removes the intermediate files.
+`-E` stops after preprocessing, `-S` after writing assembly, and `-c` after writing the object file. The last command links the object file into an executable. Plain `gcc main.c -o main` runs all four steps and deletes the intermediate files.
 
-A source file plus the headers it includes is one translation unit. A declaration gives a name a type. Exactly one definition must be linked for an external function or object that the program uses. A header normally contains declarations, not the sole definition of a function.
+A declaration tells the compiler a name's type, for example `int add(int, int);`. A definition also creates the function body or the object's storage. Headers normally hold declarations; each external function or object the program uses must be defined exactly once among the linked files, or the linker reports an error.
 
-`int main(void)` is the program's C entry function. Returning 0 reports success to the host. The shell does not print that status unless it is asked, for example with `echo $?`.
+`int main(void)` is where a C program starts. Returning 0 from `main` reports success to the shell, which you can display with `echo $?`.
 
-The following Linux x86-64 assembly is a freestanding program. It does not call `printf`, and it does not show the normal output of `gcc -S` for a hosted C program:
+The following Linux x86-64 assembly prints `Hello` without the C library. It is a hand-written program, not what `gcc -S` produces for a C program:
 
 ```text
 .section .rodata
@@ -57,7 +57,7 @@ _start:
     syscall
 ```
 
-The first `syscall` is Linux `write`: the system-call number 1 is in `%rax`, file descriptor 1 is in `%rdi`, the buffer address is in `%rsi`, and the length 5 is in `%rdx`. The second is `exit`, number 60, with status 0. A system call is a request to the kernel. It is not a function body stored in the C library. A hosted call to `printf("Hello\n")` is compiled as a call to the library function; that function may later perform a `write` system call.
+The first `syscall` asks the kernel to `write`: `%rax` holds the system-call number 1, `%rdi` the file descriptor 1 (standard output), `%rsi` the address of the text, and `%rdx` its length, 5. The second `syscall` is `exit` (number 60) with status 0. A system call is a request to the operating system kernel, not an ordinary function call. In a normal C program, `printf("Hello\n")` calls the C library's `printf`, which eventually makes the same `write` system call.
 
 :::problem id=worked-stop-the-pipeline title="Which flag stops where" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=source
 Name the GCC option and output for stopping after preprocessing, after generating assembly, and after assembling.
@@ -84,32 +84,32 @@ int main(void) {
 ```
 
 :::definition id=def-bss title=".bss" source="Lecture 1 - Introduction.pdf"
-In a typical ELF object, `.bss` reserves space for zero-initialized objects with static storage duration. The file does not store all of those zeros. `int x;` with no initializer is a common member.
+`.bss` holds static objects whose initial value is zero, such as `int x;` with no initializer. The executable records only the section's size; the zeros are supplied when the program is loaded.
 :::
 
 :::definition id=def-data title=".data" source="Lecture 1 - Introduction.pdf"
-`.data` typically holds statically allocated objects whose initial representation is not all zeros. `int y = 10;` is a common member.
+`.data` holds static objects with a nonzero initial value, such as `int y = 10;`. The executable stores those initial values.
 :::
 
 :::definition id=def-rodata title=".rodata" source="Lecture 1 - Introduction.pdf"
-`.rodata` is a common read-only section for string literals and other immutable static data. Compilers often place a `const` object with static storage there. The `const` qualifier itself does not require that placement, and a string literal must not be modified even when its actual section differs.
+`.rodata` holds read-only data: string literals and, usually, static `const` objects. Writing to it typically crashes the program. Modifying a string literal is undefined behavior wherever it is stored.
 :::
 
 :::definition id=def-text title=".text" source="Lecture 1 - Introduction.pdf"
-`.text` typically contains executable machine instructions.
+`.text` holds the program's machine instructions.
 :::
 
 :::definition id=def-stack title="Automatic storage" source="Lecture 1 - Introduction.pdf"
-An object with automatic storage duration is created on entry to its block. Implementations commonly place it in a stack frame or a register. Taking its address prevents the register-only choice.
+A local variable declared without `static` has automatic storage: it is created when its block is entered and destroyed when the block ends. Compilers place it in the function's stack frame or keep it in a register; if its address is taken, it must be in memory.
 :::
 
 :::definition id=def-heap title="Allocated storage" source="Lecture 1 - Introduction.pdf"
-`malloc`, `calloc`, and `realloc` create objects with allocated storage duration. `free` ends that lifetime. The usual name for this region is the heap.
+`malloc`, `calloc`, and `realloc` create objects at run time, and `free` destroys them. These objects live in the region called the heap.
 :::
 
 ![A common placement of the sample objects. Section names and stack allocation are implementation choices.](../assets/figures/program-sections.svg)
 
-`y` belongs in initialized static data because its initializer is nonzero. `x` is zero-initialized static data. A compiler may place `z` in read-only static data, but that is a placement choice. `a` has automatic storage. The instructions of `main` are code, whichever section contains them. The format string is a string literal and must be treated as immutable.
+Applied to the program above: `x` goes to `.bss` because it starts at zero, `y` goes to `.data` because it starts at 10, and `z` and the string `"z = %d"` usually go to `.rodata`. `a` is a local variable on the stack (or in a register), and the instructions of `main` are in `.text`.
 
 :::problem id=worked-place-each-variable title="Place x, y, z, and a" source="Lecture 1 - Introduction.pdf" kind=worked solution_origin=derived
 Using ordinary ELF placement, identify the storage of `x`, `y`, `z`, the format string, `a`, and the instructions of `main`.
@@ -120,39 +120,37 @@ Using ordinary ELF placement, identify the storage of `x`, `y`, `z`, the format 
 :::
 
 :::trap
-Putting every file-scope object in `.data`. An object with no initializer, or an initializer that is all zeros, is normally zero-initialized storage. A block-scope object without `static` has automatic storage even when it has an initializer.
+Putting every global variable in `.data`. A global with no initializer, or initialized to zero, goes to `.bss`. A local variable without `static` is on the stack even when it has an initializer.
 :::
 
 ## Address space and execution
 
 :::definition id=def-address-space title="Process address space" source="Lecture 1 - Introduction.pdf"
-A process executes against a virtual address space. A conventional drawing, from high addresses to low addresses, shows a downward-growing stack, unused address space, an upward-growing heap, static data, and code. The actual mapping is chosen by the platform and the loader.
+Each process sees its own virtual address space. The conventional picture, from high addresses to low, shows the stack growing downward, a gap of unused addresses, the heap growing upward, static data, and code. The exact addresses are chosen by the operating system.
 :::
 
 ![A conventional address-space drawing. Growth directions and the order of regions are platform conventions.](../assets/figures/address-space.svg)
 
-The loader creates the address space, maps the executable's loadable segments, prepares the initial stack, and transfers control to the executable entry point. On Linux that symbol is commonly `_start`, supplied by the C runtime. The runtime performs startup work and then calls `main`. The kernel does not search the program for a function named `main`.
+When you run a program, the operating system's loader (the `execve` system call on Linux) creates a new address space, maps the executable's code and data into it, sets up the initial stack with the command-line arguments, and jumps to the executable's entry point. That entry point is not `main`: it is usually `_start`, startup code from the C runtime that GCC links in. `_start` prepares the environment and then calls `main`.
 
 :::definition id=def-process title="Process" source="Lecture 1 - Introduction.pdf"
 A process is a running instance of a program. The operating system records it in its process table and assigns it a process identifier.
 :::
 
-While the process is runnable, the scheduler assigns it CPU time. The CPU fetches instructions from the process image and executes them. The operating system also services requests such as I/O and additional mappings. Termination removes the process record and releases its resources.
+While the process runs, the operating system's scheduler gives it turns on a CPU. The CPU repeatedly fetches the next instruction from the process's memory and executes it. When the program needs something only the kernel can do, such as I/O, it makes a system call. When the process ends, the operating system reclaims its memory and other resources.
 
 :::definition id=def-lifecycle title="Process lifetime" source="Lecture 1 - Introduction.pdf"
-Creation builds the address space and loads the executable. Execution begins at the image entry point; hosted C then calls `main`. Termination reclaims the process and its resources.
+A process goes through three stages. **Creation** builds the address space and loads the executable. **Execution** starts at the entry point, which calls `main`. **Termination** releases the process's memory and resources.
 :::
-
-`malloc` and `free` belong to allocated storage. They do not change the distinction between an executable file and a process. Ownership, leaks, and use after `free` are later material.
 
 :::check id=chk-bss
 In ordinary ELF placement, a file-scope `int x;` with no initializer is placed in which region?
 
 - [ ] The stack, beside the automatic objects of `main`
 - [x] Zero-initialized static storage, commonly `.bss`
-- [ ] `.data`, because every file-scope object is stored with an explicit image
+- [ ] `.data`, because every global variable is stored there
 
-`x` has static storage duration and is zero-initialized. `.data` is the usual section for nonzero initialized static data. Automatic objects are the stack or register case.
+`x` is a global that starts at zero, so it goes to `.bss`. `.data` is for globals with a nonzero initial value, and the stack is for local variables.
 :::
 
 ## Practice
@@ -161,7 +159,7 @@ In ordinary ELF placement, a file-scope `int x;` with no initializer is placed i
 :::check id=prac-pipeline-order-q1
 The stage that handles `#include` and `#define` is the {{=preprocessor|compiler|linker}}.
 
-Preprocessing expands directives and produces the translation unit. Its output is still C text.
+The preprocessor carries out `#` directives. Its output is still C source code.
 :::
 
 :::check id=prac-pipeline-order-q2
@@ -226,9 +224,9 @@ Linking finished before execution. Termination ends the process that execution c
 
 :::problem id=prac-who-fetches title="The instruction cycle and the address space" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-who-fetches-q1
-The processor repeats this cycle: fetch the next instruction, receive it from the process image, then {{=execute it|link it|preprocess it}}.
+The CPU repeats this cycle: fetch the next instruction from memory, then {{=execute it|link it|preprocess it}}.
 
-Fetch and execute describe the running process. Linking and preprocessing are build steps.
+Fetching and executing happen while the process runs. Linking and preprocessing happen earlier, when the program is built.
 :::
 
 :::check id=prac-who-fetches-q2
@@ -252,4 +250,4 @@ The heap is
 :::
 :::
 
-[Command-line arguments](topic:command-line-arguments) are supplied by the host when it calls `main`. Their storage is separate from the string literals of the program.
+The last lesson, [Command-line arguments](topic:command-line-arguments), looks at the strings the loader places on the initial stack and passes to `main`.
