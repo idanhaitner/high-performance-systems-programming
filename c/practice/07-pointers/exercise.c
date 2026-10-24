@@ -9,105 +9,59 @@
 
 void set_to_zero(int* p) {
     // Set the int that p points at to 0.
-    *p = 0;
+    not_implemented("set_to_zero");
 }
 
 void swap(int* a, int* b) {
     // Swap the two ints that a and b point at. The classic pointer example.
-    // Without pointers, swap would only change its own copies.
-    int temp = *a;
-    *a = *b;
-    *b = temp;
+    not_implemented("swap");
 }
 
 void divide(int a, int b, int* quotient, int* remainder) {
     // b is not 0. Write a / b into *quotient and a % b into *remainder.
-    *quotient = a / b;
-    *remainder = a % b;
+    not_implemented("divide");
 }
 
 void min_max(const int a[], int n, int* min, int* max) {
     // n is at least 1. Write the smallest element into *min and the
     // largest into *max.
-    *min = a[0];
-    *max = a[0];
-    for (int i = 1; i < n; i++) {
-        if (a[i] < *min) {
-            *min = a[i];
-        }
-        if (a[i] > *max) {
-            *max = a[i];
-        }
-    }
+    not_implemented("min_max");
 }
 
 bool safe_divide(int a, int b, int* result) {
     // When b is 0, return false and leave *result alone.
     // Otherwise write a / b into *result and return true.
-    // The return value says whether the answer in *result is valid.
-    if (b == 0) {
-        return false;
-    }
-    *result = a / b;
-    return true;
+    not_implemented("safe_divide");
 }
 
 void add_to_all(int* a, int n, int amount) {
     // Add amount to each of the n ints starting at a.
-    for (int i = 0; i < n; i++) {
-        a[i] += amount;  // a[i] means *(a + i)
-    }
+    not_implemented("add_to_all");
 }
 
 int sum_range(const int* begin, const int* end) {
     // Sum the ints from begin up to, but not including, end.
     // Walk with the pointer itself: p++ moves p to the next int.
-    int total = 0;
-    for (const int* p = begin; p != end; p++) {
-        total += *p;
-    }
-    return total;
+    not_implemented("sum_range");
 }
 
 int* largest(int* a, int n) {
     // n is at least 1. Return a pointer to the largest element (the
     // first, if there is a tie). The caller can then change it through
     // the pointer.
-    int* best = a;
-    for (int i = 1; i < n; i++) {
-        if (a[i] > *best) {
-            best = &a[i];  // remember the address, not just the value
-        }
-    }
-    return best;
+    not_implemented("largest");
 }
 
 const char* find_char(const char* s, char c) {
     // Return a pointer to the first c in s, or NULL when there is none.
-    for (const char* p = s; *p != '\0'; p++) {
-        if (*p == c) {
-            return p;
-        }
-    }
-    return NULL;
+    not_implemented("find_char");
 }
 
 void split_name(const char* full, char* first, char* last) {
     // full is a first name, one space, and a last name: "Ada Lovelace".
     // Copy "Ada" into first and "Lovelace" into last, each ending in '\0'.
     // first and last have enough room.
-    // Copy until the space into first.
-    const char* p = full;
-    while (*p != ' ') {
-        *first++ = *p++;
-    }
-    *first = '\0';
-    p++;  // step over the space
-    // Copy the rest into last.
-    while (*p != '\0') {
-        *last++ = *p++;
-    }
-    *last = '\0';
+    not_implemented("split_name");
 }
 
 static void test_zero(void) {
