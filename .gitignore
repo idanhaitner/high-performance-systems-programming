@@ -1,4 +1,8 @@
 .DS_Store
+
+# Course source materials (lecture slides); local only, the site reads study/content/
+materials/
+
 study/web/node_modules/
 study/web/.next/
 study/web/out/
