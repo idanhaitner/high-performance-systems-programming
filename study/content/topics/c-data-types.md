@@ -3,8 +3,6 @@ id: c-data-types
 title: Values and types
 sources:
   - "Lecture 1 - Introduction.pdf"
-  - c/02-types/lesson.md
-  - c/03-expressions/lesson.md
 ---
 
 In the last lesson we saw that numbers live in boxes of a fixed size. This lesson shows how C lets you choose those boxes. You will learn the basic kinds of values in C, how many bytes each takes, how to print and read them, and two places where C behaves differently from a calculator: dividing whole numbers, and storing decimals.
@@ -73,7 +71,7 @@ x = x / y;   /* x is now 2, not 2.5 */
 
 $5 \div 2 = 2.5$, and C throws away the $.5$, giving 2. This is called **truncation toward zero**: you always chop toward 0, so `-5 / 2` is `-2` (not $-3$).
 
-:::definition id=def-integer-division title="Integer division" source="c/03-expressions/lesson.md"
+:::definition id=def-integer-division title="Integer division" source="Lecture 1 - Introduction.pdf"
 When both sides of `/` are whole-number types, C computes the true quotient and throws away the fractional part. The result always moves toward zero.
 :::
 

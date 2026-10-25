@@ -3,7 +3,6 @@ id: why-low-level
 title: Why the machine matters
 sources:
   - "Lecture 1 - Introduction.pdf"
-  - c/03-expressions/lesson.md
 ---
 
 This course is about one question: **why does one program run fast while another, which does the same job, runs slow?**
@@ -91,7 +90,7 @@ Here is an important detail. What we just did was a calculation about bits. **C 
 A number in the computer is stored in a fixed number of bits. If the true result of a calculation needs more bits than that, it does not fit, and something other than the true answer happens.
 :::
 
-:::definition id=def-signed-overflow title="Signed overflow" source="c/03-expressions/lesson.md"
+:::definition id=def-signed-overflow title="Signed overflow" source="C11 standard, section 6.5, paragraph 5"
 If a calculation on a signed integer type (such as `int`) gives a result too big or too small for that type, the C program has **undefined behavior**.
 :::
 

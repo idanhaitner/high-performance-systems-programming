@@ -3,8 +3,6 @@ id: source-to-process
 title: Programs and processes
 sources:
   - "Lecture 1 - Introduction.pdf"
-  - c/01-program/lesson.md
-  - c/09-build/lesson.md
 ---
 
 So far we have written C code. But a computer's processor (the **CPU**) cannot read C. It only understands **machine code**: instructions written as numbers. This lesson follows your program on its journey: from a text file you wrote, to a file of machine code, to a **running program** in memory. Along the way we see where each kind of variable ends up, which ties together everything from the earlier lessons.

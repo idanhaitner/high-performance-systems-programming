@@ -3,8 +3,6 @@ id: memory-and-pointers
 title: Memory and pointers
 sources:
   - "Lecture 1 - Introduction.pdf"
-  - c/06-arrays-and-strings/lesson.md
-  - c/07-pointers/lesson.md
 ---
 
 In the last lesson, `scanf` needed `&x`, "the address of `x`". This lesson explains what that means. We picture memory as a long street of numbered boxes, see that every variable lives in one of those boxes, and meet **pointers**: variables that hold a box number. Then we look at **arrays**, which are many boxes in a row. Pointers are the idea most beginners find hardest in C, so we go slowly.

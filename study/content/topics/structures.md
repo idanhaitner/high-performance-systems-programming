@@ -3,7 +3,6 @@ id: structures
 title: Structures
 sources:
   - "Lecture 1 - Introduction.pdf"
-  - c/10-structs/lesson.md
 ---
 
 An array groups many values of the **same** type. But real things are made of different kinds of values. A student, for example, has a name (text) and an ID (a number). A **structure** (`struct`) lets you bundle those into one variable. This lesson shows how to define a structure, fill it, use its parts, and finally how it is laid out in memory, including the hidden gaps the compiler sometimes adds.
