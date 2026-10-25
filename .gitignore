@@ -9,3 +9,8 @@ study/web/out/
 study/web/tsconfig.tsbuildinfo
 **/__pycache__/
 *.pyc
+
+# Local editor and assistant config
+.claude/
+.cursor/
+CLAUDE.md
