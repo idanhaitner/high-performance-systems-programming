@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;700;800&family=Literata:opsz,wght@7..72,400;7..72,600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;height:900px;overflow:hidden;background:#ff6a1f;color:#17130f;font:17px/1.6 Literata,serif}
+.rail{position:absolute;right:0;top:0;bottom:0;width:120px;display:flex;flex-direction:column}
+.rail div{flex:1;font:800 14px "Hanken Grotesk";padding:14px 12px;color:#17130f}
+.rail .on{flex:3;background:#ff6a1f;margin-left:-24px;padding-left:36px}
+.leaf{position:absolute;left:120px;top:56px;width:1060px;height:900px;background:rgb(255 255 255/.92);padding:56px 88px;box-shadow:6px 0 0 rgb(0 0 0/.12)}
+.leaf::before,.leaf::after{content:"";position:absolute;left:28px;width:22px;height:22px;border-radius:50%;background:#ff6a1f}
+.leaf::before{top:120px}.leaf::after{top:420px}
+.k{font:800 14px "Hanken Grotesk";letter-spacing:.08em;text-transform:uppercase;color:#a33d06}
+h1{font:800 62px/1 "Hanken Grotesk";letter-spacing:-.03em;margin:10px 0 22px}
+.lead{font-size:20px;max-width:58ch;margin-bottom:28px}
+h2{font:800 26px "Hanken Grotesk";margin-bottom:10px}
+p{max-width:62ch;margin-bottom:16px}
+code{font:15px "JetBrains Mono";background:#fff1e8;padding:1px 5px}
+</style></head><body>
+<div class="rail">
+<div class="on">LECTURE 1<br>Data &amp; memory</div>
+<div style="background:#ffc400">2</div><div style="background:#2fae5a">3</div><div style="background:#0f9a9a">4</div><div style="background:#2b49e0;color:#fff">5</div><div style="background:#7b3fe0;color:#fff">6</div></div>
+<div class="leaf">
+<p class="k">Lecture 1 · Lesson 3 of 6</p>
+<h1>Memory and pointers</h1>
+<p class="lead">In the last lesson, <code>scanf</code> needed <code>&amp;x</code>, "the address of <code>x</code>". This lesson explains what that means.</p>
+<h2>Memory is a long row of numbered boxes</h2>
+<p>Imagine memory as a very long street. Each house is one byte, and each house has a number. That number is the byte's address.</p>
+<p>Addresses are usually written in hexadecimal (base 16), with a <code>0x</code> in front: <code>0x1000</code> is just the number 4096.</p>
+</div>
+</body></html>
