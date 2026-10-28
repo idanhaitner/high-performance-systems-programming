@@ -3,6 +3,7 @@ import { ChapterProgress } from "@/components/ChapterProgress";
 import { HeroCta } from "@/components/landing/HeroCta";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { Reveal } from "@/components/landing/Reveal";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { Mixed } from "@/lib/bidi";
 import { loadCourse } from "@/lib/course";
 
@@ -84,6 +85,7 @@ export default function HomePage() {
   return (
     <article className="page landing">
       <Reveal />
+      <ScrollReveal selector=".landing section > h2, .how-card, .benefits li, .deck-head, .deck-grid li, .deck-later, .faq details, .final" />
       <LandingNav startHref={startHref} />
 
       <section className="hero" aria-labelledby="hero-title">

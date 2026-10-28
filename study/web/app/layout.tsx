@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Figtree, Heebo, JetBrains_Mono } from "next/font/google";
+import { PageEnter } from "@/components/PageEnter";
 import { Rail } from "@/components/Rail";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { loadCourse } from "@/lib/course";
@@ -68,7 +69,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             lectures={course.lectures}
             hits={course.search}
           />
-          <main id="content">{children}</main>
+          <main id="content">
+            <PageEnter>{children}</PageEnter>
+          </main>
         </div>
       </body>
     </html>

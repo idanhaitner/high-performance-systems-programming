@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Chapter } from "@/components/Chapter";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { SideCards } from "@/components/SideCards";
 import { Visit } from "@/components/Visit";
 import { Mixed } from "@/lib/bidi";
@@ -21,6 +22,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
     <article className="page chapter lesson">
       <Visit courseId={course.id} slug={topic.id} />
       <SideCards />
+      <ScrollReveal selector=".page.lesson :is(.formal, .card.check, .callout):not(.practice *)" step={0} />
       <header className="masthead">
         <h1><Mixed text={topic.title} /></h1>
       </header>

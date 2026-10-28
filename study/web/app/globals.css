@@ -171,7 +171,10 @@ button {
 @media (hover: hover) and (pointer: fine) {
   button:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: var(--lift-sm); }
 }
-button:active:not(:disabled) { transform: none; box-shadow: none; transition-duration: 0.1s; }
+/* Press: a small squeeze confirms the tap. Wide rows and the step bar only flatten. */
+button:active:not(:disabled) { transform: scale(0.97); box-shadow: none; transition-duration: 0.1s; }
+button:is(.fold-row, .lecture-label, .session-seg):active:not(:disabled) { transform: none; }
+.chapter-hop:active { transform: scale(0.98); box-shadow: none; transition-duration: 0.1s; }
 button.is-on, button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
@@ -491,7 +494,11 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .choices label.is-picked :not(pre) > code { background: rgb(255 255 255 / 0.6); color: var(--on-card); }
 .choices label.is-right { background: var(--mint); color: var(--on-card); }
 .choices label.is-wrong { background: var(--coral-soft); color: var(--ink); border-style: dashed; }
-.choice-mark { flex: none; width: 22px; height: 22px; }
+.choice-mark { flex: none; width: 22px; height: 22px; animation: mark-in 0.25s var(--ease) 0.05s backwards; }
+@keyframes mark-in { from { opacity: 0; transform: scale(0.6); } }
+/* A wrong pick gives a short sideways nudge. It uses the translate property, so it adds to the picked card's lift. */
+.choices label.is-wrong { animation: nudge 0.3s var(--ease); }
+@keyframes nudge { 20% { translate: -5px 0; } 45% { translate: 4px 0; } 70% { translate: -2px 0; } }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .check-result { display: flex; align-items: center; gap: 8px; margin: 16px 0 0; font-weight: 700; animation: fade-in 0.2s var(--ease) both; }
 .check-result svg { flex: none; width: 22px; height: 22px; }
@@ -573,7 +580,7 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 }
 .chapter-hop.is-next { background: var(--accent); color: var(--on-accent); }
 @media (hover: hover) and (pointer: fine) {
-  .chapter-hop:hover { transform: translate(-4px, -4px); box-shadow: var(--lift); }
+  .chapter-hop:hover:not(:active) { transform: translate(-4px, -4px); box-shadow: var(--lift); }
 }
 .chapter-hop-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .chapter-hop-kicker { font-size: 0.8125rem; font-weight: 600; opacity: 0.85; }
@@ -798,12 +805,20 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 
 @keyframes fade-in { from { opacity: 0; transform: translateY(-4px); } }
 
+/* Scroll reveal (ScrollReveal.tsx). Uses the translate property, so it adds to any rotation an element already has. */
+.page-enter { animation: page-enter 0.22s var(--ease) backwards; }
+@keyframes page-enter { from { opacity: 0; transform: translateY(8px); } }
+.rv { transition: opacity 0.5s var(--ease) var(--reveal-delay, 0ms), translate 0.5s var(--ease) var(--reveal-delay, 0ms); }
+.rv:not(.is-in) { opacity: 0; translate: 0 var(--reveal-rise, 24px); }
+/* Lesson cards only fade: they must not move while someone is reading, and the side column measures their position. */
+.page.lesson .rv { --reveal-rise: 0px; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   /* Keep colour and fade changes, drop movement. */
   *, *::before, *::after { animation: none !important; transition-property: color, background-color, border-color, opacity !important; }
   .formal, .choices label.is-picked, .rail-deck span, .rail-deck strong { transform: none; }
-  button:hover:not(:disabled), .chapter-hop:hover { transform: none; }
+  button:hover:not(:disabled), .chapter-hop:hover, button:active:not(:disabled), .chapter-hop:active { transform: none; }
 }
 
 /* ---------- Narrow screens: rail becomes a top bar with a drawer ---------- */

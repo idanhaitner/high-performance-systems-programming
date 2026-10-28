@@ -73,7 +73,8 @@ body:has(.landing) .reading-progress { display: none; }
   text-decoration: none;
   transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease);
 }
-.landing-cta:active { transform: translateY(1px); box-shadow: none; transition-duration: 0.1s; }
+.landing-cta:active { transform: scale(0.97); box-shadow: none; transition-duration: 0.1s; }
+.deck-grid a:active { transform: scale(0.98); box-shadow: none; transition-duration: 0.1s; }
 .landing-cta-small { font-size: 0.875rem; line-height: 1.25rem; }
 
 .landing-toggle { display: none; width: 44px; min-height: 44px; height: 44px; padding: 0; border-radius: 9999px; place-items: center; }
@@ -156,7 +157,7 @@ body:has(.landing) .reading-progress { display: none; }
   .fan a:hover { transform: translateY(-16px); }
   .landing-cta:hover:not(:active) { transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
   .deck-session:hover { background: var(--sun); color: var(--on-card); transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
-  .deck-grid a:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--edge); }
+  .deck-grid a:hover:not(:active) { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--edge); }
 }
 .fan-num { font: 700 3.75rem/1 var(--serif); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .fan-title { font: 700 1.125rem/1.75rem var(--serif); letter-spacing: -0.02em; }
@@ -269,6 +270,13 @@ body:has(.landing) .reading-progress { display: none; }
 .faq summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 24px; }
 .faq details p { margin: 0; padding: 0 24px 24px; color: var(--muted); font-size: 1rem; line-height: 1.5rem; }
 .faq details[open] p { animation: fade-in 0.2s var(--ease) both; }
+/* Answers slide open where the browser can animate <details> (Chrome 131+); elsewhere they open at once.
+   This animates height, which is accepted for an accordion because no transform can do it. */
+@supports selector(::details-content) {
+  .faq-list { interpolate-size: allow-keywords; }
+  .faq details::details-content { block-size: 0; overflow: clip; transition: block-size 0.25s var(--ease), content-visibility 0.25s allow-discrete; }
+  .faq details[open]::details-content { block-size: auto; }
+}
 
 /* Final call to action */
 .final { margin: 64px 0 48px; padding: 64px 32px; border-radius: 32px; background: var(--accent); color: var(--on-accent); text-align: center; }
@@ -334,6 +342,8 @@ body:has(.landing) .reading-progress { display: none; }
 @keyframes menu-in { from { opacity: 0; transform: translateY(24px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .fan a:is(:hover, :focus-visible), .landing-cta:hover:not(:active), .deck-session:hover, .deck-grid a:hover { transform: none; }
+  .faq details::details-content { transition: none; }
+  .landing-cta:active, .deck-grid a:active { transform: none; }
+  .fan a:is(:hover, :focus-visible), .landing-cta:hover:not(:active), .deck-session:hover, .deck-grid a:hover:not(:active) { transform: none; }
   .landing-menu a { animation: none; }
 }
