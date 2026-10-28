@@ -36,7 +36,7 @@ code{font:15px "JetBrains Mono";background:var(--g);padding:2px 6px;border-radiu
 mark{background:none;box-shadow:inset 0 -8px 0 var(--sun)}
 aside{display:flex;flex-direction:column;gap:20px}
 .card{border-radius:22px;padding:22px 24px;border:2px solid var(--ink)}
-.card .t{font:700 13px Figtree;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between}
+.card .t{font:600 14px Figtree;margin-top:10px;color:var(--ink)}
 .card h3{font:700 24px "Bricolage Grotesque";letter-spacing:-.02em;margin-bottom:6px}
 .card p{font-size:16px;line-height:1.5;margin:0}
 .def{background:var(--mint);transform:rotate(-1.5deg)}
@@ -46,7 +46,7 @@ aside{display:flex;flex-direction:column;gap:20px}
 </style></head><body>
 <header><div class="logo"><span></span>Systems, from zero</div>
 <nav class="tabs"><a class="on">Lecture 1</a><a>Lecture 2</a><a>Glossary</a></nav>
-<div class="streak">8 of 24 cards collected</div></header>
+<div class="streak">Lesson 3 of 6 · 8 of 24 cards collected</div></header>
 <div class="wrap">
 <div>
   <div class="deck"><div class="c">Done<b>2</b></div><div class="c">Done<b>2</b></div><div class="c">Now<b>3</b>Memory and pointers</div></div>
@@ -60,7 +60,6 @@ aside{display:flex;flex-direction:column;gap:20px}
   </ul>
 </div>
 <main>
-  <p class="kick">Lesson 3 of 6</p>
   <h1>Memory and pointers</h1>
   <p class="lead">In the last lesson, <code>scanf</code> needed <code>&amp;x</code>, "the address of <code>x</code>". This lesson explains what that means.</p>
   <h2>Memory is a long row of numbered boxes</h2>
@@ -68,8 +67,8 @@ aside{display:flex;flex-direction:column;gap:20px}
   <p>Addresses are usually written in hexadecimal (base 16), with a <code>0x</code> in front: <code>0x1000</code> is just the number 4096.</p>
 </main>
 <aside>
-  <div class="card def"><div class="t">Definition <span>card 7</span></div><h3>Byte</h3><p>8 bits. The smallest piece of memory that has its own address.</p></div>
-  <div class="card chk"><div class="t">Quick check</div><h3>Which bit is drawn on the left?</h3>
+  <div class="card def"><h3>Byte</h3><p>8 bits. The smallest piece of memory that has its own address.</p><div class="t">Definition card 7</div></div>
+  <div class="card chk"><h3>Check: which bit is drawn on the left?</h3>
     <div class="opt">The lowest-value bit</div><div class="opt pick">The highest-value bit</div><div class="opt">The sign bit of an int</div></div>
 </aside>
 </div>
