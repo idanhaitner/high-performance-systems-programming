@@ -139,7 +139,10 @@ body:has(.landing) .reading-progress { display: none; }
   color: var(--on-card);
   text-decoration: none;
   transition: transform 0.2s var(--ease);
+  /* Dealt in once on load, 40ms apart. "backwards" only, so the hover lift still works afterwards. */
+  animation: deal-in 0.4s var(--ease) calc(var(--i) * 40ms) backwards;
 }
+@keyframes deal-in { from { opacity: 0; transform: translateY(24px); } }
 /* Fills the gap under a lifted card, so the pointer never falls off its bottom edge. */
 .fan a::after { content: ""; position: absolute; inset: 100% -2px auto; height: 16px; }
 .fan a:focus-visible { transform: translateY(-16px); outline: none; box-shadow: 0 0 0 4px var(--accent); }
