@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { Blocks } from "@/components/Blocks";
+import { useEffect, type ReactNode } from "react";
 import { Mixed } from "@/lib/bidi";
 import type { SessionStep } from "@/lib/types";
 
-export function LearnStep({ step, courseId, onComplete }: { step: Extract<SessionStep, { kind: "learn" }>; courseId: string; onComplete: () => void }) {
+export function LearnStep({ step, content, onComplete }: { step: Extract<SessionStep, { kind: "learn" }>; content: ReactNode; onComplete: () => void }) {
   useEffect(() => {
     onComplete();
   }, [onComplete]);
@@ -13,7 +12,7 @@ export function LearnStep({ step, courseId, onComplete }: { step: Extract<Sessio
     <div className="session-step">
       <p className="kicker">Read</p>
       <h2><Mixed text={step.title} /></h2>
-      <Blocks blocks={step.blocks} courseId={courseId} />
+      {content}
     </div>
   );
 }

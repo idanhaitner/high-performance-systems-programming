@@ -8,25 +8,26 @@ import { CheckStep } from "./CheckStep";
 import { ExerciseStep } from "./ExerciseStep";
 import { LabStep } from "./LabStep";
 import { LearnStep } from "./LearnStep";
+import type { RenderedStep } from "./rendered";
 
-type StepProps = { step: SessionStep; courseId: string; onComplete: () => void; harness: string };
+type StepProps = { step: SessionStep; courseId: string; onComplete: () => void; harness: string; rendered: RenderedStep };
 
-function StepView({ step, courseId, onComplete, harness }: StepProps) {
+function StepView({ step, courseId, onComplete, harness, rendered }: StepProps) {
   switch (step.kind) {
     case "learn":
-      return <LearnStep step={step} courseId={courseId} onComplete={onComplete} />;
+      return <LearnStep step={step} content={rendered.content} onComplete={onComplete} />;
     case "check":
-      return <CheckStep step={step} courseId={courseId} onComplete={onComplete} />;
+      return <CheckStep step={step} content={rendered.content} onComplete={onComplete} />;
     case "lab":
-      return <LabStep step={step} courseId={courseId} onComplete={onComplete} />;
+      return <LabStep step={step} content={rendered.content} onComplete={onComplete} />;
     case "exercise":
-      return <ExerciseStep step={step} courseId={courseId} onComplete={onComplete} harness={harness} />;
+      return <ExerciseStep step={step} courseId={courseId} onComplete={onComplete} harness={harness} rendered={rendered} />;
   }
 }
 
 const label = (step: SessionStep) => (step.kind === "learn" ? step.title : step.kind === "lab" ? step.lab.title : step.kind === "exercise" ? step.exercise.title : "Quick check");
 
-export function Stepper({ session, courseId, harness }: { session: Session; courseId: string; harness: string }) {
+export function Stepper({ session, courseId, harness, rendered }: { session: Session; courseId: string; harness: string; rendered: Record<string, RenderedStep> }) {
   const total = session.steps.length;
   const [state, setState] = useState<SessionState>({ step: 0, done: [], skipped: [] });
   const [ready, setReady] = useState(false);
@@ -86,7 +87,7 @@ export function Stepper({ session, courseId, harness }: { session: Session; cour
 
       {!ready ? null : current ? (
         <div key={current.id}>
-          <StepView step={current} courseId={courseId} onComplete={complete} harness={harness} />
+          <StepView step={current} courseId={courseId} onComplete={complete} harness={harness} rendered={rendered[current.id] ?? {}} />
         </div>
       ) : (
         <div className="session-step session-finished">

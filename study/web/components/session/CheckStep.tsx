@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { Blocks } from "@/components/Blocks";
+import { useEffect, type ReactNode } from "react";
 import type { SessionStep } from "@/lib/types";
 
-export function CheckStep({ step, courseId, onComplete }: { step: Extract<SessionStep, { kind: "check" }>; courseId: string; onComplete: () => void }) {
+export function CheckStep({ step, content, onComplete }: { step: Extract<SessionStep, { kind: "check" }>; content: ReactNode; onComplete: () => void }) {
   useEffect(() => {
     const listener = (event: Event) => {
       const detail = (event as CustomEvent<{ id: string; correct: boolean }>).detail;
@@ -16,7 +15,7 @@ export function CheckStep({ step, courseId, onComplete }: { step: Extract<Sessio
   return (
     <div className="session-step">
       <p className="kicker">Quick check</p>
-      <Blocks blocks={[step.block]} courseId={courseId} />
+      {content}
     </div>
   );
 }

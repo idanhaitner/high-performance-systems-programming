@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Blocks } from "@/components/Blocks";
 import { Mixed } from "@/lib/bidi";
 import { COOLDOWN_MS, GodboltError, compileAsm, runProgram } from "@/lib/godbolt";
 import { splitDiagnostics, type AsmLine, type Diagnostic, type RunOutcome } from "@/lib/run-result";
@@ -12,6 +11,7 @@ import type { SessionStep } from "@/lib/types";
 import { exerciseZip } from "@/lib/zip";
 import { AsmPanel } from "./AsmView";
 import { CaseList, OutcomeView, type CaseView } from "./OutcomeView";
+import type { RenderedStep } from "./rendered";
 
 const Editor = dynamic(() => import("./Editor").then((m) => m.Editor), {
   ssr: false,
@@ -25,11 +25,11 @@ type Result =
 
 type Action = "run" | "test" | "asm";
 type Asm = { lines: AsmLine[]; failed: Diagnostic[] | null; code: string; optimize: boolean };
-type Props = { step: Extract<SessionStep, { kind: "exercise" }>; courseId: string; onComplete: () => void; harness: string };
+type Props = { step: Extract<SessionStep, { kind: "exercise" }>; courseId: string; onComplete: () => void; harness: string; rendered: RenderedStep };
 
 const NO_LINE_LIMIT = Number.MAX_SAFE_INTEGER;
 
-export function CodeStep({ step, courseId, onComplete, harness }: Props) {
+export function CodeStep({ step, courseId, onComplete, harness, rendered }: Props) {
   const ex = step.exercise;
   const [code, setCode] = useState(() => readCode(courseId, ex.id) ?? ex.starter);
   const [result, setResult] = useState<Result | null>(null);
@@ -113,7 +113,7 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
       outcome = await runProgram(built.source);
       showOutcome(outcome, studentLines);
       const stdout = outcome.kind === "compile-error" ? "" : outcome.stdout;
-      cases = parseTestOutput(stdout, ex.caseNames).map((c) => ({ ...c, hint: ex.caseHints[c.name] ?? null }));
+      cases = parseTestOutput(stdout, ex.caseNames).map((c) => ({ ...c, hint: rendered.caseHints?.[c.name] ?? null }));
       if (outcome.kind === "compile-error") {
         setResult({ kind: "outcome", outcome, studentLines });
         failRun();
@@ -130,7 +130,7 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
           failRun();
           return;
         }
-        const hint = c.hint ? [{ type: "paragraph" as const, text: c.hint }] : null;
+        const hint = c.hint ? <p>{c.hint}</p> : null;
         if (o.kind === "ok" && outputsMatch(o.stdout, c.expected)) cases.push({ name: c.name, status: "pass", message: "", hint });
         else if (o.kind === "ok") cases.push({ name: c.name, status: "fail", message: `Expected:\n${c.expected}\nYour program printed:\n${o.stdout}`, hint });
         else if (o.kind === "timeout") cases.push({ name: c.name, status: "fail", message: "Your program ran too long. Is there a loop that never stops?", hint });
@@ -205,6 +205,7 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
   };
 
   const linked = useMemo(() => (hoverAsm === null ? [] : [hoverAsm]), [hoverAsm]);
+  const hintNodes = rendered.hints ?? [];
   const locked = busy || cooling || wait > 0;
   const error = result?.kind === "error" ? result.error : null;
 
@@ -212,7 +213,7 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
     <div className="session-step code-step">
       <p className="kicker">Coding exercise</p>
       <h2><Mixed text={ex.title} /></h2>
-      <Blocks blocks={ex.statement} courseId={courseId} />
+      {rendered.content}
 
       <div className={asmOpen ? "code-split has-asm" : "code-split"}>
         <Editor value={code} onChange={edit} diagnostics={diagnostics} onHoverLine={setHoverC} highlightLines={linked} />
@@ -260,20 +261,20 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
         {result?.kind === "cases" && (
           <>
             {result.outcome && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
-            <CaseList cases={result.cases} courseId={courseId} />
+            <CaseList cases={result.cases} />
           </>
         )}
       </div>
 
-      {ex.hints.length > 0 && (
+      {hintNodes.length > 0 && (
         <div className="code-hints">
-          {ex.hints.slice(0, hintsShown).map((hint, i) => (
+          {hintNodes.slice(0, hintsShown).map((hint, i) => (
             <div key={i} className="code-hint">
               <p className="code-label">Hint {i + 1}</p>
-              <Blocks blocks={hint} courseId={courseId} />
+              {hint}
             </div>
           ))}
-          {hintsShown < ex.hints.length && (
+          {hintsShown < hintNodes.length && (
             <button type="button" onClick={() => setHintsShown((n) => n + 1)}>Show a hint</button>
           )}
         </div>

@@ -1,12 +1,11 @@
 "use client";
 
-import { Blocks } from "@/components/Blocks";
 import { OUTPUT_CAP, type Diagnostic, type RunOutcome } from "@/lib/run-result";
 import { splitDiagnostics } from "@/lib/run-result";
 import type { CaseResult } from "@/lib/test-output";
-import type { Block } from "@/lib/types";
+import type { ReactNode } from "react";
 
-export type CaseView = CaseResult & { hint: Block[] | null };
+export type CaseView = CaseResult & { hint: ReactNode | null };
 
 const where = (d: Diagnostic) => `Line ${d.line}${d.column > 0 ? `, column ${d.column}` : ""}`;
 
@@ -87,7 +86,7 @@ export function OutcomeView({ outcome, studentLines }: { outcome: RunOutcome; st
   );
 }
 
-export function CaseList({ cases, courseId }: { cases: CaseView[]; courseId: string }) {
+export function CaseList({ cases }: { cases: CaseView[] }) {
   const passed = cases.filter((c) => c.status === "pass").length;
   return (
     <div className="code-result" data-state={passed === cases.length ? "ok" : "bad"}>
@@ -97,10 +96,10 @@ export function CaseList({ cases, courseId }: { cases: CaseView[]; courseId: str
           <li key={c.name} data-status={c.status}>
             <strong>{c.status === "pass" ? "Passed" : c.status === "fail" ? "Failed" : "Did not run"}:</strong> {c.name}
             {c.message && <pre className="code-output">{c.message}</pre>}
-            {c.status === "fail" && c.hint && c.hint.length > 0 && (
+            {c.status === "fail" && c.hint && (
               <div className="code-casehint">
                 <p className="code-label">Hint for this test</p>
-                <Blocks blocks={c.hint} courseId={courseId} />
+                {c.hint}
               </div>
             )}
           </li>
