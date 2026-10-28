@@ -291,7 +291,12 @@ def _unquote(text: str) -> str:
     while index < len(body):
         if body[index] == "\\" and index + 1 < len(body):
             nxt = body[index + 1]
-            out.append({"n": "\n", "t": "\t", "r": "\r"}.get(nxt, nxt))
+            if nxt in {"n", "t", "r"}:
+                out.append({"n": "\n", "t": "\t", "r": "\r"}[nxt])
+            elif nxt in {'"', "\\"}:
+                out.append(nxt)
+            else:
+                out.append("\\" + nxt)
             index += 2
             continue
         out.append(body[index])

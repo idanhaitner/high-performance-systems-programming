@@ -143,3 +143,25 @@ class ValidationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UnquoteTests(unittest.TestCase):
+    def setUp(self):
+        sys.path.insert(0, str(Path(__file__).parent))
+        from studylib import _unquote
+
+        self.unquote = _unquote
+
+    def test_newline_escape(self):
+        self.assertEqual(self.unquote('"7\\n"'), "7\n")
+
+    def test_tab_escape(self):
+        self.assertEqual(self.unquote('"a\\tb"'), "a\tb")
+
+    def test_escaped_backslash_then_n(self):
+        result = self.unquote('"\\\\n"')
+        self.assertEqual(result, "\\n")
+        self.assertEqual(len(result), 2)
+
+    def test_unknown_escape_passes_through(self):
+        self.assertEqual(self.unquote('"\\q"'), "\\q")
