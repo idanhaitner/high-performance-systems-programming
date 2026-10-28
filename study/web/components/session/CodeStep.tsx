@@ -1,15 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Blocks } from "@/components/Blocks";
 import { Mixed } from "@/lib/bidi";
-import { COOLDOWN_MS, GodboltError, runProgram } from "@/lib/godbolt";
-import { splitDiagnostics, type Diagnostic, type RunOutcome } from "@/lib/run-result";
+import { COOLDOWN_MS, GodboltError, compileAsm, runProgram } from "@/lib/godbolt";
+import { splitDiagnostics, type AsmLine, type Diagnostic, type RunOutcome } from "@/lib/run-result";
 import { clearCode, readCode, readFails, writeCode, writeFails } from "@/lib/session-store";
 import { buildTestSource, outputsMatch, parseTestOutput } from "@/lib/test-output";
 import type { SessionStep } from "@/lib/types";
 import { exerciseZip } from "@/lib/zip";
+import { AsmPanel } from "./AsmView";
 import { CaseList, OutcomeView, type CaseView } from "./OutcomeView";
 
 const Editor = dynamic(() => import("./Editor").then((m) => m.Editor), {
@@ -22,7 +23,8 @@ type Result =
   | { kind: "cases"; cases: CaseView[]; outcome: RunOutcome | null; studentLines: number }
   | { kind: "error"; error: GodboltError };
 
-type Action = "run" | "test";
+type Action = "run" | "test" | "asm";
+type Asm = { lines: AsmLine[]; failed: Diagnostic[] | null; code: string };
 type Props = { step: Extract<SessionStep, { kind: "exercise" }>; courseId: string; onComplete: () => void; harness: string };
 
 const NO_LINE_LIMIT = Number.MAX_SAFE_INTEGER;
@@ -40,6 +42,11 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
   const [solutionOpen, setSolutionOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [lastAction, setLastAction] = useState<Action>("test");
+  const [asm, setAsm] = useState<Asm | null>(null);
+  const [asmOpen, setAsmOpen] = useState(false);
+  const [optimize, setOptimize] = useState(false);
+  const [hoverC, setHoverC] = useState<number | null>(null);
+  const [hoverAsm, setHoverAsm] = useState<number | null>(null);
 
   const codeRef = useRef(code);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -136,13 +143,20 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
     else failRun();
   };
 
-  const act = async (action: Action) => {
+  const doAsm = async (opt: boolean) => {
+    const { lines, diagnostics: found } = await compileAsm(code, { optimize: opt });
+    const errors = found.filter((d) => d.severity === "error");
+    setDiagnostics(splitDiagnostics(found, NO_LINE_LIMIT).inEditor);
+    setAsm({ lines, failed: errors.length > 0 ? found : null, code });
+  };
+
+  const act = async (action: Action, opt = optimize) => {
     if (busy || cooling || wait > 0) return;
     setLastAction(action);
     setBusy(true);
     setConfirmReset(false);
     try {
-      await (action === "run" ? doRun() : doTest());
+      await (action === "run" ? doRun() : action === "test" ? doTest() : doAsm(opt));
     } catch (error) {
       const e = error instanceof GodboltError ? error : new GodboltError("unreachable");
       setResult({ kind: "error", error: e });
@@ -175,6 +189,22 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
     setConfirmReset(false);
   };
 
+  const openAsm = () => {
+    if (!asmOpen || !asm || asm.code !== code) {
+      setAsmOpen(true);
+      act("asm");
+    } else {
+      setAsmOpen(false);
+      setHoverAsm(null);
+    }
+  };
+
+  const pickOptimize = (opt: boolean) => {
+    setOptimize(opt);
+    act("asm", opt);
+  };
+
+  const linked = useMemo(() => (hoverAsm === null ? [] : [hoverAsm]), [hoverAsm]);
   const locked = busy || cooling || wait > 0;
   const error = result?.kind === "error" ? result.error : null;
 
@@ -184,12 +214,27 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
       <h2><Mixed text={ex.title} /></h2>
       <Blocks blocks={ex.statement} courseId={courseId} />
 
-      <Editor value={code} onChange={edit} diagnostics={diagnostics} />
+      <div className={asmOpen ? "code-split has-asm" : "code-split"}>
+        <Editor value={code} onChange={edit} diagnostics={diagnostics} onHoverLine={setHoverC} highlightLines={linked} />
+        {asmOpen && (
+          <AsmPanel
+            lines={asm?.lines ?? []}
+            activeSourceLine={hoverC ?? hoverAsm}
+            onHoverAsm={setHoverAsm}
+            optimize={optimize}
+            onOptimize={pickOptimize}
+            locked={locked}
+            stale={asm !== null && asm.code !== code}
+            diagnostics={asm?.failed ?? null}
+          />
+        )}
+      </div>
       <p className="code-privacy">Runs on godbolt.org — your code is sent there to compile.</p>
 
       <div className="code-actions">
         <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
         <button type="button" className="is-on" onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test"}</button>
+        <button type="button" aria-pressed={asmOpen} onClick={openAsm} disabled={locked && !asmOpen}>{busy && lastAction === "asm" ? "Compiling…" : "Assembly"}</button>
         {confirmReset ? (
           <span className="code-confirm" role="alert">
             Replace your code with the starter code?

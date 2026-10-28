@@ -29,6 +29,9 @@ export function flagsFor(optimize: boolean): string {
   return SANITIZE ? `${base} -fsanitize=address,undefined` : base;
 }
 
+// Assembly is for reading, so it never carries the sanitizer instrumentation.
+export const asmFlagsFor = (optimize: boolean): string => `-std=c17 -Wall -Wextra ${optimize ? "-O2" : "-O0"} -g`;
+
 async function post(body: unknown, fetchImpl: typeof fetch): Promise<unknown> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -82,7 +85,7 @@ export async function compileAsm(
     {
       source,
       options: {
-        userArguments: flagsFor(opts.optimize),
+        userArguments: asmFlagsFor(opts.optimize),
         filters: {
           intel: true,
           labels: true,
