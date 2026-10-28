@@ -493,7 +493,7 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .choices label.is-wrong { background: var(--coral-soft); color: var(--ink); border-style: dashed; }
 .choice-mark { flex: none; width: 22px; height: 22px; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.check-result { display: flex; align-items: center; gap: 8px; margin: 16px 0 0; font-weight: 700; }
+.check-result { display: flex; align-items: center; gap: 8px; margin: 16px 0 0; font-weight: 700; animation: fade-in 0.2s var(--ease) both; }
 .check-result svg { flex: none; width: 22px; height: 22px; }
 .check-result.is-yes { color: var(--ok); }
 .check-result.is-no { color: var(--danger); }
@@ -744,6 +744,13 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 }
 .session-nav .session-skip { margin-inline-start: auto; }
 .session-finished h2 { margin-top: 0; }
+.session-finished { animation: finish-in 0.3s var(--ease) backwards; }
+@keyframes finish-in { from { opacity: 0; transform: scale(0.97); } }
+/* A new step slides in 12px from the side the student moved towards. */
+.step-in { animation: step-in 0.2s var(--ease) backwards; }
+@keyframes step-in { from { opacity: 0; transform: translateX(calc(var(--dir) * 12px)); } }
+.code-run { animation: fade-in 0.2s var(--ease) backwards; }
+.practice.is-fresh { animation: fade-in 0.2s var(--ease) backwards; }
 
 /* Code step */
 .code-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; margin-top: 20px; }

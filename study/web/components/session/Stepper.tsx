@@ -33,6 +33,8 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
   const total = session.steps.length;
   const [state, setState] = useState<SessionState>({ step: 0, done: [], skipped: [] });
   const [ready, setReady] = useState(false);
+  // Which way the student last moved: 1 forward, -1 back, 0 before any move (no entrance on page load).
+  const [dir, setDir] = useState(0);
 
   useEffect(() => {
     const stored = readSession(courseId, session.id);
@@ -52,7 +54,7 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
     if (!ready) return;
     if (shown.current !== null && shown.current !== state.step) {
       const box = top.current?.getBoundingClientRect();
-      if (box && box.top < 0) top.current?.scrollIntoView({ block: "start" });
+      if (box && box.top < 0) top.current?.scrollIntoView({ block: "start", behavior: "instant" });
     }
     shown.current = state.step;
   }, [ready, state.step]);
@@ -66,9 +68,13 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
     setState((s) => (s.done.includes(currentId) ? s : { ...s, done: [...s.done, currentId], skipped: s.skipped.filter((id) => id !== currentId) }));
   }, [currentId]);
 
-  const go = (step: number) => setState((s) => ({ ...s, step: Math.min(Math.max(step, 0), total) }));
+  const go = (step: number) => {
+    setDir(Math.sign(step - state.step));
+    setState((s) => ({ ...s, step: Math.min(Math.max(step, 0), total) }));
+  };
   const skip = () => {
     if (!current) return;
+    setDir(1);
     setState((s) => ({
       ...s,
       step: Math.min(s.step + 1, total),
@@ -104,7 +110,7 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
       </div>
 
       {!ready ? null : current ? (
-        <div key={current.id}>
+        <div key={current.id} className={dir ? "step-in" : undefined} style={dir ? ({ "--dir": dir } as React.CSSProperties) : undefined}>
           <StepView step={current} courseId={courseId} done={state.done.includes(current.id)} onComplete={complete} harness={harness} rendered={rendered[current.id] ?? {}} />
         </div>
       ) : (

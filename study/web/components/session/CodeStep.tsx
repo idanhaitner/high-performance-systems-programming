@@ -33,7 +33,13 @@ const NO_LINE_LIMIT = Number.MAX_SAFE_INTEGER;
 export function CodeStep({ step, courseId, onComplete, harness, rendered }: Props) {
   const ex = step.exercise;
   const [code, setCode] = useState(() => readCode(courseId, ex.id) ?? ex.starter);
-  const [result, setResult] = useState<Result | null>(null);
+  const [result, setResultState] = useState<Result | null>(null);
+  // Counts results, so a new run replaces the result block and fades it in even when the output is the same.
+  const [runId, setRunId] = useState(0);
+  const setResult = (next: Result) => {
+    setResultState(next);
+    setRunId((n) => n + 1);
+  };
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
   const [busy, setBusy] = useState(false);
   const [cooling, setCooling] = useState(false);
@@ -187,7 +193,7 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
     clearCode(courseId, ex.id);
     codeRef.current = ex.starter;
     setCode(ex.starter);
-    setResult(null);
+    setResultState(null);
     setDiagnostics([]);
     setConfirmReset(false);
   };
@@ -247,22 +253,24 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
       </div>
 
       <div aria-live="polite">
-        {error && (
-          <div className="code-result" data-state="bad">
-            <p className="code-headline">{error.message}</p>
-            <div className="code-actions">
-              <button type="button" onClick={() => act(lastAction)} disabled={locked}>{wait > 0 ? `Retry in ${wait}s` : "Retry"}</button>
-              <button type="button" className="session-download" onClick={download}>Download to run in VS Code</button>
+        <div key={runId} className="code-run">
+          {error && (
+            <div className="code-result" data-state="bad">
+              <p className="code-headline">{error.message}</p>
+              <div className="code-actions">
+                <button type="button" onClick={() => act(lastAction)} disabled={locked}>{wait > 0 ? `Retry in ${wait}s` : "Retry"}</button>
+                <button type="button" className="session-download" onClick={download}>Download to run in VS Code</button>
+              </div>
             </div>
-          </div>
-        )}
-        {result?.kind === "outcome" && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
-        {result?.kind === "cases" && (
-          <>
-            {result.outcome && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
-            <CaseList cases={result.cases} />
-          </>
-        )}
+          )}
+          {result?.kind === "outcome" && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
+          {result?.kind === "cases" && (
+            <>
+              {result.outcome && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
+              <CaseList cases={result.cases} />
+            </>
+          )}
+        </div>
       </div>
 
       {hintNodes.length > 0 && (

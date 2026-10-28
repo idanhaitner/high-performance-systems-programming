@@ -20,6 +20,8 @@ export function PracticeCard({ id, courseId, kind, summary, statement, hints, so
   const quiz = checkIds.length > 0;
   const quizKey = checkIds.join("|");
   const [open, setOpen] = useState(worked);
+  // True once the student opens the card, so worked examples shown at load do not animate.
+  const [fresh, setFresh] = useState(false);
   const [openHints, setOpenHints] = useState(0);
   const [showSolution, setShowSolution] = useState(worked);
   const [solved, setSolved] = useState(false);
@@ -79,7 +81,10 @@ export function PracticeCard({ id, courseId, kind, summary, statement, hints, so
   if (!worked && !open) {
     return (
       <article className={`card practice is-folded${solved ? " is-solved" : ""}`} id={id}>
-        <button type="button" className="fold-row" aria-expanded={false} onClick={() => setOpen(true)}>
+        <button type="button" className="fold-row" aria-expanded={false} onClick={() => {
+          setOpen(true);
+          setFresh(true);
+        }}>
           <span className="kicker">Practice</span>
           <span className="fold-line"><Mixed text={summary} /></span>
           <span className="fold-open">Open</span>
@@ -89,7 +94,7 @@ export function PracticeCard({ id, courseId, kind, summary, statement, hints, so
   }
 
   return (
-    <article className={`card practice${solved ? " is-solved" : ""}`} id={id}>
+    <article className={`card practice${solved ? " is-solved" : ""}${fresh ? " is-fresh" : ""}`} id={id}>
       <header className="card-head">
         <p className="kicker">{worked ? "Example" : "Practice"}</p>
         {!worked && (

@@ -184,7 +184,8 @@ const groups = {
     ({ context, page } = await openSession(browser));
     for (let i = 0; i < 40 && !(await page.locator(".step-kind[data-kind=exercise]").count()); i++) {
       const skip = page.locator(".session-nav .session-skip");
-      await ((await skip.isEnabled()) ? skip : page.locator(".session-nav button.is-on")).click();
+      // A reading step can finish while we click, which disables Skip, so retry on the next loop.
+      await ((await skip.isEnabled()) ? skip : page.locator(".session-nav button.is-on")).click({ timeout: 3000 }).catch(() => {});
     }
     const run = page.locator(".code-actions button", { hasText: /^Run$/ }).first();
     const runOnce = async () => {
