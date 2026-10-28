@@ -1,12 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Mixed } from "@/lib/bidi";
 import { COOLDOWN_MS, GodboltError, compileAsm, runProgram } from "@/lib/godbolt";
 import { splitDiagnostics, type AsmLine, type Diagnostic, type RunOutcome } from "@/lib/run-result";
 import { clearCode, readCode, readFails, writeCode, writeFails } from "@/lib/session-store";
-import { buildTestSource, outputsMatch, parseTestOutput } from "@/lib/test-output";
+import { buildTestSource } from "@/lib/test-output";
+import { functionVerdict, programVerdict, type ProgramRun, type TestVerdict } from "@/lib/test-verdict";
 import type { SessionStep } from "@/lib/types";
 import { exerciseZip } from "@/lib/zip";
 import { AsmPanel } from "./AsmView";
@@ -44,7 +45,6 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
   const [lastAction, setLastAction] = useState<Action>("test");
   const [asm, setAsm] = useState<Asm | null>(null);
   const [asmOpen, setAsmOpen] = useState(false);
-  const [optimize, setOptimize] = useState(false);
   const [hoverC, setHoverC] = useState<number | null>(null);
   const [hoverAsm, setHoverAsm] = useState<number | null>(null);
 
@@ -104,42 +104,38 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
   };
 
   const doTest = async () => {
-    let cases: CaseView[];
-    let outcome: RunOutcome | null = null;
+    let verdict: TestVerdict;
     let studentLines = NO_LINE_LIMIT;
     if (ex.mode === "function") {
       const built = buildTestSource(code, harness, ex.test ?? "");
       studentLines = built.studentLines;
-      outcome = await runProgram(built.source);
+      const outcome = await runProgram(built.source);
       showOutcome(outcome, studentLines);
-      const stdout = outcome.kind === "compile-error" ? "" : outcome.stdout;
-      cases = parseTestOutput(stdout, ex.caseNames).map((c) => ({ ...c, hint: rendered.caseHints?.[c.name] ?? null }));
-      if (outcome.kind === "compile-error") {
-        setResult({ kind: "outcome", outcome, studentLines });
-        failRun();
-        return;
-      }
-      if (outcome.kind === "ok" && cases.every((c) => c.status === "pass")) outcome = null;
+      verdict = functionVerdict(outcome, ex.caseNames);
     } else {
-      cases = [];
+      const runs: ProgramRun[] = [];
       for (const c of ex.cases) {
-        const o = await runProgram(code, { args: c.args, stdin: c.stdin });
-        if (o.kind === "compile-error") {
-          showOutcome(o, studentLines);
-          setResult({ kind: "outcome", outcome: o, studentLines });
-          failRun();
-          return;
-        }
-        const hint = c.hint ? <p>{c.hint}</p> : null;
-        if (o.kind === "ok" && outputsMatch(o.stdout, c.expected)) cases.push({ name: c.name, status: "pass", message: "", hint });
-        else if (o.kind === "ok") cases.push({ name: c.name, status: "fail", message: `Expected:\n${c.expected}\nYour program printed:\n${o.stdout}`, hint });
-        else if (o.kind === "timeout") cases.push({ name: c.name, status: "fail", message: "Your program ran too long. Is there a loop that never stops?", hint });
-        else cases.push({ name: c.name, status: "fail", message: `${o.name}. ${o.explanation}`, hint });
+        const outcome = await runProgram(code, { args: c.args, stdin: c.stdin });
+        runs.push({ name: c.name, expected: c.expected, outcome });
+        if (outcome.kind === "compile-error") break;
       }
-      showOutcome({ kind: "ok", exitCode: 0, stdout: "", stderr: "", truncated: false, warnings: [] }, studentLines);
+      verdict = programVerdict(runs);
+      const broken = verdict.kind === "outcome" ? verdict.outcome : null;
+      showOutcome(broken ?? { kind: "ok", exitCode: 0, stdout: "", stderr: "", truncated: false, warnings: [], fullStdout: "", cutOff: false }, studentLines);
     }
-    setResult({ kind: "cases", cases, outcome: outcome && outcome.kind !== "ok" ? outcome : null, studentLines });
-    if (cases.length > 0 && cases.every((c) => c.status === "pass")) onComplete();
+    if (verdict.kind === "outcome") {
+      setResult({ kind: "outcome", outcome: verdict.outcome, studentLines });
+      failRun();
+      return;
+    }
+    const hints = new Map<string, ReactNode>(
+      ex.mode === "function"
+        ? Object.entries(rendered.caseHints ?? {})
+        : ex.cases.filter((c) => c.hint).map((c) => [c.name, <p key={c.name}>{c.hint}</p>]),
+    );
+    const cases = verdict.cases.map((c) => ({ ...c, hint: hints.get(c.name) ?? null }));
+    setResult({ kind: "cases", cases, outcome: verdict.outcome, studentLines });
+    if (verdict.done) onComplete();
     else failRun();
   };
 
@@ -150,7 +146,11 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
     setAsm({ lines, failed: errors.length > 0 ? found : null, code, optimize: opt });
   };
 
-  const act = async (action: Action, opt = optimize) => {
+  // The level shown on the toggle is the level of the assembly on screen, so a
+  // failed fetch leaves both on the old level.
+  const shownOptimize = asm?.optimize ?? false;
+
+  const act = async (action: Action, opt = shownOptimize) => {
     if (busy || cooling || wait > 0) return;
     setLastAction(action);
     setBusy(true);
@@ -174,8 +174,11 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
     const a = document.createElement("a");
     a.href = url;
     a.download = `${ex.id}.zip`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    // Some browsers start the download after click returns, so free the file later.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const reset = () => {
@@ -199,10 +202,7 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
     }
   };
 
-  const pickOptimize = (opt: boolean) => {
-    setOptimize(opt);
-    act("asm", opt);
-  };
+  const pickOptimize = (opt: boolean) => act("asm", opt);
 
   const linked = useMemo(() => (hoverAsm === null ? [] : [hoverAsm]), [hoverAsm]);
   const hintNodes = rendered.hints ?? [];
@@ -222,7 +222,7 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
             lines={asm?.lines ?? []}
             activeSourceLine={hoverC ?? hoverAsm}
             onHoverAsm={setHoverAsm}
-            optimize={asm?.optimize ?? false}
+            optimize={shownOptimize}
             onOptimize={pickOptimize}
             locked={locked}
             stale={asm !== null && asm.code !== code}

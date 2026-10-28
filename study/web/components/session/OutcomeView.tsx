@@ -7,6 +7,11 @@ import type { ReactNode } from "react";
 
 export type CaseView = CaseResult & { hint: ReactNode | null };
 
+// Explanations mark code with backticks, as in `i <= n`.
+function WithCode({ text }: { text: string }) {
+  return <>{text.split(/`([^`]*)`/).map((part, i) => (i % 2 === 1 ? <code key={i}>{part}</code> : part))}</>;
+}
+
 const where = (d: Diagnostic) => `Line ${d.line}${d.column > 0 ? `, column ${d.column}` : ""}`;
 
 function DiagnosticList({ items }: { items: Diagnostic[] }) {
@@ -43,7 +48,7 @@ export function OutcomeView({ outcome, studentLines }: { outcome: RunOutcome; st
     return (
       <div className="code-result" data-state="bad">
         <p className="code-headline">Your code did not compile. The compiler (the tool that turns C into a program) found a problem.</p>
-        {outcome.hint && <p>{outcome.hint}</p>}
+        {outcome.hint && <p><WithCode text={outcome.hint} /></p>}
         {inEditor.length > 0 && <DiagnosticList items={inEditor} />}
         {inTests.length > 0 && (
           <>
@@ -67,7 +72,7 @@ export function OutcomeView({ outcome, studentLines }: { outcome: RunOutcome; st
     return (
       <div className="code-result" data-state="bad">
         <p className="code-headline">{outcome.name}</p>
-        <p>{outcome.explanation}</p>
+        <p><WithCode text={outcome.explanation} /></p>
         {(outcome.stdout !== "" || outcome.stderr !== "") && <Output stdout={outcome.stdout} stderr={outcome.stderr} />}
       </div>
     );

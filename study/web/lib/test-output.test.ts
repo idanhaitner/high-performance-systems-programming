@@ -18,6 +18,18 @@ describe("parseTestOutput", () => {
     ]);
   });
 
+  it("says the output was cut off when a case is missing from cut-off output", () => {
+    expect(parseTestOutput("PASS a\n", ["a", "b"], true)).toEqual([
+      { name: "a", status: "pass", message: "" },
+      {
+        name: "b",
+        status: "not-run",
+        message:
+          "Not checked: your program printed so much that the output was cut off. Remove extra printf calls and test again.",
+      },
+    ]);
+  });
+
   it("handles case names that contain a colon", () => {
     const r = parseTestOutput("PASS a:b\nFAIL c:d: expected 1, got 2\n", ["a:b", "c:d"]);
     expect(r).toEqual([
