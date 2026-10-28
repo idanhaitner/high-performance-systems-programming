@@ -13,9 +13,10 @@
 #define N 4096 /* rows and columns; make test builds a smaller grid */
 #endif
 
-/* N x N ints: 4096 * 4096 * 4 bytes = 64 MB. That is far too big for the
-   stack, so the grid is a global. It starts at 0, so it lives in .bss. */
-static int grid[N][N];
+/* N x N ints: 4096 * 4096 * 4 bytes = 64 MB. That is too big to create
+   inside a function, so the grid is made once, here, outside any function.
+   You will learn why in the lesson "Programs and processes". */
+int grid[N][N];
 
 /* Add up every number in grid, row by row: all of row 0, then all of
    row 1, and so on. The inner loop should move along one row, changing
@@ -44,7 +45,7 @@ long long sum_cols(void) {
 }
 
 /* Puts i + j in row i, column j. */
-static void fill_grid(void) {
+void fill_grid(void) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             grid[i][j] = i + j;
@@ -53,7 +54,7 @@ static void fill_grid(void) {
 }
 
 /* The current time in seconds, from a clock that only moves forward. */
-static double seconds_now(void) {
+double seconds_now(void) {
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC, &t);
     return (double)t.tv_sec + (double)t.tv_nsec / 1e9;

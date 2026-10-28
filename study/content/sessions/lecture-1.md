@@ -45,7 +45,7 @@ Your code is built by godbolt.org, a free website that runs the C compiler. So y
 :::lab ref=lab-stride-timing
 :::
 
-:::learn from="c-data-types#whole-numbers-char-short-int-long"
+:::learn from="c-data-types#variables-and-types"
 :::
 
 :::learn from="c-data-types#dividing-whole-numbers"
@@ -63,7 +63,7 @@ Your code is built by godbolt.org, a free website that runs the C compiler. So y
 :::exercise ref=ex-average
 :::
 
-:::learn from="memory-and-pointers#every-variable-has-a-value-and-an-address"
+:::learn from="memory-and-pointers#memory-is-a-long-row-of-numbered-boxes"
 :::
 
 :::learn from="memory-and-pointers#pointers-a-variable-that-holds-an-address"
@@ -72,7 +72,7 @@ Your code is built by godbolt.org, a free website that runs the C compiler. So y
 :::learn from="memory-and-pointers#arrays-boxes-side-by-side"
 :::
 
-:::check ref=prac-array-formula-q1
+:::check ref=chk-byte
 :::
 
 :::check ref=prac-array-formula-q2
