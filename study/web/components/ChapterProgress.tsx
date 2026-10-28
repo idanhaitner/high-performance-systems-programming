@@ -21,7 +21,8 @@ export function ChapterProgress({ courseId, practiceIds }: { courseId: string; p
   }, [courseId, practiceIds]);
 
   const total = practiceIds.length;
-  if (!total) return null;
+  // Nothing solved yet: an empty bar on a first visit reads like a test already failed.
+  if (!total || !done) return null;
   return (
     <span className="chapter-progress">
       <span className="chapter-bar" aria-hidden="true">

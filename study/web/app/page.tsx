@@ -24,14 +24,14 @@ const STEPS = [
   {
     tone: "sun",
     title: "Write and run real C",
-    body: "Type C in the page, run it, test it, and look at the assembly the compiler made. Topics that need a real machine become a lab for VS Code.",
+    body: "Type C in the page, run it, test it, and look at the assembly, the machine's own instructions, that the compiler made. Topics that need a real computer become a lab you open in VS Code, a free code editor.",
   },
 ];
 
 const BENEFITS = [
   { title: "Made for a first read", body: "You do not need to know C, bits, or memory yet. The lessons start from zero and build up in order." },
   { title: "Follows your lectures", body: "Lessons follow the course lecture by lecture, with the same words and the same examples, so nothing is a surprise in class." },
-  { title: "Code without setup", body: "The editor sends your code to Compiler Explorer, so you can run C from any browser without installing a compiler." },
+  { title: "Code without setup", body: "The editor sends your code to Compiler Explorer, a free website that turns C into a program and runs it. You can run C from any browser without installing anything." },
   { title: "Your place is saved", body: "Solved checks and your last lesson stay in this browser. There is no account to make and nothing to sign in to." },
 ];
 
