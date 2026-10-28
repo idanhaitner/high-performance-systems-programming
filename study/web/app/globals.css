@@ -464,20 +464,8 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .proof { margin-top: 12px; padding-top: 12px; border-top: 2px dashed color-mix(in oklch, var(--on-card) 25%, transparent); }
 .meta { color: var(--muted); }
 
-/* Check card: coral tab, every answer stays visible, the picked one lifts forward. */
+/* Check card: every answer stays visible, the picked one lifts forward. */
 .card.check { padding-top: 24px; }
-.card.check::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  inset-inline-end: 28px;
-  width: 44px;
-  height: 14px;
-  border: 2px solid var(--edge);
-  border-top: 0;
-  border-radius: 0 0 8px 8px;
-  background: var(--coral);
-}
 .statement > :first-child { margin-top: 0; }
 .check-note { margin: 4px 0 0; color: var(--muted); font-size: 0.9375rem; }
 .choices { display: grid; gap: 8px; margin: 16px 0; }
