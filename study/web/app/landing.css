@@ -154,8 +154,10 @@ body:has(.landing) .reading-progress { display: none; }
 .tagline { padding: 96px 0; }
 .tagline p { max-width: 680px; margin: 0 auto; font: 700 3rem/1.1 var(--serif); letter-spacing: -0.035em; text-align: center; }
 .tagline-line { display: block; }
-.tagline-word { color: color-mix(in oklch, var(--ink) 30%, transparent); transition: color 0.6s var(--ease); }
-.tagline-word.is-lit { color: var(--ink); }
+/* Words start lit. Reveal.tsx arms the dimming only when motion is allowed, so without it the text stays readable. */
+.tagline-word { color: var(--ink); }
+.tagline.is-live .tagline-word { transition: color 0.6s var(--ease); }
+.tagline.is-armed .tagline-word:not(.is-lit) { color: color-mix(in oklch, var(--ink) 30%, transparent); }
 
 /* Section headings */
 .landing section > h2 { margin: 0 0 32px; font-size: 2.25rem; line-height: 2.5rem; letter-spacing: -0.03em; }
