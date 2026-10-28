@@ -41,7 +41,7 @@ export function LandingNav({ startHref }: { startHref: string }) {
         </Link>
         <nav className="landing-links" aria-label="Home sections">
           {LINKS.map((link) => (
-            <a key={link.href} href={link.href}>{link.label}</a>
+            <Link key={link.href} href={link.href}>{link.label}</Link>
           ))}
         </nav>
         <Link className="landing-cta landing-cta-small" href={startHref}>Start lecture 1</Link>
@@ -68,14 +68,14 @@ export function LandingNav({ startHref }: { startHref: string }) {
       >
         <nav aria-label="Home sections">
           {LINKS.map((link, index) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               style={{ animationDelay: `${Math.min(index * 60, 400)}ms` }}
               onClick={() => setOpen(false)}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
           <Link className="landing-cta" href={startHref} style={{ animationDelay: `${Math.min(LINKS.length * 60, 400)}ms` }}>
             Start lecture 1
