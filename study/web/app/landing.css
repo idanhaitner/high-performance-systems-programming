@@ -76,7 +76,7 @@ body:has(.landing) .reading-progress { display: none; }
 .landing-cta:active { transform: translateY(1px); box-shadow: none; transition-duration: 0.1s; }
 .landing-cta-small { font-size: 0.875rem; line-height: 1.25rem; }
 
-.landing-toggle { display: none; width: 40px; min-height: 40px; height: 40px; padding: 0; border-radius: 9999px; place-items: center; }
+.landing-toggle { display: none; width: 44px; min-height: 44px; height: 44px; padding: 0; border-radius: 9999px; place-items: center; }
 .landing-toggle span, .landing-toggle span::before { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 2px; position: relative; transition: transform 0.25s var(--ease); }
 .landing-toggle span { transform: translateY(-3px); }
 .landing-toggle span::before { content: ""; position: absolute; left: 0; transform: translateY(6px); }
@@ -269,12 +269,12 @@ body:has(.landing) .reading-progress { display: none; }
 .final .hero-resume { color: var(--on-accent); }
 
 .landing-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding: 24px 0; color: var(--muted); font-size: 0.875rem; line-height: 1.25rem; }
-.landing-foot nav { display: flex; gap: 24px; }
-.landing-foot a { color: var(--muted); }
+.landing-foot nav { display: flex; gap: 16px; }
+.landing-foot a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--muted); }
 
 
 @media (max-width: 1024px) {
-  .landing-links { display: none; }
+  .landing-bar { gap: 12px; }
   .hero { grid-template-columns: minmax(0, 1fr); padding: 64px 0; }
   .page.landing .fan { height: 20rem; }
   .page.landing .deck-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -282,14 +282,11 @@ body:has(.landing) .reading-progress { display: none; }
 
 @media (max-width: 860px) {
   .shell:has(.landing) { display: block; padding-top: 0; }
-}
-
-@media (max-width: 800px) {
   .page.landing { padding: 0 16px 32px; }
   .landing-bar { width: 100%; justify-content: space-between; gap: 12px; }
-  .landing-bar .landing-cta-small { display: none; }
+  .landing-links, .landing-bar .landing-cta-small { display: none; }
   .landing-toggle { display: grid; }
-  .landing-mark { white-space: nowrap; }
+  .landing-mark { min-height: 44px; white-space: nowrap; }
   .landing-menu:not([hidden]) {
     display: block;
     position: fixed;
