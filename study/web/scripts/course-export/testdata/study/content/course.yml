@@ -1,0 +1,27 @@
+id: tiny-course
+title: Tiny Course
+lang: en
+dir: ltr
+summary: A tiny course used to test the exporter.
+changelog:
+  - date: 2026-10-28
+    note: Test fixture.
+lectures:
+  - id: lecture-1
+    number: 1
+    title: First lecture
+    summary: One topic.
+    topics: [topic-one]
+    session: lecture-1
+sources:
+  - path: "Slides.pdf"
+    type: lecture
+    status: incorporated
+    note: "Fixture source."
+topics:
+  - id: topic-one
+    file: topics/topic-one.md
+    title: Topic One
+    exam_weight: taught
+glossary: []
+exams: []

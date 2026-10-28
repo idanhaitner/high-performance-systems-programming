@@ -33,6 +33,7 @@ export type Lecture = {
   title: string;
   summary: string;
   lessons: LessonRef[];
+  sessionId: string | null;
 };
 
 export type Topic = {
@@ -62,6 +63,32 @@ export type SearchHit = {
   href: string;
 };
 
+export type ProgramCase = { name: string; args: string[]; stdin: string; expected: string; hint: string };
+
+export type Exercise = {
+  id: string;
+  title: string;
+  mode: "function" | "program";
+  statement: Block[];
+  hints: Block[][];
+  caseHints: Record<string, Block[]>;
+  starter: string;
+  solution: string;
+  test: string | null;
+  caseNames: string[];
+  cases: ProgramCase[];
+};
+
+export type Lab = { id: string; title: string; body: Block[]; zip: string };
+
+export type SessionStep =
+  | { kind: "learn"; id: string; title: string; blocks: Block[] }
+  | { kind: "check"; id: string; block: Block }
+  | { kind: "exercise"; id: string; exercise: Exercise }
+  | { kind: "lab"; id: string; lab: Lab };
+
+export type Session = { id: string; lectureId: string; title: string; steps: SessionStep[] };
+
 export type Course = {
   id: string;
   title: string;
@@ -72,4 +99,6 @@ export type Course = {
   topics: Topic[];
   glossary: GlossaryEntry[];
   search: SearchHit[];
+  sessions: Session[];
+  harness: string;
 };

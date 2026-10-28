@@ -89,6 +89,7 @@ def main() -> None:
             "title": str(lecture.get("title") or ""),
             "summary": str(lecture.get("summary") or "").strip(),
             "lessons": lessons,
+            "sessionId": str(lecture["session"]) if lecture.get("session") else None,
         })
 
     glossary = []
@@ -131,6 +132,8 @@ def main() -> None:
             "topics": topics,
             "glossary": glossary,
             "search": search,
+            "sessions": model["sessions"],
+            "harness": model["harness"],
         },
         sys.stdout,
         ensure_ascii=False,
