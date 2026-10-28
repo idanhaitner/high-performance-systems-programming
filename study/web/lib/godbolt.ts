@@ -4,7 +4,7 @@ export const GODBOLT_COMPILER = "cg162";
 export const GODBOLT_BASE = "https://godbolt.org/api";
 export const SANITIZE = true;
 
-export const REQUEST_TIMEOUT_MS = 15_000;
+export const REQUEST_TIMEOUT_MS = 30_000; // godbolt itself takes about 21 s to report an infinite loop
 export const COOLDOWN_MS = 3_000;
 
 export class GodboltError extends Error {
