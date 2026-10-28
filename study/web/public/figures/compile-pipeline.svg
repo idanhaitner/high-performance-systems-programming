@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" role="img">
 
 <style>
-  .t { font-family: Heebo, system-ui, sans-serif; fill: #2a1a12; }
-  .m { font-family: Heebo, system-ui, sans-serif; fill: #7a6458; }
-  .w { font-family: Heebo, system-ui, sans-serif; fill: #ffffff; }
-  .mono { font-family: "Source Code Pro", ui-monospace, monospace; }
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; }
   .step { opacity: 1; }
   @media (prefers-reduced-motion: no-preference) {
     .step { animation: appear 0.45s ease both; }
@@ -16,35 +16,35 @@
 </style>
 
 
-  <rect width="720" height="230" fill="#fbf6f2"/>
+  <rect width="720" height="230" fill="#f7f6ff"/>
   <text x="24" y="32" class="m" font-size="13">gcc main.c -o main runs every stage. You can stop after each one.</text>
   
   <g class="step" style="animation-delay:0.08s">
-    <rect x="24" y="56" width="120" height="64" rx="12" fill="#ffffff" stroke="#e6d2c4"/>
+    <rect x="24" y="56" width="120" height="64" rx="12" fill="#ffffff" stroke="#dcd8f5"/>
     <text x="84" y="84" text-anchor="middle" class="t" font-size="13" font-weight="700">Source</text>
     <text x="84" y="104" text-anchor="middle" class="m" font-size="11">main.c</text>
   </g>
-  <path d="M148 88 H160" stroke="#d9a888" stroke-width="2"/>
+  <path d="M148 88 H160" stroke="#a9a1f2" stroke-width="2"/>
   <g class="step" style="animation-delay:0.20s">
-    <rect x="164" y="56" width="120" height="64" rx="12" fill="#fde3d2" stroke="#c2531d"/>
+    <rect x="164" y="56" width="120" height="64" rx="12" fill="#e6e2ff" stroke="#4b3cf5"/>
     <text x="224" y="84" text-anchor="middle" class="t" font-size="13" font-weight="700">Preprocessor</text>
     <text x="224" y="104" text-anchor="middle" class="m" font-size="11">main.i</text>
   </g>
-  <path d="M288 88 H300" stroke="#d9a888" stroke-width="2"/>
+  <path d="M288 88 H300" stroke="#a9a1f2" stroke-width="2"/>
   <g class="step" style="animation-delay:0.32s">
-    <rect x="304" y="56" width="120" height="64" rx="12" fill="#fde3d2" stroke="#c2531d"/>
+    <rect x="304" y="56" width="120" height="64" rx="12" fill="#e6e2ff" stroke="#4b3cf5"/>
     <text x="364" y="84" text-anchor="middle" class="t" font-size="13" font-weight="700">Compiler</text>
     <text x="364" y="104" text-anchor="middle" class="m" font-size="11">main.s</text>
   </g>
-  <path d="M428 88 H440" stroke="#d9a888" stroke-width="2"/>
+  <path d="M428 88 H440" stroke="#a9a1f2" stroke-width="2"/>
   <g class="step" style="animation-delay:0.44s">
-    <rect x="444" y="56" width="120" height="64" rx="12" fill="#fde3d2" stroke="#c2531d"/>
+    <rect x="444" y="56" width="120" height="64" rx="12" fill="#e6e2ff" stroke="#4b3cf5"/>
     <text x="504" y="84" text-anchor="middle" class="t" font-size="13" font-weight="700">Assembler</text>
     <text x="504" y="104" text-anchor="middle" class="m" font-size="11">main.o</text>
   </g>
-  <path d="M568 88 H580" stroke="#d9a888" stroke-width="2"/>
+  <path d="M568 88 H580" stroke="#a9a1f2" stroke-width="2"/>
   <g class="step" style="animation-delay:0.56s">
-    <rect x="584" y="56" width="120" height="64" rx="12" fill="#2a1a12" stroke="#2a1a12"/>
+    <rect x="584" y="56" width="120" height="64" rx="12" fill="#1b1740" stroke="#1b1740"/>
     <text x="644" y="84" text-anchor="middle" class="w" font-size="13" font-weight="700">Linker</text>
     <text x="644" y="104" text-anchor="middle" class="w" font-size="11">executable</text>
   </g>

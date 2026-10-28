@@ -211,7 +211,6 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
 
   return (
     <div className="session-step code-step">
-      <p className="kicker">Coding exercise</p>
       <h2><Mixed text={ex.title} /></h2>
       {rendered.content}
 

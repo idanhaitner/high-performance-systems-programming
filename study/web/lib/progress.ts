@@ -23,6 +23,10 @@ export function readProgress(courseId: string): Progress {
 }
 
 export function writeProgress(courseId: string, progress: Progress) {
-  localStorage.setItem(storageKey(courseId), JSON.stringify(progress));
+  try {
+    localStorage.setItem(storageKey(courseId), JSON.stringify(progress));
+  } catch {
+    // Storage can be blocked or full; the page still works, progress just isn't kept.
+  }
   window.dispatchEvent(new Event("study-progress"));
 }

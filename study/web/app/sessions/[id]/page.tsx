@@ -49,7 +49,6 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   return (
     <article className="page chapter">
       <header className="masthead">
-        <p className="kicker">Guided session</p>
         <h1><Mixed text={session.title} /></h1>
       </header>
       <Stepper session={session} courseId={course.id} harness={course.harness} rendered={rendered} />

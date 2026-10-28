@@ -10,7 +10,6 @@ export function LearnStep({ step, content, onComplete }: { step: Extract<Session
   }, [onComplete]);
   return (
     <div className="session-step">
-      <p className="kicker">Read</p>
       <h2><Mixed text={step.title} /></h2>
       {content}
     </div>

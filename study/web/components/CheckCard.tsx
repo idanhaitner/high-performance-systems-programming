@@ -31,6 +31,20 @@ function shuffle<T>(items: T[], seed: number) {
   return copy;
 }
 
+function Mark({ right }: { right: boolean }) {
+  return right ? (
+    <svg className="choice-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9.5" />
+      <path d="m7.5 12.5 3 3 6-6.5" />
+    </svg>
+  ) : (
+    <svg className="choice-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3 21.5 20h-19z" />
+      <path d="m9.5 11.5 5 5m0-5-5 5" />
+    </svg>
+  );
+}
+
 export function reportCheck(id: string, correct: boolean) {
   window.dispatchEvent(new CustomEvent("study-check", { detail: { id, correct } }));
 }
@@ -266,8 +280,10 @@ export function CheckCard({
         <div className="choices">
           {choices.map((choice, index) => {
             const on = multi ? pickedMany.includes(index) : picked === index;
+            const marked = graded && on;
+            const state = marked ? (choice.correct ? " is-right" : " is-wrong") : "";
             return (
-              <label key={index} className={on ? "is-picked" : ""}>
+              <label key={index} className={`${on ? "is-picked" : ""}${state}`}>
                 <input
                   type={multi ? "checkbox" : "radio"}
                   name={id}
@@ -285,6 +301,8 @@ export function CheckCard({
                   }}
                 />
                 <span>{choice.text}</span>
+                {marked && <Mark right={choice.correct} />}
+                {marked && <span className="sr-only">{choice.correct ? "(right)" : "(wrong)"}</span>}
               </label>
             );
           })}
@@ -294,8 +312,8 @@ export function CheckCard({
         <button type="submit">Check</button>
       </div>
       {graded && !hasAnswer && <p className="check-result">Choose an answer first.</p>}
-      {graded && hasAnswer && correct && <p className="check-result is-yes">Yes. That is the answer.</p>}
-      {graded && hasAnswer && !correct && <p className="check-result is-no">That is not it. The reason is below.</p>}
+      {graded && hasAnswer && correct && <p className="check-result is-yes"><Mark right />Yes. That is the answer.</p>}
+      {graded && hasAnswer && !correct && <p className="check-result is-no"><Mark right={false} />That is not it. The reason is below.</p>}
       {graded && hasAnswer && <div className="check-why">{why}</div>}
     </form>
   );

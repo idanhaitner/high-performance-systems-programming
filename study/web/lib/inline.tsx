@@ -18,7 +18,7 @@ function hrefOf(url: string): string | null {
   if (url === "study:glossary") return "/glossary";
   if (url === "study:index" || url === "study:drill") return "/";
   if (url.startsWith("repo:")) return null;
-  if (url.startsWith("../assets/figures/")) return `${assetBase}/figures/${url.slice("../assets/figures/".length)}?v=ember1`;
+  if (url.startsWith("../assets/figures/")) return `${assetBase}/figures/${url.slice("../assets/figures/".length)}?v=deck1`;
   return url;
 }
 

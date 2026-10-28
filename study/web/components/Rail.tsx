@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SearchBox } from "@/components/SearchBox";
 import { Mixed } from "@/lib/bidi";
 import { readProgress } from "@/lib/progress";
 import type { SearchHit } from "@/lib/types";
 
 type Lesson = { id: string; title: string; lessonNumber: number; practiceIds: string[] };
-type LectureNav = { id: string; number: number; title: string; lessons: Lesson[] };
+type LectureNav = { id: string; number: number; title: string; lessons: Lesson[]; sessionId: string | null };
 
 function samePath(pathname: string, href: string) {
   const trim = (path: string) => (path.length > 1 ? path.replace(/\/+$/, "") : path);
@@ -32,15 +32,17 @@ export function Rail({
   hits: SearchHit[];
 }) {
   const pathname = usePathname();
-  const chaptersRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const [mark, setMark] = useState<{ top: number; height: number } | null>(null);
   const [solved, setSolved] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const lessons = lectures.flatMap((lecture) => lecture.lessons);
-  const currentLecture =
-    lectures.find((lecture) => lecture.lessons.some((lesson) => samePath(pathname, `/topics/${lesson.id}`)))?.id ??
-    lectures[lectures.length - 1]?.id;
+  const inLecture = lectures.find(
+    (lecture) =>
+      lecture.lessons.some((lesson) => samePath(pathname, `/topics/${lesson.id}`)) ||
+      (lecture.sessionId !== null && samePath(pathname, `/sessions/${lecture.sessionId}`)),
+  );
+  const currentLecture = inLecture?.id ?? lectures[lectures.length - 1]?.id;
+  const currentLesson = inLecture?.lessons.find((lesson) => samePath(pathname, `/topics/${lesson.id}`));
   const [expanded, setExpanded] = useState<string[]>(currentLecture ? [currentLecture] : []);
 
   useEffect(() => {
@@ -50,26 +52,6 @@ export function Rail({
 
   const toggleLecture = (id: string) =>
     setExpanded((ids) => (ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id]));
-
-  useLayoutEffect(() => {
-    const nav = chaptersRef.current;
-    if (!nav) return;
-    const place = () => {
-      const current = nav.querySelector<HTMLElement>("a.is-current");
-      if (!current || current.offsetParent === null) {
-        setMark(null);
-        return;
-      }
-      const inset = 8;
-      setMark({
-        top: current.offsetTop + inset,
-        height: Math.max(16, current.offsetHeight - inset * 2),
-      });
-    };
-    place();
-    window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
-  }, [pathname, open, expanded]);
 
   useEffect(() => {
     setOpen(false);
@@ -157,8 +139,21 @@ export function Rail({
           <Link className={samePath(pathname, "/glossary") ? "is-current" : ""} href="/glossary">Glossary</Link>
         </nav>
         <p className="rail-label">Lectures</p>
-        <nav className="chapters-nav" ref={chaptersRef}>
-          {mark && <span className="rail-mark" style={{ top: mark.top, height: mark.height }} />}
+        {inLecture && currentLesson && (
+          <div className="rail-deck" aria-hidden="true">
+            <span />
+            <span />
+            <strong>
+              {currentLesson.lessonNumber}
+              <small>Lecture {inLecture.number}</small>
+            </strong>
+            <p>
+              <strong>{currentLesson.lessonNumber} of {inLecture.lessons.length}</strong>
+              lessons
+            </p>
+          </div>
+        )}
+        <nav className="chapters-nav" aria-label="Lectures">
           {lectures.map((lecture) => {
             const isOpen = expanded.includes(lecture.id);
             const ids = lecture.lessons.flatMap((lesson) => lesson.practiceIds);
@@ -174,7 +169,9 @@ export function Rail({
                 >
                   <span className="lecture-label-kicker">Lecture {String(lecture.number).padStart(2, "0")}</span>
                   <span><Mixed text={lecture.title} /></span>
-                  <span className="lecture-label-meta">{ids.length ? `${solvedHere}/${ids.length}` : lecture.lessons.length}</span>
+                  <span className="lecture-label-meta">
+                    {ids.length ? <><span className="sr-only">Checks solved: </span>{solvedHere}/{ids.length}</> : lecture.lessons.length}
+                  </span>
                 </button>
                 <div className="lecture-lessons" id={`rail-${lecture.id}`}>
                   {lecture.lessons.map((lesson) => {
@@ -183,17 +180,36 @@ export function Rail({
                     const finished = lesson.practiceIds.length > 0 && lesson.practiceIds.every((id) => solved.includes(id));
                     return (
                       <Link key={lesson.id} href={href} className={current ? "is-current" : ""}>
-                        <span className={`dot${finished ? " is-done" : ""}`}>{String(lesson.lessonNumber).padStart(2, "0")}</span>
+                        <span className={`dot${finished ? " is-done" : ""}`}>
+                          {finished ? (
+                            <svg className="dot-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-label="finished">
+                              <path d="M3 8.5 6.5 12 13 4.5" />
+                            </svg>
+                          ) : (
+                            lesson.lessonNumber
+                          )}
+                        </span>
                         <span><Mixed text={lesson.title} /></span>
                       </Link>
                     );
                   })}
+                  {lecture.sessionId && (
+                    <Link
+                      href={`/sessions/${lecture.sessionId}/`}
+                      className={`rail-session${samePath(pathname, `/sessions/${lecture.sessionId}`) ? " is-current" : ""}`}
+                    >
+                      <span className="dot" aria-hidden="true">
+                        <svg className="dot-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.5v9l7.5-4.5z" /></svg>
+                      </span>
+                      <span>Guided session</span>
+                    </Link>
+                  )}
                 </div>
               </div>
             );
           })}
         </nav>
-        <p className="progress-count">{total ? <>{done} / {total} exercises solved</> : ""}</p>
+        <p className="progress-count">{total ? <>{done} of {total} checks solved</> : ""}</p>
       </div>
     </aside>
   );

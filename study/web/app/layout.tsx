@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Heebo, Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import { Ambient } from "@/components/Ambient";
+import { Bricolage_Grotesque, Figtree, Heebo, JetBrains_Mono } from "next/font/google";
 import { Rail } from "@/components/Rail";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { loadCourse } from "@/lib/course";
 import "katex/dist/katex.min.css";
 import "./globals.css";
+import "./landing.css";
 
 const sans = Heebo({
   subsets: ["latin", "hebrew"],
@@ -13,14 +13,15 @@ const sans = Heebo({
   variable: "--font-sans",
   display: "swap",
 });
-const body = Inter({
+const body = Figtree({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-body",
   display: "swap",
 });
-const display = Plus_Jakarta_Sans({
+const display = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
   variable: "--font-display",
   display: "swap",
 });
@@ -58,7 +59,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang={course.lang} dir={course.dir} className={`${sans.variable} ${body.variable} ${display.variable} ${mono.variable}`}>
       <body>
-        <Ambient />
         <ReadingProgress />
         <a className="skip" href="#content">Skip to content</a>
         <div className="shell">

@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 390" role="img">
 
 <style>
-  .t { font-family: Heebo, system-ui, sans-serif; fill: #2a1a12; }
-  .m { font-family: Heebo, system-ui, sans-serif; fill: #7a6458; }
-  .w { font-family: Heebo, system-ui, sans-serif; fill: #ffffff; }
-  .mono { font-family: "Source Code Pro", ui-monospace, monospace; }
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; }
   .step { opacity: 1; }
   @media (prefers-reduced-motion: no-preference) {
     .step { animation: appear 0.45s ease both; }
@@ -16,37 +16,37 @@
 </style>
 
 
-  <rect width="720" height="390" fill="#fbf6f2"/>
+  <rect width="720" height="390" fill="#f7f6ff"/>
   <text x="24" y="32" class="t" font-size="15" font-weight="700">Row-major layout of A[i][j]</text>
   <text x="24" y="52" class="m" font-size="13">Each row is 2049 ints. Neighbors in a row sit next to each other.</text>
   <g class="step" style="animation-delay:0.08s">
     <text x="24" y="88" class="m" font-size="12">row i</text>
-    <rect x="80" y="68" width="48" height="36" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="104" y="91" text-anchor="middle" class="mono" font-size="12">j=0</text><rect x="132" y="68" width="48" height="36" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="156" y="91" text-anchor="middle" class="mono" font-size="12">j=1</text><rect x="184" y="68" width="48" height="36" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="208" y="91" text-anchor="middle" class="mono" font-size="12">j=2</text><rect x="236" y="68" width="48" height="36" rx="6" fill="#fde3d2" stroke="#c2531d"/><text x="260" y="91" text-anchor="middle" class="mono" font-size="12">j=3</text>
+    <rect x="80" y="68" width="48" height="36" rx="6" fill="#e6e2ff" stroke="#4b3cf5"/><text x="104" y="91" text-anchor="middle" class="mono" font-size="12">j=0</text><rect x="132" y="68" width="48" height="36" rx="6" fill="#e6e2ff" stroke="#4b3cf5"/><text x="156" y="91" text-anchor="middle" class="mono" font-size="12">j=1</text><rect x="184" y="68" width="48" height="36" rx="6" fill="#e6e2ff" stroke="#4b3cf5"/><text x="208" y="91" text-anchor="middle" class="mono" font-size="12">j=2</text><rect x="236" y="68" width="48" height="36" rx="6" fill="#e6e2ff" stroke="#4b3cf5"/><text x="260" y="91" text-anchor="middle" class="mono" font-size="12">j=3</text>
     <text x="300" y="91" class="m" font-size="16">…</text>
-    <rect x="332" y="68" width="70" height="36" rx="6" fill="#fde3d2" stroke="#c2531d"/>
+    <rect x="332" y="68" width="70" height="36" rx="6" fill="#e6e2ff" stroke="#4b3cf5"/>
     <text x="367" y="91" text-anchor="middle" class="mono" font-size="12">j=2048</text>
   </g>
   <g class="step" style="animation-delay:0.20s">
-    <path d="M104 116 C140 140, 180 140, 208 116" fill="none" stroke="#1f7a4d" stroke-width="2"/>
-    <path d="M200 122 L212 114 L198 108" fill="#1f7a4d"/>
+    <path d="M104 116 C140 140, 180 140, 208 116" fill="none" stroke="#17784f" stroke-width="2"/>
+    <path d="M200 122 L212 114 L198 108" fill="#17784f"/>
     <text x="24" y="156" class="t" font-size="14">i outer, j inner: the next element is the next address.</text>
   </g>
   <g class="step" style="animation-delay:0.32s">
     <text x="24" y="196" class="m" font-size="12">column j</text>
-    <rect x="110" y="176" width="72" height="32" rx="6" fill="#fbe1e6" stroke="#a3263f"/>
+    <rect x="110" y="176" width="72" height="32" rx="6" fill="#ffe3dc" stroke="#b4233f"/>
     <text x="146" y="197" text-anchor="middle" class="mono" font-size="12">i = 0</text>
-    <rect x="110" y="220" width="72" height="32" rx="6" fill="#fbe1e6" stroke="#a3263f"/>
+    <rect x="110" y="220" width="72" height="32" rx="6" fill="#ffe3dc" stroke="#b4233f"/>
     <text x="146" y="241" text-anchor="middle" class="mono" font-size="12">i = 1</text>
-    <rect x="110" y="264" width="72" height="32" rx="6" fill="#fbe1e6" stroke="#a3263f"/>
+    <rect x="110" y="264" width="72" height="32" rx="6" fill="#ffe3dc" stroke="#b4233f"/>
     <text x="146" y="285" text-anchor="middle" class="mono" font-size="12">i = 2</text>
-    <path d="M182 192 H250" stroke="#a3263f" stroke-width="2"/>
-    <path d="M242 186 L254 192 L242 198" fill="#a3263f"/>
+    <path d="M182 192 H250" stroke="#b4233f" stroke-width="2"/>
+    <path d="M242 186 L254 192 L242 198" fill="#b4233f"/>
     <text x="264" y="188" class="t" font-size="14">j outer, i inner</text>
     <text x="264" y="210" class="m" font-size="13">Each step jumps a whole row:</text>
     <text x="264" y="232" class="mono" font-size="13">2049 × sizeof(int) bytes</text>
   </g>
   <g class="step" style="animation-delay:0.44s">
-    <rect x="24" y="320" width="672" height="48" rx="10" fill="#fbeee4"/>
+    <rect x="24" y="320" width="672" height="48" rx="10" fill="#f1efff"/>
     <text x="40" y="349" class="t" font-size="14">Step of 3 copies three neighbors. 2049 = 3 × 683, so each row is covered exactly.</text>
   </g>
 

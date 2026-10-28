@@ -20,11 +20,9 @@ export default function GlossaryPage() {
   return (
     <article className="page glossary">
       <header className="masthead">
-        <p className="kicker">Glossary</p>
         <h1>Glossary</h1>
-        <span className="masthead-num" aria-hidden="true">{String(course.glossary.length).padStart(2, "0")}</span>
       </header>
-      <p className="lead">The terms used in the lessons, grouped by the lesson that defines them.</p>
+      <p className="lead">All {course.glossary.length} terms used in the lessons, grouped by the lesson that defines them.</p>
       {groups.length > 0 && (
         <nav className="glossary-jump" aria-label="Chapters in the glossary">
           {groups.map((group) => (
