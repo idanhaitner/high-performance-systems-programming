@@ -74,6 +74,10 @@
     --mint-soft: rgb(127 224 182 / 0.16);
     --coral-soft: rgb(255 123 92 / 0.16);
     --sun-soft: rgb(255 210 63 / 0.14);
+    /* Card colours one step darker so they do not glare on the night background. */
+    --mint: #5fc49a;
+    --coral: #e8694c;
+    --sun: #e6b92e;
     --ok: #6fdcaa;
     --danger: #ff8fa3;
     --code: #0e0c24;

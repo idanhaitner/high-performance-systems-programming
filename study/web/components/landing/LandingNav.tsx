@@ -21,9 +21,12 @@ export function LandingNav({ startHref }: { startHref: string }) {
       setOpen(false);
       toggleRef.current?.focus();
     };
+    // iOS Safari ignores overflow on body alone, so lock the root element too.
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
     return () => {
+      document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
@@ -54,7 +57,15 @@ export function LandingNav({ startHref }: { startHref: string }) {
           <span aria-hidden="true" />
         </button>
       </div>
-      <div className="landing-menu" id="landing-menu" hidden={!open}>
+      <div
+        className="landing-menu"
+        id="landing-menu"
+        hidden={!open}
+        onClick={(event) => {
+          // A tap on the empty part of the panel closes it.
+          if (event.target === event.currentTarget) setOpen(false);
+        }}
+      >
         <nav aria-label="Home sections">
           {LINKS.map((link, index) => (
             <a

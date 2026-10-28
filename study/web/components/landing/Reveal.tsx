@@ -12,7 +12,10 @@ export function Reveal() {
     const words = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          entry.target.classList.toggle("is-lit", entry.isIntersecting || entry.boundingClientRect.top < 0);
+          if (!entry.isIntersecting && entry.boundingClientRect.top >= 0) continue;
+          // Each word lights once and stays lit.
+          entry.target.classList.add("is-lit");
+          words.unobserve(entry.target);
         }
       },
       { rootMargin: "0px 0px -45% 0px" },
