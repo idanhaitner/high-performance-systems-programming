@@ -17,7 +17,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
   const previous = course.topics[index - 1];
   const next = course.topics[index + 1];
   return (
-    <article className="page chapter">
+    <article className="page chapter lesson">
       <Visit courseId={course.id} slug={topic.id} />
       <header className="masthead">
         <h1><Mixed text={topic.title} /></h1>

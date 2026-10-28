@@ -339,7 +339,7 @@ main { min-width: 0; }
   font: 700 3.25rem/1 var(--serif);
   letter-spacing: -0.04em;
 }
-.rail-deck small { font: 600 0.75rem/1.2 var(--sans); letter-spacing: 0; }
+.rail-deck small { font-family: var(--sans); font-size: 0.75rem; font-weight: 600; line-height: 1.2; letter-spacing: 0; }
 .rail-deck p { position: absolute; inset-inline-start: 124px; inset-block-start: 36px; margin: 0; font-size: 0.875rem; line-height: 1.35; color: var(--muted); }
 .rail-deck p strong { all: unset; display: block; color: var(--ink); font: 700 1.5rem/1.1 var(--serif); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 
@@ -588,6 +588,26 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .chapter-bar { flex: 1; height: 8px; border: 2px solid var(--edge); border-radius: var(--r-pill); overflow: hidden; }
 .chapter-bar > span { display: block; height: 100%; background: var(--mint); transition: width 0.6s var(--ease); }
 .chapter-count { font-size: 0.8125rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Wide screens: definition and check cards sit in a column beside the text they belong to. */
+@media (min-width: 1400px) {
+  .page.lesson {
+    --side: 18rem;
+    --side-gap: 32px;
+    width: min(calc(40rem + var(--side) + var(--side-gap) + 96px), calc(100% - 48px));
+    padding-inline-end: calc(48px + var(--side) + var(--side-gap));
+  }
+  .page.lesson :is(.formal, .card.check):not(.practice *) {
+    float: right;
+    clear: right;
+    width: var(--side);
+    margin: 4px calc(-1 * (var(--side) + var(--side-gap))) 16px 0;
+  }
+  [dir="rtl"] .page.lesson :is(.formal, .card.check):not(.practice *) { float: left; clear: left; margin: 4px 0 16px calc(-1 * (var(--side) + var(--side-gap))); }
+  .page.lesson .card.check:not(.practice *) { padding: 20px 18px 18px; }
+  .page.lesson .card.check:not(.practice *) .choices label { padding: 8px 12px; font-size: 0.9375rem; }
+  .page.lesson .chapter-foot, .page.lesson .toc { clear: both; }
+}
 
 /* ---------- Glossary ---------- */
 
