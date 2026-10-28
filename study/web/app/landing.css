@@ -269,7 +269,7 @@ body:has(.landing) .reading-progress { display: none; }
 .final .landing-cta { background: var(--sun); color: var(--on-card); }
 .final .hero-resume { color: var(--on-accent); }
 
-.landing-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding: 24px 0; color: var(--muted); font-size: 0.875rem; line-height: 1.25rem; }
+.landing-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 24px 0; color: var(--muted); font-size: 0.875rem; line-height: 1.25rem; }
 .landing-foot nav { display: flex; gap: 16px; }
 .landing-foot a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--muted); }
 
