@@ -39,6 +39,11 @@ export default function HomePage() {
                 <p className="kicker">Lecture {pad(lecture.number)} · {lecture.lessons.length} lessons</p>
                 <h2><Mixed text={lecture.title} /></h2>
                 <p><Mixed text={lecture.summary} /></p>
+                {lecture.sessionId && (
+                  <p>
+                    <Link className="session-start" href={`/sessions/${lecture.sessionId}/`}>Start session</Link>
+                  </p>
+                )}
                 <ChapterProgress
                   courseId={course.id}
                   practiceIds={lecture.lessons.flatMap((lesson) => lesson.practiceIds)}
