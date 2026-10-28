@@ -23,8 +23,8 @@ The processor never fetches just one number. It fetches a 64-byte block, a **cac
 ## What to do in VS Code
 
 1. Download the zip below and unzip it. In VS Code, choose **File → Open Folder…** and open the unzipped folder.
-2. Open a terminal inside VS Code: **Terminal → New Terminal**. This lab needs `gcc` and `make`, which Linux and macOS have (on Windows, use WSL, the Linux system built into Windows).
-3. Type `make test` and press Enter. It builds a small 1024 × 1024 grid and checks both sums. Right now it prints `WRONG`, because both functions return 0.
+2. Open a terminal inside VS Code: **Terminal → New Terminal**. This lab needs `gcc` and `make`. On macOS, install them by typing `xcode-select --install`. There, `gcc` is really Apple's compiler `clang` under another name, which is fine for this lab. On Linux, type `sudo apt install build-essential`. On Windows, use WSL (the Linux system built into Windows) and the same Linux command.
+3. Type `make test` and press Enter. It builds a small 1024 × 1024 grid and checks both sums. Right now it prints `WRONG`, because both functions return 0. After that, make prints a line like `make: *** [test] Error 1`. This is expected: it just means the test failed.
 4. Open `stride.c` and write `sum_rows`: an outer loop over the rows `i`, an inner loop over the columns `j`, adding `grid[i][j]` to `total`. Then write `sum_cols` with the two loops the other way round: the outer loop over the columns `j`, the inner loop over the rows `i`.
 5. Run `make test` again until it prints `OK: both sums are 1072693248.`
 6. Type `make run`. This builds the full 4096 × 4096 grid with `-O2`, the option that asks the compiler to make the code fast, the way real programs are built. Then it runs the timing.

@@ -4,14 +4,14 @@ title: Add up the squares
 
 This exercise practices the first surprise from the lesson "Why the machine matters": a number lives in a box of fixed size, and a total that grows too big no longer fits.
 
-You will write a **function**. A function is a named piece of code that receives some input values and gives back one answer. Giving back the answer is called **returning** it, and C does it with the word `return`. You do not write `main` here. The Test button calls your function for you with a few inputs and checks the answers.
+You will write a **function**. A function is a named piece of code that receives some input values and gives back one answer. Giving back the answer is called **returning** it, and C does it with the word `return`. `main` is the function where a whole program starts; here the tests bring their own, so you do not write `main`. The Test button calls your function for you with a few inputs and checks the answers.
 
 Write `sum_squares(n)`. It must return the sum of the squares from 1 up to `n`, that is, 1×1 + 2×2 + … + n×n. For example:
 
 - `sum_squares(3)` is 1 + 4 + 9 = 14.
 - `sum_squares(0)` is 0, because there is nothing to add.
 
-The function returns a `long long`. That is a whole-number type that takes 8 bytes (64 bits) on every computer, so it can hold numbers with up to 19 digits. On this course's machines it is the same size as `long`.
+The function returns a `long long`. That is a whole-number type that takes 8 bytes (64 bits) on the computers you will use; C only promises at least 64 bits. So it can hold numbers with up to 19 digits. On this course's machines it is the same size as `long`.
 
 The starter code already has a loop. A **loop** repeats the lines inside it. Here, `for (int i = 1; i <= n; i++)` runs once with `i` equal to 1, then 2, and so on up to `n`. (`i++` means "add 1 to `i`".) Press Test first and see which case fails.
 
