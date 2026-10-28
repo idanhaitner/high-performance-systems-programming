@@ -14,7 +14,6 @@ body:has(.landing) .reading-progress { display: none; }
 .landing h1, .landing h2, .landing h3 { text-wrap: balance; }
 .landing p { text-wrap: pretty; }
 .landing section { scroll-margin-top: 112px; }
-.page.landing :is(ul, ol) li { padding-inline-start: 0; }
 .page.landing :is(ul, ol) li::marker { content: none; }
 
 /* Floating nav */
