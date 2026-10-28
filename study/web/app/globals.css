@@ -161,8 +161,10 @@ button {
   cursor: pointer;
   transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background-color 0.2s var(--ease);
 }
-button:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: var(--lift-sm); }
-button:active:not(:disabled) { transform: none; box-shadow: none; }
+@media (hover: hover) and (pointer: fine) {
+  button:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: var(--lift-sm); }
+}
+button:active:not(:disabled) { transform: none; box-shadow: none; transition-duration: 0.1s; }
 button.is-on, button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
@@ -506,11 +508,10 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
   border-radius: var(--r-sm);
   background: var(--accent-soft);
   transform-origin: top center;
-  animation: flip-in 0.28s var(--ease) both;
+  animation: fade-in 0.2s var(--ease) both;
 }
 .check-why > :first-child { margin-top: 0; }
 .check-why > :last-child { margin-bottom: 0; }
-@keyframes flip-in { from { opacity: 0; transform: perspective(800px) rotateX(-70deg); } }
 
 /* Practice */
 .practice.is-folded { padding: 0; }
@@ -780,7 +781,8 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  /* Keep colour and fade changes, drop movement. */
+  *, *::before, *::after { animation: none !important; transition-property: color, background-color, border-color, opacity !important; }
   .formal, .choices label.is-picked, .rail-deck span, .rail-deck strong { transform: none; }
   button:hover:not(:disabled), .chapter-hop:hover { transform: none; }
 }

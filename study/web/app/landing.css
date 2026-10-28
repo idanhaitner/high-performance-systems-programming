@@ -54,7 +54,7 @@ body:has(.landing) .reading-progress { display: none; }
   font-weight: 600;
   color: var(--muted);
   text-decoration: none;
-  transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
+  transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
 }
 .landing-links a:hover { background: var(--accent-soft); color: var(--ink); }
 .landing-links a:focus-visible, .landing-mark:focus-visible, .landing-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -71,14 +71,13 @@ body:has(.landing) .reading-progress { display: none; }
   line-height: 1.5rem;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease);
 }
-.landing-cta:hover { transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
-.landing-cta:active { transform: translateY(1px); box-shadow: none; }
+.landing-cta:active { transform: translateY(1px); box-shadow: none; transition-duration: 0.1s; }
 .landing-cta-small { font-size: 0.875rem; line-height: 1.25rem; }
 
 .landing-toggle { display: none; width: 40px; min-height: 40px; height: 40px; padding: 0; border-radius: 9999px; place-items: center; }
-.landing-toggle span, .landing-toggle span::before { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 2px; position: relative; transition: transform 0.5s var(--ease); }
+.landing-toggle span, .landing-toggle span::before { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 2px; position: relative; transition: transform 0.25s var(--ease); }
 .landing-toggle span { transform: translateY(-3px); }
 .landing-toggle span::before { content: ""; position: absolute; left: 0; transform: translateY(6px); }
 .landing-nav.is-open .landing-toggle span { transform: rotate(45deg); }
@@ -146,6 +145,9 @@ body:has(.landing) .reading-progress { display: none; }
 .fan a:focus-visible { transform: translateY(-16px); outline: none; box-shadow: 0 0 0 4px var(--accent); }
 @media (hover: hover) and (pointer: fine) {
   .fan a:hover { transform: translateY(-16px); }
+  .landing-cta:hover:not(:active) { transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
+  .deck-session:hover { background: var(--sun); color: var(--on-card); transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
+  .deck-grid a:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--edge); }
 }
 .fan-num { font: 700 3.75rem/1 var(--serif); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .fan-title { font: 700 1.125rem/1.75rem var(--serif); letter-spacing: -0.02em; }
@@ -217,9 +219,8 @@ body:has(.landing) .reading-progress { display: none; }
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), background-color 0.3s var(--ease);
+  transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease), background-color 0.16s var(--ease);
 }
-.deck-session:hover { background: var(--sun); color: var(--on-card); transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
 .page.landing .deck-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
 .deck-grid a {
   display: flex;
@@ -231,9 +232,8 @@ body:has(.landing) .reading-progress { display: none; }
   border-radius: 16px;
   color: var(--ink);
   text-decoration: none;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
-.deck-grid a:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--edge); }
 .deck-grid a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .deck-num { font: 700 1.875rem/2.25rem var(--serif); color: var(--accent-ink); }
 .deck-grid strong { font: 700 1.125rem/1.75rem var(--serif); letter-spacing: -0.02em; }
@@ -255,7 +255,7 @@ body:has(.landing) .reading-progress { display: none; }
   letter-spacing: -0.02em;
 }
 .faq summary::-webkit-details-marker { display: none; }
-.faq summary::after { content: "+"; font-size: 1.5rem; line-height: 1.75rem; color: var(--accent-ink); transition: transform 0.3s var(--ease); }
+.faq summary::after { content: "+"; font-size: 1.5rem; line-height: 1.75rem; color: var(--accent-ink); transition: transform 0.2s var(--ease); }
 .faq details[open] summary::after { transform: rotate(45deg); }
 .faq summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 24px; }
 .faq details p { margin: 0; padding: 0 24px 24px; color: var(--muted); font-size: 1rem; line-height: 1.5rem; }
@@ -326,6 +326,6 @@ body:has(.landing) .reading-progress { display: none; }
 @keyframes menu-in { from { opacity: 0; transform: translateY(24px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .fan a:is(:hover, :focus-visible) { transform: none; }
+  .fan a:is(:hover, :focus-visible), .landing-cta:hover:not(:active), .deck-session:hover, .deck-grid a:hover { transform: none; }
   .landing-menu a { animation: none; }
 }
