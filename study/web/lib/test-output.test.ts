@@ -18,6 +18,14 @@ describe("parseTestOutput", () => {
     ]);
   });
 
+  it("handles case names that contain a colon", () => {
+    const r = parseTestOutput("PASS a:b\nFAIL c:d: expected 1, got 2\n", ["a:b", "c:d"]);
+    expect(r).toEqual([
+      { name: "a:b", status: "pass", message: "" },
+      { name: "c:d", status: "fail", message: "expected 1, got 2" },
+    ]);
+  });
+
   it("ignores unknown names and follows the order of names", () => {
     const r = parseTestOutput("PASS z\nPASS b\nPASS a\n", ["a", "b"]);
     expect(r.map((c) => c.name)).toEqual(["a", "b"]);
@@ -34,5 +42,6 @@ describe("outputsMatch", () => {
   it("fails on missing or extra lines", () => {
     expect(outputsMatch("7\n8\n", "7\n")).toBe(false);
     expect(outputsMatch("", "7\n")).toBe(false);
+    expect(outputsMatch("7\n\n", "7\n")).toBe(false);
   });
 });

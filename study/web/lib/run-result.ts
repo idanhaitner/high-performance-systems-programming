@@ -1,7 +1,7 @@
 export type Diagnostic = { line: number; column: number; severity: "error" | "warning" | "note"; text: string };
 export type RunOutcome =
   | { kind: "compile-error"; diagnostics: Diagnostic[]; text: string; hint: string | null }
-  | { kind: "timeout" }
+  | { kind: "timeout"; stdout: string; stderr: string }
   | { kind: "crash"; signal: number; name: string; explanation: string; stdout: string; stderr: string }
   | { kind: "ok"; exitCode: number; stdout: string; stderr: string; truncated: boolean; warnings: Diagnostic[] };
 export type AsmLine = { text: string; sourceLine: number | null };
@@ -84,14 +84,14 @@ export function classifyRun(response: unknown): RunOutcome {
     };
   }
 
-  // Timeout first: it exits with 143, which would otherwise read as signal 15.
-  if (r.timedOut === true) return { kind: "timeout" };
-
   const code = typeof r.code === "number" ? r.code : 0;
   const stdoutFull = joinText(r.stdout);
   const stderrFull = joinText(r.stderr);
   const stdout = stdoutFull.slice(0, OUTPUT_CAP);
   const stderr = stderrFull.slice(0, OUTPUT_CAP);
+
+  // Timeout first: it exits with 143, which would otherwise read as signal 15.
+  if (r.timedOut === true) return { kind: "timeout", stdout, stderr };
 
   const signal = code > 128 ? code - 128 : code < 0 ? -code : 0;
   if (signal > 0) {

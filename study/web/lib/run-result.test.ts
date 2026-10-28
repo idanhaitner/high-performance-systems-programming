@@ -36,7 +36,11 @@ describe("classifyRun", () => {
   });
 
   it("decides timeout before reading the exit code as a signal", () => {
-    expect(classifyRun(fixture("run-timeout")).kind).toBe("timeout");
+    const r = classifyRun(fixture("run-timeout"));
+    expect(r.kind).toBe("timeout");
+    if (r.kind !== "timeout") return;
+    expect(typeof r.stdout).toBe("string");
+    expect(typeof r.stderr).toBe("string");
   });
 
   it("hints when the student defines main twice", () => {
