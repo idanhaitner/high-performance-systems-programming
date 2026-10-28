@@ -1,0 +1,16 @@
+cases:
+  - name: two numbers
+    args: ["3", "4"]
+    stdin: ""
+    expected: "7\n"
+    hint: "For ./sum 3 4 the answer is 3 + 4 = 7. If you printed 3, only argv[1] was added. Loop over every argument from argv[1] up to argv[argc - 1]."
+  - name: no numbers
+    args: []
+    stdin: ""
+    expected: "0\n"
+    hint: "With nothing after the program's name, argc is 1 and there is nothing to add, so print 0. Do not read argv[1] here: it is NULL, the end marker."
+  - name: three numbers with a negative
+    args: ["-2", "5", "10"]
+    stdin: ""
+    expected: "13\n"
+    hint: "-2 + 5 + 10 = 13. atoi understands the minus sign, so just add every argument the same way."

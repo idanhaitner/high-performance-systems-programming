@@ -1,0 +1,9 @@
+import type { ReactNode } from "react";
+
+// Step content the server has already turned into React nodes. Code blocks are
+// highlighted by a Server Component, so the client tree only receives the result.
+export type RenderedStep = {
+  content?: ReactNode;
+  hints?: ReactNode[];
+  caseHints?: Record<string, ReactNode>;
+};

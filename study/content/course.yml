@@ -19,6 +19,8 @@ changelog:
     note: Edited Lecture 1 for clarity and corrected the struct initializer, pointer addition, process startup, and printf output answers.
   - date: 2026-10-24
     note: Rewrote the overview, every Lecture 1 lesson, and the glossary for readers starting from zero, explaining each term before using it.
+  - date: 2026-10-28
+    note: Added the Lecture 1 guided session, with short readings, quick questions, six coding exercises you solve in the page, and a timing lab for VS Code.
 
 lectures:
   - id: lecture-1
@@ -29,6 +31,7 @@ lectures:
       data into records, how your C code becomes a running program, and how a
       program reads the words you type after its name.
     topics: [why-low-level, c-data-types, memory-and-pointers, structures, source-to-process, command-line-arguments]
+    session: sessions/lecture-1.md
 
 sources:
   - path: "Lecture 1 - Introduction.pdf"

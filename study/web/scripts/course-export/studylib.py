@@ -46,6 +46,10 @@ KNOWN_DIRECTIVES = {
     "check",
     "trap",
     "examnote",
+    "learn",
+    "exercise",
+    "lab",
+    "case",
 }
 FORMAL = {"definition", "theorem", "algorithm"}
 
@@ -286,7 +290,13 @@ def _unquote(text: str) -> str:
     index = 0
     while index < len(body):
         if body[index] == "\\" and index + 1 < len(body):
-            out.append(body[index + 1])
+            nxt = body[index + 1]
+            if nxt in {"n", "t", "r"}:
+                out.append({"n": "\n", "t": "\t", "r": "\r"}[nxt])
+            elif nxt in {'"', "\\"}:
+                out.append(nxt)
+            else:
+                out.append("\\" + nxt)
             index += 2
             continue
         out.append(body[index])
@@ -1223,7 +1233,9 @@ def load_course(root: Path) -> dict:
         except StudyError as exc:
             raise StudyError(f"study/content/{rel}: {exc}") from exc
         topics.append({"entry": entry, "meta": meta, "blocks": blocks, "rel": rel, "missing": False})
-    return {"root": root, "content": content, "course": course, "topics": topics}
+    model = {"root": root, "content": content, "course": course, "topics": topics}
+    load_sessions(model)
+    return model
 
 
 def _as_list(value, label, errors):
@@ -1240,6 +1252,234 @@ def _require(mapping, key, label, errors):
         errors.append(f"{label} is missing {key}")
         return None
     return mapping[key]
+
+
+def section_slug(text: str, used: dict) -> str:
+    """Same output as slug() in study/web/components/Chapter.tsx."""
+    base = re.sub(r"^-+|-+$", "", re.sub(r"[^a-z0-9]+", "-", text.lower())) or "section"
+    count = used.get(base, 0)
+    used[base] = count + 1
+    return base if count == 0 else f"{base}-{count + 1}"
+
+
+def topic_sections(blocks) -> dict:
+    """slug -> (heading text, blocks under that ## heading)."""
+    sections = {}
+    used: dict = {}
+    current = None
+    for block in blocks:
+        if block["type"] == "heading" and block["level"] == 2:
+            current = section_slug(block["text"], used)
+            sections[current] = (block["text"], [])
+        elif current is not None:
+            sections[current][1].append(block)
+    return sections
+
+
+def _read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def _load_exercise(directory: Path, rel: str, errors: list):
+    exercise_id = directory.name
+    if not ID_RE.match(exercise_id):
+        errors.append(f"{rel}: exercise folder name must be a simple id")
+        return None
+    try:
+        readme = directory / "README.md"
+        if not readme.exists():
+            errors.append(f"{rel}: missing README.md")
+            return None
+        meta, blocks = parse_topic(_read_text(readme))
+    except StudyError as exc:
+        errors.append(f"{rel}/README.md: {exc}")
+        return None
+    title = str((meta or {}).get("title") or "").strip() if isinstance(meta, dict) else ""
+    if not title:
+        errors.append(f"{rel}/README.md: frontmatter needs title")
+    statement, hints, case_hints = [], [], {}
+    for block in blocks:
+        name = block["name"] if block["type"] == "directive" else ""
+        if name == "hint":
+            hints.append(block["children"])
+        elif name == "case":
+            case_name = str(block["attrs"].get("name") or "")
+            if not case_name:
+                errors.append(f"{rel}/README.md:{block['line']}: case needs name")
+            case_hints[case_name] = block["children"]
+        else:
+            statement.append(block)
+    files = {}
+    for name in ("starter.c", "solution.c"):
+        if (directory / name).exists():
+            files[name] = _read_text(directory / name)
+        else:
+            errors.append(f"{rel}: missing {name}")
+            files[name] = ""
+    has_test = (directory / "test.c").exists()
+    has_cases = (directory / "cases.yml").exists()
+    if has_test == has_cases:
+        errors.append(f"{rel}: needs exactly one of test.c or cases.yml")
+    test, case_names, cases = None, [], []
+    if has_test:
+        test = _read_text(directory / "test.c")
+        case_names = re.findall(r'CHECK\(\s*"([^"]*)"', test)
+        if not case_names:
+            errors.append(f"{rel}/test.c: no CHECK(\"name\", ...) calls found")
+    elif has_cases:
+        try:
+            data = parse_yaml(_read_text(directory / "cases.yml"))
+        except StudyError as exc:
+            errors.append(f"{rel}/cases.yml: {exc}")
+            data = None
+        items = data.get("cases") if isinstance(data, dict) else None
+        if not isinstance(items, list):
+            errors.append(f"{rel}/cases.yml: needs a cases: list")
+            items = []
+        for item in items:
+            if not isinstance(item, dict) or not str(item.get("name") or "") or "expected" not in item:
+                errors.append(f"{rel}/cases.yml: each case needs name and expected")
+                continue
+            args = item.get("args") or []
+            cases.append({
+                "name": str(item["name"]),
+                "args": [str(arg) for arg in args] if isinstance(args, list) else [str(args)],
+                "stdin": str(item.get("stdin") or ""),
+                "expected": str(item["expected"]),
+                "hint": str(item.get("hint") or ""),
+            })
+        if not 1 <= len(items) <= 3:
+            errors.append(f"{rel}/cases.yml: a program exercise needs 1 to 3 cases, found {len(items)}")
+        case_names = [case["name"] for case in cases]
+    for name in case_hints:
+        if name not in case_names:
+            errors.append(f"{rel}/README.md: case hint {name!r} is not a case of this exercise")
+    return {
+        "id": exercise_id, "title": title, "mode": "function" if has_test else "program",
+        "statement": statement, "hints": hints, "caseHints": case_hints,
+        "starter": files["starter.c"], "solution": files["solution.c"],
+        "test": test, "caseNames": case_names if has_test else [], "cases": cases,
+    }
+
+
+def _load_lab(directory: Path, rel: str, errors: list):
+    try:
+        readme = directory / "README.md"
+        if not readme.exists():
+            errors.append(f"{rel}: missing README.md")
+            return None
+        meta, blocks = parse_topic(_read_text(readme))
+    except StudyError as exc:
+        errors.append(f"{rel}/README.md: {exc}")
+        return None
+    title = str(meta.get("title") or "").strip() if isinstance(meta, dict) else ""
+    if not title:
+        errors.append(f"{rel}/README.md: frontmatter needs title")
+    return {"id": directory.name, "title": title, "body": blocks, "zip": f"/labs/{directory.name}.zip"}
+
+
+def _load_session(model, lecture_id: str, session_ref: str, errors: list):
+    rel = norm_rel(session_ref)
+    match = re.fullmatch(r"sessions/([a-z0-9]+(?:-[a-z0-9]+)*)\.md", rel)
+    if not match:
+        errors.append(f"lecture {lecture_id}: session must be a path like sessions/{lecture_id}.md, found {session_ref!r}")
+        return None
+    session_ref = match.group(1)
+    path = model["content"] / rel
+    label = f"study/content/{rel}"
+    if not path.exists():
+        errors.append(f"lecture {lecture_id}: session file {label} is missing")
+        return None
+    try:
+        meta, blocks = parse_topic(_read_text(path))
+    except StudyError as exc:
+        errors.append(f"{label}: {exc}")
+        return None
+    meta = meta if isinstance(meta, dict) else {}
+    if str(meta.get("id") or "") != session_ref:
+        errors.append(f"{label}: frontmatter id must be {session_ref}")
+    if str(meta.get("lecture") or "") != lecture_id:
+        errors.append(f"{label}: lecture must be {lecture_id}")
+    if not str(meta.get("title") or "").strip():
+        errors.append(f"{label}: frontmatter needs title")
+    steps = []
+    for index, block in enumerate(blocks):
+        where = f"{label}:{block['line']}"
+        if block["type"] != "directive" or block["name"] not in {"learn", "check", "exercise", "lab"}:
+            errors.append(f"{where}: a session holds only learn, check, exercise, and lab blocks")
+            continue
+        name, attrs = block["name"], block["attrs"]
+        ref = str(attrs.get("ref") or "")
+        if name == "learn":
+            source = str(attrs.get("from") or "")
+            if source:
+                topic_id, _hash, slug = source.partition("#")
+                found = model["topic_sections"].get(topic_id, {}).get(slug)
+                if found is None:
+                    errors.append(f"{where}: learn from={source} names no topic section")
+                    continue
+                steps.append({"kind": "learn", "id": f"learn:{source}", "title": found[0], "blocks": found[1]})
+            elif attrs.get("title") and block["children"]:
+                steps.append({"kind": "learn", "id": f"learn:{index}", "title": attrs["title"], "blocks": block["children"]})
+            else:
+                errors.append(f"{where}: learn needs from=topic#section, or a title and content")
+        elif name == "check":
+            found = model["checks"].get(ref)
+            if found is None:
+                errors.append(f"{where}: check ref={ref or '?'} names no check in any topic")
+                continue
+            steps.append({"kind": "check", "id": ref, "block": found})
+        elif name == "exercise":
+            found = model["exercises"].get(ref)
+            if found is None:
+                errors.append(f"{where}: exercise ref={ref or '?'} names no folder in exercises/")
+                continue
+            steps.append({"kind": "exercise", "id": ref, "exercise": found})
+        else:
+            found = model["labs"].get(ref)
+            if found is None:
+                errors.append(f"{where}: lab ref={ref or '?'} names no folder in labs/")
+                continue
+            steps.append({"kind": "lab", "id": ref, "lab": found})
+    ids = [step["id"] for step in steps]
+    for step_id in sorted({item for item in ids if ids.count(item) > 1}):
+        errors.append(f"{label}: step {step_id} appears more than once")
+    return {"id": session_ref, "lectureId": lecture_id, "title": str(meta.get("title") or ""), "steps": steps}
+
+
+def load_sessions(model) -> None:
+    """Adds sessions, exercises, labs, harness, and session_errors to the model."""
+    content = model["content"]
+    errors: list = []
+    model["session_errors"] = errors
+    model["topic_sections"] = {}
+    model["checks"] = {}
+    for topic in model["topics"]:
+        entry = topic["entry"] if isinstance(topic["entry"], dict) else {}
+        topic_id = str(entry.get("id") or "")
+        model["topic_sections"][topic_id] = topic_sections(topic["blocks"])
+        for _parent, block in walk_directives(topic["blocks"]):
+            if block["name"] == "check" and block["attrs"].get("id"):
+                model["checks"].setdefault(str(block["attrs"]["id"]), block)
+    for key, loader in (("exercises", _load_exercise), ("labs", _load_lab)):
+        found = {}
+        base = content / key
+        if base.is_dir():
+            for directory in sorted(base.iterdir()):
+                if directory.is_dir() and not directory.name.startswith("."):
+                    item = loader(directory, f"study/content/{key}/{directory.name}", errors)
+                    if item:
+                        found[item["id"]] = item
+        model[key] = found
+    harness = content / "exercises" / "harness.h"
+    model["harness"] = _read_text(harness) if harness.is_file() else ""
+    model["sessions"] = []
+    lectures = model["course"].get("lectures") if isinstance(model["course"], dict) else None
+    for lecture in lectures if isinstance(lectures, list) else []:
+        if isinstance(lecture, dict) and lecture.get("session"):
+            session = _load_session(model, str(lecture.get("id") or ""), str(lecture["session"]), errors)
+            if session:
+                model["sessions"].append(session)
 
 
 def _validate_lectures(course, topic_ids, errors):
@@ -1405,6 +1645,7 @@ def validate_content(model) -> list[str]:
                     "List topics in syllabus order."
                 )
     _validate_lectures(course, topic_ids, errors)
+    errors.extend(model.get("session_errors") or [])
 
     attached = set()
     for topic in model["topics"]:

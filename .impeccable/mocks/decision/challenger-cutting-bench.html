@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;height:900px;overflow:hidden;background:#0b0b0b;color:#fff;font:17px/1.6 "Atkinson Hyperlegible"}
+.top{background:#e8691c;color:#0b0b0b;padding:16px 40px;font:700 14px "Barlow Condensed";letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between}
+.rail{background:#e8691c;padding:0 40px 28px;position:relative}
+.perf{height:14px;background:repeating-linear-gradient(90deg,#0b0b0b 0 10px,transparent 10px 28px);margin-bottom:10px}
+.frames{display:grid;grid-template-columns:repeat(14,1fr);gap:8px}
+.f{height:72px;background:#0b0b0b;color:#e8691c;font:700 14px "Barlow Condensed";padding:8px;position:relative}
+.f.done::after{content:"✕";position:absolute;right:6px;top:2px;color:#fff;font-size:22px}
+.f.now{background:#fff;color:#0b0b0b}
+.f.now::before{content:"";position:absolute;left:-4px;top:-18px;width:24px;height:18px;background:#fff;clip-path:polygon(0 0,100% 0,100% 100%,50% 70%,0 100%)}
+.perf2{height:14px;background:repeating-linear-gradient(90deg,#0b0b0b 0 10px,transparent 10px 28px);margin-top:10px}
+.win{margin:48px auto 0;width:760px;background:#fff;color:#111;padding:40px 56px}
+.k{font:700 13px "Barlow Condensed";letter-spacing:.16em;text-transform:uppercase;color:#a8460c}
+h1{font:700 48px/1 "Barlow Condensed";text-transform:uppercase;margin:6px 0 18px}
+p{margin-bottom:14px}
+code{font:15px "JetBrains Mono";background:#f1ece8;padding:1px 4px}
+.opt{border:2px solid #111;padding:10px 14px;margin-top:8px;font-size:16px}
+.opt.sel{background:#111;color:#fff}
+</style></head><body>
+<div class="top"><span>Session 01 · Data, memory, and running programs</span><span>Frame 06 of 14</span></div>
+<div class="rail"><div class="perf"></div>
+<div class="frames">
+<div class="f done">01 Read</div><div class="f done">02 Check</div><div class="f done">03 Read</div><div class="f done">04 Code</div><div class="f done">05 Read</div><div class="f now">06 Check</div><div class="f">07 Code</div><div class="f">08 Read</div><div class="f">09 Check</div><div class="f">10 Code</div><div class="f">11 Read</div><div class="f">12 Code</div><div class="f">13 Check</div><div class="f">14 Lab</div>
+</div><div class="perf2"></div></div>
+<div class="win">
+<p class="k">Check · Memory and pointers</p>
+<h1>Which bit is drawn on the left?</h1>
+<p>In the course's byte diagram, which bit is drawn on the left?</p>
+<div class="opt">The least significant (lowest-value) bit</div>
+<div class="opt sel">The most significant (highest-value) bit</div>
+<div class="opt">The sign bit of a C <code>int</code></div>
+</div>
+</body></html>
