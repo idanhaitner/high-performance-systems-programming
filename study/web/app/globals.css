@@ -572,7 +572,9 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
   transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 .chapter-hop.is-next { background: var(--accent); color: var(--on-accent); }
-.chapter-hop:hover { transform: translate(-4px, -4px); box-shadow: var(--lift); }
+@media (hover: hover) and (pointer: fine) {
+  .chapter-hop:hover { transform: translate(-4px, -4px); box-shadow: var(--lift); }
+}
 .chapter-hop-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .chapter-hop-kicker { font-size: 0.8125rem; font-weight: 600; opacity: 0.85; }
 .chapter-hop-title { font: 700 1.1875rem/1.25 var(--serif); letter-spacing: -0.02em; text-wrap: balance; }
@@ -593,7 +595,8 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 /* Lecture progress bars (home page) */
 .chapter-progress { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 8px; }
 .chapter-bar { flex: 1; height: 8px; border: 2px solid var(--edge); border-radius: var(--r-pill); overflow: hidden; }
-.chapter-bar > span { display: block; height: 100%; background: var(--mint); transition: width 0.6s var(--ease); }
+.chapter-bar > span { display: block; height: 100%; background: var(--mint); transform: scaleX(var(--fill, 0)); transform-origin: left center; transition: transform 0.4s var(--ease); }
+[dir="rtl"] .chapter-bar > span { transform-origin: right center; }
 .chapter-count { font-size: 0.8125rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 /* Wide screens: definition and check cards sit in a column beside the text they belong to. */
@@ -685,7 +688,9 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 }
 .session-seg::before { content: ""; display: block; height: 8px; border-radius: var(--r-pill); background: var(--line); transition: background-color 0.2s var(--ease), transform 0.2s var(--ease); }
 .session-seg:hover:not(:disabled) { transform: none; box-shadow: none; }
-.session-seg:hover::before { transform: scaleY(1.5); }
+@media (hover: hover) and (pointer: fine) {
+  .session-seg:hover::before { transform: scaleY(1.5); }
+}
 .session-seg[data-status="done"]::before { background: var(--mint); box-shadow: inset 0 0 0 2px var(--edge); }
 .session-seg[data-status="skipped"]::before { background: repeating-linear-gradient(-45deg, var(--sun) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 2px var(--edge); }
 .session-seg[data-status="current"]::before { background: var(--accent); transform: scaleY(1.5); }
@@ -816,14 +821,14 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
     height: 2px;
     border-radius: 2px;
     background: currentColor;
-    transition: transform 0.25s var(--ease), top 0.25s var(--ease), background-color 0.2s;
+    transition: transform 0.25s var(--ease), background-color 0.2s var(--ease);
   }
   .rail-toggle-icon::before, .rail-toggle-icon::after { content: ""; position: absolute; left: 0; }
-  .rail-toggle-icon::before { top: -5px; }
-  .rail-toggle-icon::after { top: 5px; }
+  .rail-toggle-icon::before { top: 0; transform: translateY(-5px); }
+  .rail-toggle-icon::after { top: 0; transform: translateY(5px); }
   .rail.is-open .rail-toggle-icon { background: transparent; }
-  .rail.is-open .rail-toggle-icon::before { top: 0; transform: rotate(45deg); }
-  .rail.is-open .rail-toggle-icon::after { top: 0; transform: rotate(-45deg); }
+  .rail.is-open .rail-toggle-icon::before { transform: rotate(45deg); }
+  .rail.is-open .rail-toggle-icon::after { transform: rotate(-45deg); }
   .rail-bar .course-name { flex: 1; min-width: 0; margin: 0; font-size: 1rem; }
   .rail-bar .course-name a { min-height: 44px; }
   .rail-bar .course-name a > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

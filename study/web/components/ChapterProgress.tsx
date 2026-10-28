@@ -26,7 +26,7 @@ export function ChapterProgress({ courseId, practiceIds }: { courseId: string; p
   return (
     <span className="chapter-progress">
       <span className="chapter-bar" aria-hidden="true">
-        <span style={{ width: `${Math.round((done / total) * 100)}%` }} />
+        <span style={{ "--fill": done / total } as React.CSSProperties} />
       </span>
       <span className="chapter-count">{done} / {total} solved</span>
     </span>
