@@ -3,13 +3,26 @@ import type { Block, Exercise } from "./types";
 
 const FLAGS = "-std=c17 -Wall -Wextra -O0 -g";
 
-const plain = (text: string): string =>
-  text
+const plain = (text: string): string => {
+  // Code spans are kept exactly as written, so identifiers like read_line_from survive.
+  const spans: string[] = [];
+  const kept = text.replace(/`([^`]*)`/g, (_m, inner: string) => {
+    spans.push(inner);
+    return `\u0000${spans.length - 1}\u0000`;
+  });
+  const stripped = kept
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/`([^`]*)`/g, "$1")
     .replace(/\$\$?([^$]+)\$\$?/g, "$1")
-    .replace(/(\*\*|__)(.+?)\1/g, "$2")
-    .replace(/(\*|_)(.+?)\1/g, "$2");
+    .replace(/(\*\*)(.+?)\1/g, "$2")
+    .replace(/(?<![A-Za-z0-9_])__(?=\S)(.+?)(?<=\S)__(?![A-Za-z0-9_])/g, "$1")
+    .replace(/\*(?=\S)(.+?)(?<=\S)\*/g, "$1")
+    .replace(/(?<![A-Za-z0-9_])_(?=\S)(.+?)(?<=\S)_(?![A-Za-z0-9_])/g, "$1");
+  return stripped.replace(/\u0000(\d+)\u0000/g, (_m, i: string) => spans[Number(i)]);
+};
+
+const endWithNewline = (text: string): string => (text === "" || text.endsWith("\n") ? text : `${text}\n`);
+
+const shellQuote = (arg: string): string => `'${arg.replace(/'/g, "'\\''")}'`;
 
 function blockText(block: Block): string {
   switch (block.type) {
@@ -49,31 +62,33 @@ test:
 function programMakefile(count: number): string {
   const runs = Array.from({ length: count }, (_, i) => i + 1).map(
     (n) =>
-      `\t@./program $$(cat cases/${n}.args) < cases/${n}.in > cases/${n}.actual; \\\n` +
-      `\tif diff cases/${n}.actual cases/${n}.out > /dev/null; then echo "PASS case ${n}"; else echo "FAIL case ${n}"; diff cases/${n}.actual cases/${n}.out; fi`,
+      `\teval "./program $$(cat cases/${n}.args)" < cases/${n}.in > cases/${n}.actual; \\\n` +
+      `\tif diff cases/${n}.actual cases/${n}.out > /dev/null; then echo "PASS case ${n}"; else echo "FAIL case ${n}"; diff cases/${n}.actual cases/${n}.out; failed=1; fi; \\`,
   );
   return `CFLAGS = ${FLAGS}
 
 .PHONY: test
 test:
 \tgcc $(CFLAGS) main.c -o program
+\t@failed=0; \\
 ${runs.join("\n")}
+\texit $$failed
 `;
 }
 
 export function exerciseZip(ex: Exercise, studentCode: string, harness: string): Uint8Array {
   const files: Record<string, Uint8Array> = {
-    "main.c": strToU8(studentCode),
+    "main.c": strToU8(endWithNewline(studentCode)),
     "README.txt": strToU8(readme(ex)),
   };
   if (ex.mode === "function") {
-    files["harness.h"] = strToU8(harness);
-    files["test.c"] = strToU8(ex.test ?? "");
+    files["harness.h"] = strToU8(endWithNewline(harness));
+    files["test.c"] = strToU8(endWithNewline(ex.test ?? ""));
     files["Makefile"] = strToU8(functionMakefile);
   } else {
     ex.cases.forEach((c, i) => {
       const n = i + 1;
-      files[`cases/${n}.args`] = strToU8(c.args.join(" "));
+      files[`cases/${n}.args`] = strToU8(c.args.map(shellQuote).join(" "));
       files[`cases/${n}.in`] = strToU8(c.stdin);
       files[`cases/${n}.out`] = strToU8(c.expected);
     });

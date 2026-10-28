@@ -40,7 +40,7 @@ describe("exerciseZip", () => {
     const f = files(exerciseZip(base, "MY CODE\n", "#include <stdio.h>"));
     expect(Object.keys(f).sort()).toEqual(["Makefile", "README.txt", "harness.h", "main.c", "test.c"]);
     expect(f["main.c"]).toBe("MY CODE\n");
-    expect(f["harness.h"]).toBe("#include <stdio.h>");
+    expect(f["harness.h"]).toBe("#include <stdio.h>\n");
     expect(f["test.c"]).toBe(base.test);
     expect(f["Makefile"]).toContain("cat main.c harness.h test.c > all.c");
     expect(f["Makefile"]).toContain("-std=c17 -Wall -Wextra -O0 -g");
@@ -55,7 +55,7 @@ describe("exerciseZip", () => {
       "Makefile", "README.txt", "cases/1.args", "cases/1.in", "cases/1.out",
       "cases/2.args", "cases/2.in", "cases/2.out", "main.c",
     ]);
-    expect(f["cases/1.args"]).toBe("3 4");
+    expect(f["cases/1.args"]).toBe("'3' '4'");
     expect(f["cases/1.in"]).toBe("hi\n");
     expect(f["cases/1.out"]).toBe("7\n");
     expect(f["cases/2.args"]).toBe("");
@@ -70,5 +70,35 @@ describe("exerciseZip", () => {
       expect(recipes.length).toBeGreaterThan(0);
       for (const l of recipes) expect(l.startsWith("\t")).toBe(true);
     }
+  });
+
+  it("ends main.c, harness.h and test.c with a newline so cat never joins lines", () => {
+    const f = files(exerciseZip({ ...base, test: "int main(void) { return 0; }" }, "int f(void) { return 1; }", "#include <stdio.h>"));
+    for (const name of ["main.c", "harness.h", "test.c"]) expect(f[name].endsWith("\n")).toBe(true);
+    expect(f["main.c"]).toBe("int f(void) { return 1; }\n");
+    expect(files(exerciseZip(base, "a\n\n", "h\n"))["main.c"]).toBe("a\n\n");
+  });
+
+  it("program Makefile runs every case and fails only at the end", () => {
+    const m = files(exerciseZip(program, "c", ""))["Makefile"];
+    expect(m).toContain("failed=1");
+    expect(m).toContain("exit $$failed");
+    expect(m).toContain('eval "./program $$(cat cases/1.args)"');
+  });
+
+  it("writes args shell-quoted so spaces and quotes survive", () => {
+    const ex = { ...program, cases: [{ name: "q", args: ["hello world", "it's"], stdin: "", expected: "", hint: "" }] };
+    expect(files(exerciseZip(ex, "c", ""))["cases/1.args"]).toBe("'hello world' 'it'\\''s'");
+  });
+
+  it("keeps identifiers with underscores in the README", () => {
+    const ex = {
+      ...base,
+      statement: [
+        { type: "paragraph" as const, text: "Call `read_line_from` and use size_t or `size_t`. Also _emphasis_ and **bold**." },
+      ],
+    };
+    const r = files(exerciseZip(ex, "c", "h"))["README.txt"];
+    expect(r).toContain("Call read_line_from and use size_t or size_t. Also emphasis and bold.");
   });
 });
