@@ -54,9 +54,16 @@ const groups = {
     }
     // A still pointer must keep pointing at the same card while the fan reacts.
     const { context, page } = await open(browser, 1440);
-    const num = await page.locator(".fan-num").nth(1).boundingBox();
-    const x = num.x + num.width / 2;
-    const y = num.y + num.height / 2;
+    // Find a point where card 2 is on top at rest, then park the pointer there.
+    const [x, y] = await page.evaluate(() => {
+      const box = document.querySelectorAll(".fan-num")[1].getBoundingClientRect();
+      for (let px = box.left; px < box.right; px += 2) {
+        const py = box.top + box.height / 2;
+        const li = document.elementFromPoint(px, py)?.closest(".fan li");
+        if (li && [...li.parentNode.children].indexOf(li) === 1) return [px, py];
+      }
+      return [box.left, box.top];
+    });
     await page.mouse.move(x, y);
     const seen = new Set();
     for (let i = 0; i < 10; i++) {

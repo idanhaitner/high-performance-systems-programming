@@ -118,16 +118,18 @@ body:has(.landing) .reading-progress { display: none; }
   margin-left: -6rem;
   transform-origin: 50% 120%;
   transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 9deg));
-  transition: transform 0.5s var(--ease);
 }
-.fan:hover li { transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 13deg)); }
+/* The card being pointed at or focused comes to the front so its title is readable. */
+.fan li:has(> a:is(:hover, :focus-visible)) { z-index: 1; }
 .fan li:nth-child(6n + 1) a { background: var(--mint); }
 .fan li:nth-child(6n + 2) a { background: var(--sun); }
 .fan li:nth-child(6n + 3) a { background: var(--coral); }
 .fan li:nth-child(6n + 4) a { background: var(--card-solid); color: var(--ink); }
-.fan li:nth-child(6n + 5) a { background: var(--accent-soft); color: var(--ink); }
+/* --accent-soft is see-through in dark mode, so lay it over a solid card. */
+.fan li:nth-child(6n + 5) a { background: linear-gradient(var(--accent-soft) 0 0), var(--card-solid); color: var(--ink); }
 .fan li:nth-child(6n + 6) a { background: var(--accent); color: var(--on-accent); }
 .fan a {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -137,10 +139,14 @@ body:has(.landing) .reading-progress { display: none; }
   border-radius: 24px;
   color: var(--on-card);
   text-decoration: none;
-  transition: transform 0.5s var(--ease);
+  transition: transform 0.2s var(--ease);
 }
-.fan a:hover, .fan a:focus-visible { transform: translateY(-24px); outline: none; }
-.fan a:focus-visible { box-shadow: 0 0 0 4px var(--accent); }
+/* Fills the gap under a lifted card, so the pointer never falls off its bottom edge. */
+.fan a::after { content: ""; position: absolute; inset: 100% -2px auto; height: 16px; }
+.fan a:focus-visible { transform: translateY(-16px); outline: none; box-shadow: 0 0 0 4px var(--accent); }
+@media (hover: hover) and (pointer: fine) {
+  .fan a:hover { transform: translateY(-16px); }
+}
 .fan-num { font: 700 3.75rem/1 var(--serif); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .fan-title { font: 700 1.125rem/1.75rem var(--serif); letter-spacing: -0.02em; }
 
@@ -318,8 +324,6 @@ body:has(.landing) .reading-progress { display: none; }
 @keyframes menu-in { from { opacity: 0; transform: translateY(24px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .fan li, .fan a, .landing-cta, .deck-grid a { transition: none; }
-  .fan:hover li { transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 9deg)); }
-  .fan a:hover { transform: none; }
+  .fan a:is(:hover, :focus-visible) { transform: none; }
   .landing-menu a { animation: none; }
 }
