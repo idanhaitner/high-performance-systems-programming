@@ -89,7 +89,7 @@ def main() -> None:
             "title": str(lecture.get("title") or ""),
             "summary": str(lecture.get("summary") or "").strip(),
             "lessons": lessons,
-            "sessionId": str(lecture["session"]) if lecture.get("session") else None,
+            "sessionId": Path(studylib.norm_rel(lecture["session"])).stem if lecture.get("session") else None,
         })
 
     glossary = []

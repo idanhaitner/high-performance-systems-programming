@@ -1373,10 +1373,15 @@ def _load_lab(directory: Path, rel: str, errors: list):
 
 
 def _load_session(model, lecture_id: str, session_ref: str, errors: list):
-    rel = f"sessions/{session_ref}.md"
+    rel = norm_rel(session_ref)
+    match = re.fullmatch(r"sessions/([a-z0-9]+(?:-[a-z0-9]+)*)\.md", rel)
+    if not match:
+        errors.append(f"lecture {lecture_id}: session must be a path like sessions/{lecture_id}.md, found {session_ref!r}")
+        return None
+    session_ref = match.group(1)
     path = model["content"] / rel
     label = f"study/content/{rel}"
-    if not COURSE_ID_RE.match(session_ref) or not path.exists():
+    if not path.exists():
         errors.append(f"lecture {lecture_id}: session file {label} is missing")
         return None
     try:

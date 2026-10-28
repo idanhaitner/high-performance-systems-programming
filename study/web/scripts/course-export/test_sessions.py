@@ -131,6 +131,12 @@ class ValidationTests(unittest.TestCase):
     def test_session_lecture_unknown(self):
         self.broken(self.edit("sessions/lecture-1.md", "lecture: lecture-1", "lecture: lecture-9"), "lecture must be lecture-1")
 
+    def test_bare_session_id_rejected(self):
+        self.broken(self.edit("course.yml", "session: sessions/lecture-1.md", "session: lecture-1"), "sessions/lecture-1.md")
+
+    def test_session_path_to_missing_file(self):
+        self.broken(self.edit("course.yml", "session: sessions/lecture-1.md", "session: sessions/ghost.md"), "sessions/ghost.md")
+
     def test_session_file_missing(self):
         self.broken(lambda c: (c / "sessions/lecture-1.md").unlink(), "session file")
 
