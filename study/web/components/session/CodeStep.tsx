@@ -45,7 +45,6 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
   const [lastAction, setLastAction] = useState<Action>("test");
   const [asm, setAsm] = useState<Asm | null>(null);
   const [asmOpen, setAsmOpen] = useState(false);
-  const [optimize, setOptimize] = useState(false);
   const [hoverC, setHoverC] = useState<number | null>(null);
   const [hoverAsm, setHoverAsm] = useState<number | null>(null);
 
@@ -147,7 +146,11 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
     setAsm({ lines, failed: errors.length > 0 ? found : null, code, optimize: opt });
   };
 
-  const act = async (action: Action, opt = optimize) => {
+  // The level shown on the toggle is the level of the assembly on screen, so a
+  // failed fetch leaves both on the old level.
+  const shownOptimize = asm?.optimize ?? false;
+
+  const act = async (action: Action, opt = shownOptimize) => {
     if (busy || cooling || wait > 0) return;
     setLastAction(action);
     setBusy(true);
@@ -171,8 +174,11 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
     const a = document.createElement("a");
     a.href = url;
     a.download = `${ex.id}.zip`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    // Some browsers start the download after click returns, so free the file later.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const reset = () => {
@@ -196,10 +202,7 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
     }
   };
 
-  const pickOptimize = (opt: boolean) => {
-    setOptimize(opt);
-    act("asm", opt);
-  };
+  const pickOptimize = (opt: boolean) => act("asm", opt);
 
   const linked = useMemo(() => (hoverAsm === null ? [] : [hoverAsm]), [hoverAsm]);
   const hintNodes = rendered.hints ?? [];
@@ -219,7 +222,7 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
             lines={asm?.lines ?? []}
             activeSourceLine={hoverC ?? hoverAsm}
             onHoverAsm={setHoverAsm}
-            optimize={asm?.optimize ?? false}
+            optimize={shownOptimize}
             onOptimize={pickOptimize}
             locked={locked}
             stale={asm !== null && asm.code !== code}
