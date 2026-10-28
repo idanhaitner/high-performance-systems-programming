@@ -164,7 +164,8 @@ const groups = {
     await context.close();
     const phone = await open(browser, 390);
     const lines = await phone.page.$eval(".fan li:last-child .fan-title", (el) =>
-      Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)),
+      // offsetHeight ignores the card's rotation, unlike getBoundingClientRect.
+      Math.round(el.offsetHeight / parseFloat(getComputedStyle(el).lineHeight)),
     );
     expect("hierarchy", lines <= 2, `390px: top fan card title wraps to ${lines} lines`);
     await phone.context.close();

@@ -153,8 +153,8 @@ body:has(.landing) .reading-progress { display: none; }
 .fan-title { font: 700 1.125rem/1.75rem var(--serif); letter-spacing: -0.02em; }
 
 /* Tagline reveal */
-.tagline { padding: 96px 0; }
-.tagline p { max-width: 680px; margin: 0 auto; font: 700 3rem/1.1 var(--serif); letter-spacing: -0.035em; text-align: center; }
+.tagline { padding: 64px 0; }
+.tagline p { max-width: 680px; margin: 0 auto; font: 700 2.25rem/2.5rem var(--serif); letter-spacing: -0.035em; text-align: center; }
 .tagline-line { display: block; }
 /* Words start lit. Reveal.tsx arms the dimming only when motion is allowed, so without it the text stays readable. */
 .tagline-word { color: var(--ink); }
@@ -190,7 +190,7 @@ body:has(.landing) .reading-progress { display: none; }
 /* Benefits */
 .benefits { padding: 64px 0; }
 .page.landing .benefits ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
-.benefits li { display: flex; flex-direction: column; gap: 8px; padding: 24px; border-radius: 24px; background: var(--card-solid); }
+.benefits li { display: flex; flex-direction: column; gap: 8px; padding: 24px; border: 2px solid var(--edge); border-radius: 24px; background: var(--card-solid); }
 .benefits strong { font: 700 1.25rem/1.75rem var(--serif); letter-spacing: -0.02em; }
 .benefits span { font-size: 1rem; line-height: 1.5rem; color: var(--muted); }
 
@@ -305,10 +305,11 @@ body:has(.landing) .reading-progress { display: none; }
   .hero h1 br { display: none; }
   .hero-sub { font-size: 1.125rem; line-height: 1.75rem; }
   .page.landing .fan { height: 16rem; }
-  .fan li { width: 8rem; height: 11rem; margin-left: -4rem; }
+  .fan li { width: 9rem; height: 12rem; margin-left: -4.5rem; }
+  .fan a { padding: 12px; }
   .fan-num { font-size: 2.25rem; line-height: 2.5rem; }
   .fan-title { font-size: 0.875rem; line-height: 1.25rem; }
-  .tagline { padding: 64px 0; }
+  .tagline { padding: 48px 0; }
   .tagline p { font-size: 1.875rem; line-height: 2.25rem; }
   .landing section > h2 { font-size: 1.875rem; line-height: 2.25rem; }
   .page.landing :is(.how-cards, .benefits ul, .deck-grid) { grid-template-columns: minmax(0, 1fr); }
