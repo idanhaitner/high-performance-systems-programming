@@ -65,8 +65,10 @@ const highlight = HighlightStyle.define([
   { tag: [t.typeName, t.standard(t.typeName)], color: "var(--code-type)" },
   { tag: [t.string, t.character], color: "var(--code-str)" },
   { tag: [t.number, t.bool, t.null], color: "var(--code-num)" },
-  { tag: [t.comment, t.lineComment, t.blockComment], color: "var(--code-muted)", fontStyle: "italic" },
-  { tag: [t.meta, t.processingInstruction], color: "var(--code-type)" },
+  { tag: [t.variableName, t.propertyName], color: "var(--code-var)" },
+  { tag: [t.function(t.variableName), t.function(t.propertyName), t.macroName], color: "var(--code-fn)" },
+  { tag: [t.comment, t.lineComment, t.blockComment], color: "var(--code-comment)", fontStyle: "italic" },
+  { tag: [t.meta, t.processingInstruction], color: "var(--code-macro)" },
 ]);
 
 function toCm(doc: EditorState["doc"], list: Diagnostic[]): CmDiagnostic[] {

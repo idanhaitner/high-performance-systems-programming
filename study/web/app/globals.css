@@ -29,16 +29,21 @@
   --on-card: #1b1740;
   --ok: #17784f;
   --danger: #b4233f;
-  --code: #16133a;
-  --code-head: #211d4d;
-  --code-ink: #ece9ff;
-  --code-muted: #a7a1d6;
-  --code-gutter: #7c76b0;
-  --code-border: #2e2a63;
-  --code-key: #b9b3ff;
-  --code-type: #ffb39f;
-  --code-str: #8fe8c0;
+  /* Code: near-black panel, one clear colour per kind of word. */
+  --code: #0b0a10;
+  --code-head: #16151f;
+  --code-ink: #e6e4f0;
+  --code-muted: #9a97ad;
+  --code-gutter: #5c5970;
+  --code-border: #26243a;
+  --code-comment: #7f7c94;
+  --code-key: #c792ea;
+  --code-type: #ff9e7a;
+  --code-var: #8fd3ff;
+  --code-fn: #82aaff;
+  --code-str: #a6e3a1;
   --code-num: #ffd23f;
+  --code-macro: #ff7eb6;
   --lift: 4px 4px 0 var(--edge);
   --lift-sm: 2px 2px 0 var(--edge);
   --shadow: 0 16px 40px -20px rgb(27 23 64 / 0.35);
@@ -80,8 +85,6 @@
     --sun: #e6b92e;
     --ok: #6fdcaa;
     --danger: #ff8fa3;
-    --code: #0e0c24;
-    --code-head: #17143a;
     --shadow: 0 16px 40px -20px rgb(0 0 0 / 0.7);
     --search-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23b8b2de' stroke-width='2' stroke-linecap='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
   }
