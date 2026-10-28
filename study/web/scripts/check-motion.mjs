@@ -42,6 +42,7 @@ const groups = {
   async "side-cards"(browser) {
     for (const path of await lessonPaths(browser)) {
       const { context, page } = await open(browser, path);
+      await page.waitForTimeout(300);
       const late = await page.evaluate(() => {
         const out = [];
         const cards = [...document.querySelectorAll(".page.lesson :is(.formal, .card.check):not(.practice *)")];
@@ -52,6 +53,9 @@ const groups = {
           if (next && card.getBoundingClientRect().bottom > next.getBoundingClientRect().top + 1) {
             out.push(`"${card.textContent.trim().slice(0, 30)}" runs past "${next.textContent.trim().slice(0, 30)}"`);
           }
+          const before = card.previousElementSibling;
+          const drift = before ? card.getBoundingClientRect().top - before.getBoundingClientRect().bottom : 0;
+          if (drift > 161) out.push(`"${card.textContent.trim().slice(0, 30)}" sits ${Math.round(drift)}px below its paragraph`);
         }
         return out;
       });

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Chapter } from "@/components/Chapter";
+import { SideCards } from "@/components/SideCards";
 import { Visit } from "@/components/Visit";
 import { Mixed } from "@/lib/bidi";
 import { loadCourse } from "@/lib/course";
@@ -19,6 +20,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
   return (
     <article className="page chapter lesson">
       <Visit courseId={course.id} slug={topic.id} />
+      <SideCards />
       <header className="masthead">
         <h1><Mixed text={topic.title} /></h1>
       </header>
