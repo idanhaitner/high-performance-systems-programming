@@ -569,9 +569,10 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .chapter-hops { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 16px; }
 .chapter-hop {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 16px 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
   border: 2px solid var(--edge);
   border-radius: var(--r-card);
   background: var(--card-solid);
@@ -579,14 +580,24 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
   text-decoration: none;
   transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
-.chapter-hop.is-next { background: var(--accent); color: var(--on-accent); text-align: end; }
-.chapter-hop:only-child.is-next { grid-column: -2 / -1; }
+.chapter-hop.is-next { background: var(--accent); color: var(--on-accent); }
 .chapter-hop:hover { transform: translate(-4px, -4px); box-shadow: var(--lift); }
-.chapter-hop-copy { display: contents; }
-.chapter-hop-kicker { order: 1; font-size: 0.8125rem; font-weight: 600; opacity: 0.85; }
-.chapter-hop-title { order: 2; font: 700 1.1875rem/1.25 var(--serif); letter-spacing: -0.02em; text-wrap: balance; }
-.chapter-hop-go { order: 0; display: inline-flex; gap: 6px; font-size: 0.8125rem; font-weight: 700; }
-.chapter-hop.is-next .chapter-hop-go { justify-content: flex-end; }
+.chapter-hop-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.chapter-hop-kicker { font-size: 0.8125rem; font-weight: 600; opacity: 0.85; }
+.chapter-hop-title { font: 700 1.1875rem/1.25 var(--serif); letter-spacing: -0.02em; text-wrap: balance; }
+.chapter-hop-go {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 2px solid currentColor;
+  border-radius: var(--r-pill);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
 
 /* Lecture progress bars (home page) */
 .chapter-progress { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 8px; }
