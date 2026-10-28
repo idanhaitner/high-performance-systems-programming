@@ -115,8 +115,17 @@ body:has(.landing) .reading-progress { display: none; }
   width: 12rem;
   height: 16rem;
   margin-left: -6rem;
+  --angle: calc((var(--i) - (var(--n) - 1) / 2) * 9deg);
   transform-origin: 50% 120%;
-  transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 9deg));
+  transform: rotate(var(--angle));
+  /* On load the six cards rise together as one squared-up deck, then fan out to their angles. */
+  animation: fan-out 0.75s var(--ease) 0.1s backwards;
+}
+/* The rise eases out; the spread uses an ease-in-out (cubic-bezier(0.77, 0, 0.175, 1)) so it sweeps open like a hand fanning cards. */
+@keyframes fan-out {
+  0% { opacity: 0; transform: translateY(40px) rotate(0deg); }
+  25% { opacity: 1; transform: translateY(0) rotate(0deg); animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+  100% { opacity: 1; transform: translateY(0) rotate(var(--angle)); }
 }
 /* The card being pointed at or focused comes to the front so its title is readable. */
 .fan li:has(> a:is(:hover, :focus-visible)) { z-index: 1; }
@@ -139,13 +148,6 @@ body:has(.landing) .reading-progress { display: none; }
   color: var(--on-card);
   text-decoration: none;
   transition: transform 0.2s var(--ease);
-  /* Dealt in once on load, 40ms apart. "backwards" only, so the hover lift still works afterwards. */
-  animation: deal-in 0.4s var(--ease) calc(var(--i) * 40ms) backwards;
-}
-/* Opacity finishes in the first 30%, so the overlapping cards never show each other's text through them. */
-@keyframes deal-in {
-  from { opacity: 0; transform: translateY(24px); }
-  30% { opacity: 1; }
 }
 /* Fills the gap under a lifted card, so the pointer never falls off its bottom edge. */
 .fan a::after { content: ""; position: absolute; inset: 100% -2px auto; height: 16px; }
