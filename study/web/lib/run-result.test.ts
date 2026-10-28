@@ -35,6 +35,20 @@ describe("classifyRun", () => {
     );
   });
 
+  it("reads a segfault caught by AddressSanitizer, which exits with 1", () => {
+    const r = classifyRun({
+      didExecute: true,
+      code: 1,
+      stdout: [],
+      stderr: [{ text: "==2==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000" }],
+      buildResult: { stderr: [] },
+    });
+    expect(r.kind).toBe("crash");
+    if (r.kind !== "crash") return;
+    expect(r.signal).toBe(11);
+    expect(r.name).toBe("Segmentation fault");
+  });
+
   it("decides timeout before reading the exit code as a signal", () => {
     const r = classifyRun(fixture("run-timeout"));
     expect(r.kind).toBe("timeout");

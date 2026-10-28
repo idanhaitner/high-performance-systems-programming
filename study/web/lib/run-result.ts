@@ -93,7 +93,11 @@ export function classifyRun(response: unknown): RunOutcome {
   // Timeout first: it exits with 143, which would otherwise read as signal 15.
   if (r.timedOut === true) return { kind: "timeout", stdout, stderr };
 
-  const signal = code > 128 ? code - 128 : code < 0 ? -code : 0;
+  // With the sanitizer on, AddressSanitizer catches the signal itself and the
+  // program exits with 1, so read the signal from its report instead.
+  const asan = /AddressSanitizer: (SEGV|FPE|ABRT|BUS)\b/.exec(stderrFull);
+  const asanSignal = asan ? { SEGV: 11, FPE: 8, ABRT: 6, BUS: 7 }[asan[1] as "SEGV" | "FPE" | "ABRT" | "BUS"] : 0;
+  const signal = asanSignal || (code > 128 ? code - 128 : code < 0 ? -code : 0);
   if (signal > 0) {
     const info = SIGNALS[signal] ?? {
       name: `Signal ${signal}`,
