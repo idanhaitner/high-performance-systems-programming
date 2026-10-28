@@ -36,17 +36,81 @@ describe("classifyRun", () => {
   });
 
   it("reads a segfault caught by AddressSanitizer, which exits with 1", () => {
-    const r = classifyRun({
-      didExecute: true,
-      code: 1,
-      stdout: [],
-      stderr: [{ text: "==2==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000" }],
-      buildResult: { stderr: [] },
-    });
+    const r = classifyRun(fixture("run-asan-segv"));
     expect(r.kind).toBe("crash");
     if (r.kind !== "crash") return;
     expect(r.signal).toBe(11);
     expect(r.name).toBe("Segmentation fault");
+  });
+
+  it("ignores a sanitizer SEGV line when the program still exits with 0", () => {
+    const r = classifyRun({
+      didExecute: true,
+      code: 0,
+      stdout: [{ text: "ok" }],
+      stderr: [{ text: "==2==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000" }],
+      buildResult: { stderr: [] },
+    });
+    expect(r.kind).toBe("ok");
+  });
+
+  it("explains an array read past the end, caught by AddressSanitizer", () => {
+    const r = classifyRun(fixture("run-asan-stack-overflow"));
+    expect(r.kind).toBe("crash");
+    if (r.kind !== "crash") return;
+    expect(r.signal).toBeNull();
+    expect(r.name).toBe("Read or write past the end of an array");
+    expect(r.explanation).toBe(
+      "Your program used a position outside an array, often because a loop went one step too far (for example `i <= n` instead of `i < n`).",
+    );
+    expect(r.stderr).toContain("stack-buffer-overflow");
+    expect(r.stderr).not.toContain("\u001b");
+  });
+
+  it.each(["heap-buffer-overflow", "global-buffer-overflow"])("treats %s as past the end of an array", (what) => {
+    const r = classifyRun({
+      didExecute: true,
+      code: 1,
+      stdout: [],
+      stderr: [{ text: `==2==ERROR: AddressSanitizer: ${what} on address 0x602000000014` }],
+    });
+    expect(r).toMatchObject({ kind: "crash", name: "Read or write past the end of an array" });
+  });
+
+  it.each(["heap-use-after-free", "stack-use-after-return"])("treats %s as memory used after it was given back", (what) => {
+    const r = classifyRun({
+      didExecute: true,
+      code: 1,
+      stdout: [{ text: "partial" }],
+      stderr: [{ text: `==2==ERROR: AddressSanitizer: ${what} on address 0x602000000014` }],
+    });
+    expect(r).toMatchObject({
+      kind: "crash",
+      signal: null,
+      name: "Used memory after it was given back",
+      explanation: "Your program used memory that was already freed, or a local variable after its function returned.",
+      stdout: "partial",
+    });
+  });
+
+  it("explains undefined behavior when the program exits with an error", () => {
+    const r = classifyRun(fixture("run-ubsan-exit-1"));
+    expect(r).toMatchObject({
+      kind: "crash",
+      signal: null,
+      name: "Undefined behavior",
+      explanation:
+        "Your program did something the C rules do not allow, such as an int growing too large. The line is shown in the error output below.",
+    });
+    if (r.kind !== "crash") return;
+    expect(r.stderr).toContain("runtime error:");
+  });
+
+  it("leaves an undefined-behavior report alone when the program exits with 0", () => {
+    const r = classifyRun(fixture("run-ubsan-overflow"));
+    expect(r.kind).toBe("ok");
+    if (r.kind !== "ok") return;
+    expect(r.stderr).toContain("runtime error:");
   });
 
   it("decides timeout before reading the exit code as a signal", () => {
@@ -78,6 +142,26 @@ describe("classifyRun", () => {
     if (r.kind !== "ok") return;
     expect(r.stdout.length).toBe(OUTPUT_CAP);
     expect(r.truncated).toBe(true);
+  });
+
+  it("keeps the full output for reading test results", () => {
+    const long = "x".repeat(12_000);
+    const r = classifyRun({
+      didExecute: true,
+      code: 0,
+      timedOut: false,
+      stdout: [{ text: long }, { text: "PASS last" }],
+      stderr: [],
+    });
+    expect(r.kind).toBe("ok");
+    if (r.kind !== "ok") return;
+    expect(r.fullStdout).toBe(`${long}\nPASS last`);
+    expect(r.cutOff).toBe(false);
+  });
+
+  it("notes when the online compiler itself cut the output off", () => {
+    const r = classifyRun({ didExecute: true, code: 0, truncated: true, stdout: [{ text: "x" }], stderr: [] });
+    expect(r).toMatchObject({ kind: "ok", truncated: true, cutOff: true });
   });
 
   it("names other signals generically", () => {

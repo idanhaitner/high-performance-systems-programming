@@ -1,9 +1,13 @@
 export type Diagnostic = { line: number; column: number; severity: "error" | "warning" | "note"; text: string };
+// `stdout` is capped for display; `fullStdout` is kept whole for reading test
+// results, and `cutOff` says the online compiler itself cut the output short.
+type RunOutput = { stdout: string; stderr: string; fullStdout: string; cutOff: boolean };
 export type RunOutcome =
   | { kind: "compile-error"; diagnostics: Diagnostic[]; text: string; hint: string | null }
-  | { kind: "timeout"; stdout: string; stderr: string }
-  | { kind: "crash"; signal: number; name: string; explanation: string; stdout: string; stderr: string }
-  | { kind: "ok"; exitCode: number; stdout: string; stderr: string; truncated: boolean; warnings: Diagnostic[] };
+  | ({ kind: "timeout" } & RunOutput)
+  // `signal` is null when a sanitizer report, not a signal, stopped the program.
+  | ({ kind: "crash"; signal: number | null; name: string; explanation: string } & RunOutput)
+  | ({ kind: "ok"; exitCode: number; truncated: boolean; warnings: Diagnostic[] } & RunOutput);
 export type AsmLine = { text: string; sourceLine: number | null };
 
 export const OUTPUT_CAP = 10_000;
@@ -29,6 +33,27 @@ const SIGNALS: Record<number, { name: string; explanation: string }> = {
     name: "Bus error",
     explanation: "Your program read memory at an address the processor cannot use, often through a bad pointer.",
   },
+};
+
+// Reports the sanitizers print when they find a memory or C-rules error.
+const SANITIZER_REPORTS: { pattern: RegExp; name: string; explanation: string }[] = [
+  {
+    pattern: /AddressSanitizer: (?:stack|heap|global)-buffer-overflow\b/,
+    name: "Read or write past the end of an array",
+    explanation:
+      "Your program used a position outside an array, often because a loop went one step too far (for example `i <= n` instead of `i < n`).",
+  },
+  {
+    pattern: /AddressSanitizer: (?:heap-use-after-free|stack-use-after-return)\b/,
+    name: "Used memory after it was given back",
+    explanation: "Your program used memory that was already freed, or a local variable after its function returned.",
+  },
+];
+
+const UNDEFINED_BEHAVIOR = {
+  name: "Undefined behavior",
+  explanation:
+    "Your program did something the C rules do not allow, such as an int growing too large. The line is shown in the error output below.",
 };
 
 type Line = { text?: unknown; tag?: { line?: unknown; column?: unknown; text?: unknown; severity?: unknown } };
@@ -87,15 +112,25 @@ export function classifyRun(response: unknown): RunOutcome {
   const code = typeof r.code === "number" ? r.code : 0;
   const stdoutFull = joinText(r.stdout);
   const stderrFull = joinText(r.stderr);
-  const stdout = stdoutFull.slice(0, OUTPUT_CAP);
-  const stderr = stderrFull.slice(0, OUTPUT_CAP);
+  const output = {
+    stdout: stdoutFull.slice(0, OUTPUT_CAP),
+    stderr: stderrFull.slice(0, OUTPUT_CAP),
+    fullStdout: stdoutFull,
+    cutOff: r.truncated === true,
+  };
 
   // Timeout first: it exits with 143, which would otherwise read as signal 15.
-  if (r.timedOut === true) return { kind: "timeout", stdout, stderr };
+  if (r.timedOut === true) return { kind: "timeout", ...output };
+
+  // Sanitizer reports only count when they stopped the program with an error.
+  if (code !== 0) {
+    const report = SANITIZER_REPORTS.find((x) => x.pattern.test(stderrFull));
+    if (report) return { kind: "crash", signal: null, name: report.name, explanation: report.explanation, ...output };
+  }
 
   // With the sanitizer on, AddressSanitizer catches the signal itself and the
   // program exits with 1, so read the signal from its report instead.
-  const asan = /AddressSanitizer: (SEGV|FPE|ABRT|BUS)\b/.exec(stderrFull);
+  const asan = code !== 0 ? /AddressSanitizer: (SEGV|FPE|ABRT|BUS)\b/.exec(stderrFull) : null;
   const asanSignal = asan ? { SEGV: 11, FPE: 8, ABRT: 6, BUS: 7 }[asan[1] as "SEGV" | "FPE" | "ABRT" | "BUS"] : 0;
   const signal = asanSignal || (code > 128 ? code - 128 : code < 0 ? -code : 0);
   if (signal > 0) {
@@ -103,15 +138,18 @@ export function classifyRun(response: unknown): RunOutcome {
       name: `Signal ${signal}`,
       explanation: "Your program was stopped by the operating system.",
     };
-    return { kind: "crash", signal, name: info.name, explanation: info.explanation, stdout, stderr };
+    return { kind: "crash", signal, name: info.name, explanation: info.explanation, ...output };
+  }
+
+  if (code !== 0 && /runtime error:/.test(stderrFull)) {
+    return { kind: "crash", signal: null, ...UNDEFINED_BEHAVIOR, ...output };
   }
 
   return {
     kind: "ok",
     exitCode: code,
-    stdout,
-    stderr,
-    truncated: r.truncated === true || stdoutFull.length > OUTPUT_CAP || stderrFull.length > OUTPUT_CAP,
+    ...output,
+    truncated: output.cutOff || stdoutFull.length > OUTPUT_CAP || stderrFull.length > OUTPUT_CAP,
     warnings: diagnosticsOf(build.stderr).filter((d) => d.severity !== "error"),
   };
 }

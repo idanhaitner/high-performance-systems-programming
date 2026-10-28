@@ -1,6 +1,8 @@
 export type CaseResult = { name: string; status: "pass" | "fail" | "not-run"; message: string };
 
 const NOT_RUN = "Did not run: the program stopped before reaching this test.";
+const NOT_CHECKED =
+  "Not checked: your program printed so much that the output was cut off. Remove extra printf calls and test again.";
 
 // Student code goes first so its line numbers match the editor.
 export function buildTestSource(
@@ -12,7 +14,8 @@ export function buildTestSource(
   return { source: `${student}\n${harness}\n\n${test}\n`, studentLines };
 }
 
-export function parseTestOutput(stdout: string, names: string[]): CaseResult[] {
+// `cutOff` says the output was cut short, so a missing case may have run.
+export function parseTestOutput(stdout: string, names: string[], cutOff = false): CaseResult[] {
   const seen = new Map<string, CaseResult>();
   for (const raw of stdout.split("\n")) {
     const line = raw.replace(/\r$/, "");
@@ -24,7 +27,7 @@ export function parseTestOutput(stdout: string, names: string[]): CaseResult[] {
       }
     }
   }
-  return names.map((name) => seen.get(name) ?? { name, status: "not-run", message: NOT_RUN });
+  return names.map((name) => seen.get(name) ?? { name, status: "not-run", message: cutOff ? NOT_CHECKED : NOT_RUN });
 }
 
 function normalize(text: string): string {
