@@ -109,7 +109,7 @@ export default function HomePage() {
           {fan.map((lesson, index) => (
             <li key={lesson.id} style={{ "--i": index, "--n": fan.length } as React.CSSProperties}>
               <Link href={`/topics/${lesson.id}`}>
-                <span className="fan-num">{pad(lesson.lessonNumber)}</span>
+                <span className="fan-num">{lesson.lessonNumber}</span>
                 <span className="fan-title"><Mixed text={lesson.title} /></span>
               </Link>
             </li>
@@ -129,7 +129,7 @@ export default function HomePage() {
         </p>
       </section>
 
-      <section className="how" id="how" aria-labelledby="how-title" data-reveal>
+      <section className="how" id="how" aria-labelledby="how-title">
         <h2 id="how-title">Three steps for every idea</h2>
         <ol className="how-cards">
           {STEPS.map((step, index) => (
@@ -142,7 +142,7 @@ export default function HomePage() {
         </ol>
       </section>
 
-      <section className="benefits" aria-labelledby="benefits-title" data-reveal>
+      <section className="benefits" aria-labelledby="benefits-title">
         <h2 id="benefits-title">Built for learning it the first time</h2>
         <ul>
           {BENEFITS.map((benefit) => (
@@ -154,7 +154,7 @@ export default function HomePage() {
         </ul>
       </section>
 
-      <section className="deck" id="deck" aria-labelledby="deck-title" data-reveal>
+      <section className="deck" id="deck" aria-labelledby="deck-title">
         <h2 id="deck-title">The lessons</h2>
         {lectures.map((lecture) => (
           <div className="deck-lecture" id={lecture.id} key={lecture.id}>
@@ -188,7 +188,7 @@ export default function HomePage() {
         </p>
       </section>
 
-      <section className="faq" id="faq" aria-labelledby="faq-title" data-reveal>
+      <section className="faq" id="faq" aria-labelledby="faq-title">
         <h2 id="faq-title">Questions</h2>
         <div className="faq-list">
           {FAQ.map((item) => (
@@ -200,7 +200,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="final" aria-labelledby="final-title" data-reveal>
+      <section className="final" aria-labelledby="final-title">
         <h2 id="final-title">
           Start with one card.
           <br /> The rest of the deck follows.

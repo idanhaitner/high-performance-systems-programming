@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Mixed } from "@/lib/bidi";
 import { readSession, writeSession, type SessionState } from "@/lib/session-store";
 import type { Session, SessionStep } from "@/lib/types";
@@ -10,20 +10,22 @@ import { LabStep } from "./LabStep";
 import { LearnStep } from "./LearnStep";
 import type { RenderedStep } from "./rendered";
 
-type StepProps = { step: SessionStep; courseId: string; onComplete: () => void; harness: string; rendered: RenderedStep };
+type StepProps = { step: SessionStep; courseId: string; done: boolean; onComplete: () => void; harness: string; rendered: RenderedStep };
 
-function StepView({ step, courseId, onComplete, harness, rendered }: StepProps) {
+function StepView({ step, courseId, done, onComplete, harness, rendered }: StepProps) {
   switch (step.kind) {
     case "learn":
       return <LearnStep step={step} content={rendered.content} onComplete={onComplete} />;
     case "check":
       return <CheckStep step={step} content={rendered.content} onComplete={onComplete} />;
     case "lab":
-      return <LabStep step={step} content={rendered.content} onComplete={onComplete} />;
+      return <LabStep step={step} content={rendered.content} done={done} onComplete={onComplete} />;
     case "exercise":
       return <ExerciseStep step={step} courseId={courseId} onComplete={onComplete} harness={harness} rendered={rendered} />;
   }
 }
+
+const KIND: Record<SessionStep["kind"], string> = { learn: "Read", check: "Quick check", exercise: "Coding exercise", lab: "Lab" };
 
 const label = (step: SessionStep) => (step.kind === "learn" ? step.title : step.kind === "lab" ? step.lab.title : step.kind === "exercise" ? step.exercise.title : "Quick check");
 
@@ -41,6 +43,19 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
   useEffect(() => {
     if (ready) writeSession(courseId, session.id, state);
   }, [ready, courseId, session.id, state]);
+
+  const top = useRef<HTMLDivElement>(null);
+  const shown = useRef<number | null>(null);
+
+  // Moving to another step starts it from the top, so a long step never opens halfway down.
+  useEffect(() => {
+    if (!ready) return;
+    if (shown.current !== null && shown.current !== state.step) {
+      const box = top.current?.getBoundingClientRect();
+      if (box && box.top < 0) top.current?.scrollIntoView({ block: "start" });
+    }
+    shown.current = state.step;
+  }, [ready, state.step]);
 
   const finished = state.step >= total;
   const current = finished ? null : session.steps[state.step];
@@ -65,7 +80,7 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
   const skippedCount = session.steps.filter((step) => state.skipped.includes(step.id) && !state.done.includes(step.id)).length;
 
   return (
-    <div className="session">
+    <div className="session" ref={top}>
       <ol className="session-bar" aria-label="Session progress">
         {session.steps.map((step, index) => {
           const status = state.done.includes(step.id) ? "done" : state.skipped.includes(step.id) ? "skipped" : index === state.step ? "current" : "upcoming";
@@ -83,11 +98,14 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
           );
         })}
       </ol>
-      <p className="session-count">{finished ? "Done" : `Step ${state.step + 1} of ${total}`}</p>
+      <div className="session-head">
+        {current && <span className="step-kind" data-kind={current.kind}>{KIND[current.kind]}</span>}
+        <p className="session-count">{finished ? "All steps seen" : `Step ${state.step + 1} of ${total}`}</p>
+      </div>
 
       {!ready ? null : current ? (
         <div key={current.id}>
-          <StepView step={current} courseId={courseId} onComplete={complete} harness={harness} rendered={rendered[current.id] ?? {}} />
+          <StepView step={current} courseId={courseId} done={state.done.includes(current.id)} onComplete={complete} harness={harness} rendered={rendered[current.id] ?? {}} />
         </div>
       ) : (
         <div className="session-step session-finished">

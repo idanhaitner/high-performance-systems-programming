@@ -2,6 +2,7 @@
   "name": "study-web",
   "private": true,
   "scripts": {
+    "predev": "node scripts/build-labs.mjs",
     "dev": "next dev",
     "prebuild": "node scripts/build-labs.mjs",
     "build": "next build",

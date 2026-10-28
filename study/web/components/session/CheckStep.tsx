@@ -14,7 +14,6 @@ export function CheckStep({ step, content, onComplete }: { step: Extract<Session
   }, [step.id, onComplete]);
   return (
     <div className="session-step">
-      <p className="kicker">Quick check</p>
       {content}
     </div>
   );

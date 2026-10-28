@@ -39,28 +39,34 @@ const highlightField = StateField.define({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-const theme = EditorView.theme({
-  "&": { color: "var(--ink)", backgroundColor: "var(--card-solid)", fontSize: "0.9rem" },
-  ".cm-content": { fontFamily: "var(--mono)", caretColor: "var(--accent)", padding: "0.5rem 0" },
-  ".cm-scroller": { fontFamily: "var(--mono)", lineHeight: "1.55", minHeight: "10rem", maxHeight: "28rem" },
-  "&.cm-focused": { outline: "2px solid var(--accent)", outlineOffset: "-2px" },
-  ".cm-gutters": { backgroundColor: "var(--card-solid)", color: "var(--muted)", border: "none", borderInlineEnd: "1px solid var(--line)" },
-  ".cm-activeLine": { backgroundColor: "color-mix(in oklch, var(--accent) 7%, transparent)" },
-  ".cm-activeLineGutter": { backgroundColor: "transparent", color: "var(--ink)" },
-  ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": { backgroundColor: "color-mix(in oklch, var(--accent) 25%, transparent)" },
-  ".cm-cursor": { borderLeftColor: "var(--accent)" },
-  ".cm-linked-line": { backgroundColor: "color-mix(in oklch, var(--accent) 16%, transparent)" },
-  ".cm-tooltip": { backgroundColor: "var(--card-solid)", color: "var(--ink)", border: "1px solid var(--line)", borderRadius: "0.4rem" },
-  ".cm-diagnostic": { fontFamily: "var(--font-sans), system-ui, sans-serif", fontSize: "0.85rem" },
-});
+const theme = EditorView.theme(
+  {
+    "&": { color: "var(--code-ink)", backgroundColor: "var(--code)", fontSize: "0.875rem" },
+    ".cm-content": { fontFamily: "var(--mono)", fontVariantLigatures: "none", caretColor: "var(--code-num)", padding: "10px 0" },
+    ".cm-scroller": { fontFamily: "var(--mono)", lineHeight: "1.6", minHeight: "12rem", maxHeight: "30rem" },
+    "&.cm-focused": { outline: "none" },
+    ".cm-gutters": { backgroundColor: "var(--code-head)", color: "var(--code-gutter)", border: "none" },
+    ".cm-activeLine": { backgroundColor: "rgb(255 255 255 / 0.05)" },
+    ".cm-activeLineGutter": { backgroundColor: "transparent", color: "var(--code-ink)" },
+    ".cm-selectionBackground, &.cm-focused .cm-selectionBackground, ::selection": { backgroundColor: "rgb(143 134 255 / 0.4) !important" },
+    ".cm-cursor": { borderLeftColor: "var(--code-num)", borderLeftWidth: "2px" },
+    ".cm-matchingBracket": { backgroundColor: "rgb(255 210 63 / 0.22)", outline: "none" },
+    ".cm-linked-line": { backgroundColor: "rgb(143 134 255 / 0.3)" },
+    ".cm-tooltip": { backgroundColor: "var(--card-solid)", color: "var(--ink)", border: "2px solid var(--edge)", borderRadius: "10px" },
+    ".cm-diagnostic": { fontFamily: "var(--sans)", fontSize: "0.875rem", padding: "6px 10px" },
+    ".cm-lintRange-error": { backgroundImage: "none", textDecoration: "wavy underline #ff8fa3", textUnderlineOffset: "3px" },
+    ".cm-lintRange-warning": { backgroundImage: "none", textDecoration: "wavy underline #ffd23f", textUnderlineOffset: "3px" },
+  },
+  { dark: true },
+);
 
 const highlight = HighlightStyle.define([
-  { tag: [t.keyword, t.controlKeyword, t.definitionKeyword, t.modifier], color: "var(--accent-ink)", fontWeight: "600" },
-  { tag: [t.typeName, t.standard(t.typeName)], color: "var(--accent-2)" },
-  { tag: [t.string, t.character], color: "var(--ok)" },
-  { tag: [t.number, t.bool, t.null], color: "var(--accent)" },
-  { tag: [t.comment, t.lineComment, t.blockComment], color: "var(--muted)", fontStyle: "italic" },
-  { tag: [t.meta, t.processingInstruction], color: "var(--muted)" },
+  { tag: [t.keyword, t.controlKeyword, t.definitionKeyword, t.modifier, t.operatorKeyword], color: "var(--code-key)", fontWeight: "600" },
+  { tag: [t.typeName, t.standard(t.typeName)], color: "var(--code-type)" },
+  { tag: [t.string, t.character], color: "var(--code-str)" },
+  { tag: [t.number, t.bool, t.null], color: "var(--code-num)" },
+  { tag: [t.comment, t.lineComment, t.blockComment], color: "var(--code-muted)", fontStyle: "italic" },
+  { tag: [t.meta, t.processingInstruction], color: "var(--code-type)" },
 ]);
 
 function toCm(doc: EditorState["doc"], list: Diagnostic[]): CmDiagnostic[] {
@@ -90,6 +96,7 @@ export function Editor({ value, onChange, diagnostics, onHoverLine, highlightLin
       indentOnInput(),
       bracketMatching(),
       highlightActiveLine(),
+      EditorView.lineWrapping,
       keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
       cpp(),
       syntaxHighlighting(highlight),

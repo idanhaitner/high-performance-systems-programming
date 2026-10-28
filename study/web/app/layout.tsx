@@ -1,12 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Figtree, Heebo, JetBrains_Mono } from "next/font/google";
-import { Ambient } from "@/components/Ambient";
 import { Rail } from "@/components/Rail";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { loadCourse } from "@/lib/course";
 import "katex/dist/katex.min.css";
 import "./globals.css";
-import "./deck.css";
 import "./landing.css";
 
 const sans = Heebo({
@@ -61,7 +59,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang={course.lang} dir={course.dir} className={`${sans.variable} ${body.variable} ${display.variable} ${mono.variable}`}>
       <body>
-        <Ambient />
         <ReadingProgress />
         <a className="skip" href="#content">Skip to content</a>
         <div className="shell">
