@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   GodboltError,
   REQUEST_TIMEOUT_MS,
+  asmFlagsFor,
   compileAsm,
   flagsFor,
   runProgram,
@@ -128,5 +129,21 @@ describe("compileAsm", () => {
     expect(body.options.userArguments).toContain("-O2");
     expect(body.options.filters.execute).toBe(false);
     expect(body.options.filters.intel).toBe(true);
+  });
+
+  it("never sends sanitizer flags", async () => {
+    const fetchImpl = vi.fn(async () => jsonResponse(fixture("asm.json")));
+    await compileAsm("int f(void){return 1;}", { optimize: false, fetchImpl: fetchImpl as unknown as typeof fetch });
+    const init = (fetchImpl.mock.calls[0] as unknown as [string, RequestInit])[1];
+    const body = JSON.parse(init.body as string);
+    expect(body.options.userArguments).toBe("-std=c17 -Wall -Wextra -O0 -g");
+    expect(body.options.userArguments).not.toContain("-fsanitize");
+  });
+});
+
+describe("asmFlagsFor", () => {
+  it("builds plain -O0 and -O2 flags", () => {
+    expect(asmFlagsFor(false)).toBe("-std=c17 -Wall -Wextra -O0 -g");
+    expect(asmFlagsFor(true)).toBe("-std=c17 -Wall -Wextra -O2 -g");
   });
 });

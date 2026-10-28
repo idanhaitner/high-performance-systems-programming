@@ -24,7 +24,7 @@ type Result =
   | { kind: "error"; error: GodboltError };
 
 type Action = "run" | "test" | "asm";
-type Asm = { lines: AsmLine[]; failed: Diagnostic[] | null; code: string };
+type Asm = { lines: AsmLine[]; failed: Diagnostic[] | null; code: string; optimize: boolean };
 type Props = { step: Extract<SessionStep, { kind: "exercise" }>; courseId: string; onComplete: () => void; harness: string };
 
 const NO_LINE_LIMIT = Number.MAX_SAFE_INTEGER;
@@ -147,7 +147,7 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
     const { lines, diagnostics: found } = await compileAsm(code, { optimize: opt });
     const errors = found.filter((d) => d.severity === "error");
     setDiagnostics(splitDiagnostics(found, NO_LINE_LIMIT).inEditor);
-    setAsm({ lines, failed: errors.length > 0 ? found : null, code });
+    setAsm({ lines, failed: errors.length > 0 ? found : null, code, optimize: opt });
   };
 
   const act = async (action: Action, opt = optimize) => {
@@ -221,7 +221,7 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
             lines={asm?.lines ?? []}
             activeSourceLine={hoverC ?? hoverAsm}
             onHoverAsm={setHoverAsm}
-            optimize={optimize}
+            optimize={asm?.optimize ?? false}
             onOptimize={pickOptimize}
             locked={locked}
             stale={asm !== null && asm.code !== code}
@@ -234,7 +234,7 @@ export function CodeStep({ step, courseId, onComplete, harness }: Props) {
       <div className="code-actions">
         <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
         <button type="button" className="is-on" onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test"}</button>
-        <button type="button" aria-pressed={asmOpen} onClick={openAsm} disabled={locked && !asmOpen}>{busy && lastAction === "asm" ? "Compiling…" : "Assembly"}</button>
+        <button type="button" aria-pressed={asmOpen} onClick={openAsm} disabled={locked}>{busy && lastAction === "asm" ? "Compiling…" : "Assembly"}</button>
         {confirmReset ? (
           <span className="code-confirm" role="alert">
             Replace your code with the starter code?
