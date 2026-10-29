@@ -52,6 +52,16 @@ if (A == NULL) {
 
 This rarely happens on a laptop, but asking for a huge amount by mistake (for example a negative size that turns into a giant one) makes it happen right away.
 
+:::check id=chk-malloc-size
+You need room for 50 `double`s. Which call asks for the right amount?
+
+- [x] `malloc(50 * sizeof(double))`
+- [ ] `malloc(50)`
+- [ ] `malloc(sizeof(double))`
+
+`malloc` counts in **bytes**. 50 `double`s take 50 × `sizeof(double)` bytes (400 on typical machines). `malloc(50)` gives only 50 bytes, and `malloc(sizeof(double))` gives room for a single `double`.
+:::
+
 ## Where the memory lives
 
 The variable `A` itself is a normal local variable, so it sits on the **stack**, the area where a function's local variables live. Only the block it points to sits on the **heap**.
@@ -62,6 +72,16 @@ This difference matters a lot:
 
 - The stack box `A` disappears when the function ends, like every local variable.
 - The heap block stays until **you** give it back. It does not care when functions end.
+
+:::check id=chk-heap-after-return
+A function runs `int *A = malloc(4000);` and then returns without calling `free`. What is left?
+
+- [x] The box `A` is gone, but the 4000-byte block is still reserved
+- [ ] Both are gone, because the function ended
+- [ ] Both are still there, until the program ends
+
+`A` is a local variable on the stack, so it disappears when the function ends. The heap block stays until someone calls `free`. But the only copy of its address was in `A`, so now nobody can free it.
+:::
 
 ## Giving memory back with free
 
@@ -134,6 +154,23 @@ Right after `free`, store `NULL` in the pointer. Then:
 
 :::trap
 Thinking `free(A)` also changes `A`. It does not: `A` keeps the old address, and only the memory behind it is gone. That is exactly why you write `A = NULL;` on the next line.
+:::
+
+:::check id=chk-free-walk
+```c
+int *A = malloc(4 * sizeof(int));
+int *walk = A;
+walk++;
+free(A);
+```
+
+Is the `free` correct?
+
+- [x] Yes: `A` still holds the address `malloc` returned
+- [ ] No: the block moved, so `free` crashes
+- [ ] No: `walk` must be freed too
+
+Only `walk` moved. `A` still holds the start of the block, which is exactly what `free` needs. There is one block, so there is one `free`; `walk` is just a second pointer into the same block.
 :::
 
 ## calloc: memory that starts at zero

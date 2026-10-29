@@ -56,6 +56,16 @@ The lecture's slides write `void main()`. Standard C wants `int main(void)` and 
 Dropping the parentheses around `*pf`. `int *pf(int, int);` declares a **function** named `pf` that returns an `int *`, not a pointer to a function. The parentheses in `int (*pf)(int, int);` are what make `pf` a pointer.
 :::
 
+:::check id=chk-store-function
+With `int (*pf)(int, int);` declared, which line makes `pf` point to `f`?
+
+- [x] `pf = f;`
+- [ ] `pf = f(4, 5);`
+- [ ] `pf(f);`
+
+`f` without parentheses names the function, so `pf = f;` stores its address. `pf = f(4, 5);` would *call* `f` and try to store the result, 9, which is a number, not an address. `pf(f)` calls through `pf`, which does not point anywhere yet.
+:::
+
 ## Passing a function to a function
 
 Why would you want this? Because a function can then receive *another function* as an argument, and run it. One loop can do many different jobs.
@@ -93,6 +103,24 @@ int main(void) {
 ```
 
 `apply` never changes. Only the function you hand it changes. The C library uses the same idea: its sorting function `qsort` receives a function that says which of two values should come first.
+
+:::check id=chk-apply-twice
+Start with `int B[] = {2, 3};` and run:
+
+```c
+apply(B, 2, sqr);
+apply(B, 2, sqr);
+apply(B, 2, print);
+```
+
+What does it print?
+
+- [ ] `4 9`
+- [x] `16 81`
+- [ ] `2 3`
+
+`apply` hands each function the address of an element, so `sqr` changes the array itself. The first call makes it {4, 9}, the second makes it {16, 81}, and only then does `print` run.
+:::
 
 ## A shorter name with typedef
 

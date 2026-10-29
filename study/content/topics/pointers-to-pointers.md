@@ -83,6 +83,18 @@ So `**` is called a **double dereference**: follow the address once, then follow
 A pointer to a pointer is a variable whose value is the address of another pointer. Its type has two stars, for example `int **`. One star (`*pp`) reaches the middle pointer; two stars (`**pp`) reach the final value.
 :::
 
+:::check id=chk-one-star
+Use the boxes above: `x` lives at 1020, `ptr` at 1024, and `ptr_to_ptr` at 1032.
+
+What is `*ptr_to_ptr`?
+
+- [x] 1020
+- [ ] 1024
+- [ ] 10
+
+One star takes one step: from `ptr_to_ptr` to the box at 1024, which is `ptr`. The value in `ptr` is 1020, the address of `x`. You need a second star to reach the 10.
+:::
+
 ## Changing the middle pointer
 
 Here is why a pointer to a pointer is more than a trick. It does not hold a copy of an address; it points to the box `ptr` itself. So if `ptr` changes, `**ptr_to_ptr` follows the change.
@@ -127,6 +139,16 @@ int main(void) {
 - Back in `main`, `*p` follows that address and prints 3.
 
 You will use exactly this pattern later in the lecture, when a function hands back memory it asked for.
+
+:::check id=chk-change-callers-pointer
+Inside `point_at_smaller`, which line changes the pointer `p` that lives in `main`?
+
+- [x] `*pp = b;`
+- [ ] `pp = b;`
+- [ ] `**pp = *b;`
+
+`pp` holds the address of `main`'s `p`, so `*pp` *is* `p`. `pp = b;` would only change the function's own copy, `pp`. `**pp = *b;` goes one step further, to the `int` that `p` points to, and changes that number instead of `p`.
+:::
 
 :::trap
 Mixing up `*pp` and `**pp`. With `int **pp`, `*pp` is a pointer (an address), and `**pp` is the `int` at the end. Writing `*pp = 5;` tries to store the number 5 as an address, which the compiler rejects.

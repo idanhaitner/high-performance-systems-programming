@@ -42,6 +42,18 @@ So you may use square brackets on a pointer (`p[1]`), and a star with an array n
 Adding a whole number `k` to a pointer moves it `k` elements forward, which is `k * sizeof(element)` bytes. The result is only valid while it stays inside the array, or exactly one step past its last element.
 :::
 
+:::check id=chk-pointer-plus-three
+`A` starts at address 1000 and holds `int`s, 4 bytes each, and `p = A`.
+
+Which address is `p + 3`?
+
+- [ ] 1003
+- [x] 1012
+- [ ] 1004
+
+Adding 3 moves the pointer three **elements**, not three bytes: 3 × 4 = 12 bytes, so 1000 + 12 = 1012. That is the address of `A[3]`.
+:::
+
 ## Subtracting two pointers
 
 You can also subtract one pointer from another, when both point into the same array. The answer is **how many elements apart** they are, not how many bytes.
@@ -66,6 +78,22 @@ printf("%td bytes\n", (char *)p2 - (char *)p1);   /* 20 bytes */
 
 :::trap
 Writing `*p2 - *p1` for the distance. The stars take the **values**: `60 - 10` is 50, which has nothing to do with where the elements are. To compare positions, subtract the pointers themselves: `p2 - p1`.
+:::
+
+:::check id=chk-pointer-distance
+```c
+int a[] = {10, 20, 30, 40, 50, 60};
+int *p1 = &a[1];
+int *p2 = &a[4];
+```
+
+What is `p2 - p1`?
+
+- [x] 3
+- [ ] 12
+- [ ] 30
+
+`a[4]` is three elements after `a[1]`, so the answer is 3. The distance in bytes would be 12, and `*p2 - *p1` (the values) would be 50 − 20 = 30.
 :::
 
 ## sizeof: an array is not a pointer
@@ -159,6 +187,21 @@ Note that the check only helps if you started with `NULL`. A garbage pointer is 
 
 :::trap
 Declaring `int *px;` and checking `if (px != NULL)` later. An uninitialized pointer holds garbage, not `NULL`, so the check passes and `*px` still writes to a random place. Write `int *px = NULL;` when you declare it.
+:::
+
+:::check id=chk-null-write
+```c
+int *p = NULL;
+*p = 1;
+```
+
+What happens?
+
+- [ ] The compiler refuses to build it
+- [x] It builds, and the program crashes with a segmentation fault when it runs
+- [ ] It writes 1 at address 0 and keeps going
+
+The compiler does not check where a pointer points while the program runs, so this builds. Address 0 is never yours, so the operating system stops the program at the second line with a segmentation fault.
 :::
 
 ## Practice

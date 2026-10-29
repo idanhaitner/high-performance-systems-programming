@@ -25,6 +25,16 @@ Ten million `int`s are 40 MB. As a local array, that is five times the usual sta
 A stack overflow happens when a program needs more stack memory than its limit, for example for a huge local array or for a function that calls itself too many times. The operating system stops the program.
 :::
 
+:::check id=chk-stack-overflow
+Inside `main`, which line is likely to crash the program on a typical machine?
+
+- [x] `int big[5000000];`
+- [ ] `int *big = malloc(5000000 * sizeof(int));`
+- [ ] `int small[100];`
+
+Five million `int`s are 20 MB, more than the usual 8 MB stack, so the local array causes a stack overflow. The same amount from `malloc` comes from the heap, which is much bigger. 100 `int`s are only 400 bytes.
+:::
+
 ## Reason 2 for the heap: memory that outlives the function
 
 Say you want a function that builds an array and gives it back. This version looks reasonable but is wrong:
@@ -48,6 +58,16 @@ int *createArray(int n) {
 ```
 
 There is a price: the job of calling `free` now passes to the **caller**. Whoever receives the address must free it, exactly once.
+
+:::check id=chk-who-frees
+`main` calls `int *B = createArray(10);`, the heap version. Who should call `free`?
+
+- [x] `main`, with `free(B);` once it is done with the array
+- [ ] `createArray`, just before `return A;`
+- [ ] Nobody: heap memory is freed when the function that made it returns
+
+If `createArray` freed the block before returning, `main` would receive a dangling pointer. Heap memory is never freed by itself, so the job goes to whoever holds the address: here `main`, exactly once.
+:::
 
 ## Reason 3 for the heap: changing the size
 
