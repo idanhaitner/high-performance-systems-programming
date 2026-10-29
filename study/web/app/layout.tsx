@@ -53,6 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
         { url: `${basePath}/favicon.svg`, type: "image/svg+xml" },
         { url: `${basePath}/favicon.ico`, sizes: "any" },
       ],
+      apple: `${basePath}/apple-icon.png`,
     },
   };
 }
