@@ -3,6 +3,7 @@ id: source-to-process
 title: Programs and processes
 sources:
   - "Lecture 1 - Introduction.pdf"
+  - "ps1 (1).pdf"
 ---
 
 So far we have written C code. But a computer's processor (the **CPU**) cannot read C. It only understands **machine code**: instructions written as numbers. This lesson follows your program on its journey: from a text file you wrote, to a file of machine code, to a **running program** in memory. Along the way we see where each kind of variable ends up, which ties together everything from the earlier lessons.
@@ -88,6 +89,78 @@ You do not need to memorize this. The idea: a program cannot print to the screen
 - The second `syscall` is "exit" (number 60) with status 0.
 
 In normal C, you call `printf("Hello\n")`. `printf` is ordinary library code, and deep inside it eventually makes this same "write" system call.
+
+## Building on your own computer
+
+The course's work is done on **Linux**. On Windows you can use **WSL** (the Linux system built into Windows) or install Linux next to Windows. The course recommends **VS Code** for writing code. You can also use the Linux computers in the university labs.
+
+To check that everything works, save the "Hello, world" program from [Printing and reading values](topic:printf-and-scanf) as `hello.c`, and type in a terminal:
+
+```text
+$ gcc -std=c11 -Wall -Wextra hello.c -o hello
+$ ./hello
+Hello, world!
+```
+
+(The `$` is the terminal's prompt; you do not type it.) The options mean:
+
+| Option | Meaning |
+| --- | --- |
+| `-std=c11` | use the C11 version of the C language rules |
+| `-Wall -Wextra` | turn on extra **warnings**: messages about code that compiles but looks wrong |
+| `-o hello` | name the runnable program `hello` (without it, gcc calls it `a.out`) |
+
+Then `./hello` runs the program: `./` means "the file in this folder". Always build with `-Wall -Wextra`, and read every warning. Most warnings point at a real bug.
+
+## A program in several files
+
+Real programs are split into several `.c` files. Each one is compiled on its own into an object file, and the linker joins them. The files share their function declarations through a **header file** (`.h`).
+
+```c
+/* f.h: the declaration, shared by everyone who uses f */
+#ifndef F_H
+#define F_H
+int f(int x);
+#endif
+```
+
+```c
+/* f.c: the definition (the body) of f */
+#include "f.h"
+int f(int x) {
+    return 2 * x;
+}
+```
+
+```c
+/* main.c: uses f */
+#include <stdio.h>
+#include "f.h"
+int main(void) {
+    printf("%d\n", f(5));   /* 10 */
+    return 0;
+}
+```
+
+- `#include "f.h"` with quotes means "a header from my own folder". Angle brackets, as in `<stdio.h>`, mean "a header from the system".
+- `main.c` only sees the **declaration** `int f(int x);`. That is enough for the compiler to check the call `f(5)`. The **definition** lives in `f.c`.
+- The three lines `#ifndef F_H`, `#define F_H`, and `#endif` are an **include guard**. The first time the preprocessor pastes `f.h` into a file, `F_H` is not defined yet, so it keeps the contents and defines `F_H`. If the same file includes `f.h` a second time (for example through another header), `F_H` is already defined, and the contents are skipped. Without the guard, the same declarations could be pasted twice.
+
+To build:
+
+```text
+$ gcc -c main.c          # compile only: makes main.o
+$ gcc -c f.c             # compile only: makes f.o
+$ gcc main.o f.o -o demo # link the two object files into one program
+$ ./demo
+10
+```
+
+The linker connects the call to `f` in `main.o` with the code of `f` in `f.o`. If `f.c` were left out of the last command, the linker would stop with an "undefined reference to `f`" error.
+
+:::definition id=def-include-guard title="Header file and include guard" source="ps1 (1).pdf"
+A header file (`.h`) holds declarations that several `.c` files share through `#include`. An include guard, `#ifndef NAME` / `#define NAME` / `#endif` around its contents, makes sure those contents are pasted only once per `.c` file.
+:::
 
 ## Where each variable lives in the program file
 

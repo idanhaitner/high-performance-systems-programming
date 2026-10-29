@@ -5,7 +5,7 @@ sources:
   - "Lecture 2 - Memory management.pptx"
 ---
 
-In the last lesson you asked for a block with `malloc` and gave it back with `free`. This lesson does two more things with the heap. First, it **grows** a block that turned out too small, with `realloc`. Second, it solves a classic problem from the lecture: storing several names of different lengths, using exactly as much memory as they need. On the way you meet three string functions, `fgets`, `strlen`, and `strcpy`, and you put pointers to pointers from the first lesson to real use.
+In the last lesson you asked for a block with `malloc` and gave it back with `free`. This lesson does two more things with the heap. First, it **grows** a block that turned out too small, with `realloc`. Second, it solves a classic problem from the lecture: storing several names of different lengths, using exactly as much memory as they need. On the way you meet `fgets`, reuse `strlen` and `strcpy` from [Working with strings](topic:strings), and put pointers to pointers from the first lesson to real use.
 
 ## Growing a block with realloc
 
@@ -67,7 +67,7 @@ The better idea: keep an array of **pointers**, one per name, and give each name
 
 ![A is an array of three pointers. Each points to its own heap block that is exactly as long as the name plus its end marker.](../assets/figures/names-array.svg)
 
-Before writing it, we need three tools for strings. Remember from [Memory and pointers](topic:memory-and-pointers) that a string is an array of `char` that ends with `'\0'`, a byte with value 0.
+Before writing it, we need three tools for strings. Remember from [Working with strings](topic:strings) that a string is an array of `char` that ends with `'\0'`, a byte with value 0. Two of the tools, `strlen` and `strcpy`, are from that lesson; here is a short recap, and one new tool.
 
 ## Three string tools
 

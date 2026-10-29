@@ -3,6 +3,7 @@ id: memory-and-pointers
 title: Memory and pointers
 sources:
   - "Lecture 1 - Introduction.pdf"
+  - "ps1 (1).pdf"
 ---
 
 In the last lesson, `scanf` needed `&x`, "the address of `x`". This lesson explains what that means. We picture memory as a long street of numbered boxes, see that every variable lives in one of those boxes, and meet **pointers**: variables that hold a box number. Then we look at **arrays**, which are many boxes in a row. Pointers are the idea most beginners find hardest in C, so we go slowly.
@@ -99,6 +100,11 @@ Read the second line as: "make a variable `p` of type `int *` (a pointer to an `
 
 So now there are two boxes. Say `x` lives at `0x1000` and holds 5. `p` lives somewhere else, say `0x2000`, and holds `0x1000`. In other words, `p` holds the house number of `x`. We say "`p` **points to** `x`".
 
+Two small facts about pointers:
+
+- **Every address on one machine has the same size**, whatever it points to: 8 bytes on a 64-bit machine, 4 bytes on an old 32-bit one. The type (`int *`, `char *`) only says how to read the bytes at that address.
+- **When you declare several pointers on one line, each name needs its own star.** `int *p1, *p2, *p3;` makes three pointers. But `int* p1, p2;` makes one pointer `p1` and one plain `int` `p2`, because the star belongs to the name, not to the type. That is why most C code writes the star next to the name.
+
 ![The pointer object p stores the address of x.](../assets/figures/pointer-boxes.svg)
 
 ### Following a pointer: the star
@@ -166,6 +172,17 @@ int *p = a;  /* p holds 0x1000, the address of a[0] */
 ```
 
 Notice: `p + 1` is `0x1004`, not `0x1001`. When you add a number to a pointer, C counts in **elements**, not bytes. Because `p` points to `int`s, which are 4 bytes each, `p + 1` moves 4 bytes. In general, `p + k` moves `k * sizeof(*p)` bytes.
+
+So the same `++` moves a different distance for each pointer type (sizes on the course's 64-bit Linux machines):
+
+| Pointer | Starts at | After `p++` | Moved by |
+| --- | --- | --- | --- |
+| `char *p` | 1000 | 1001 | `sizeof(char)` = 1 |
+| `short *p` | 2000 | 2002 | `sizeof(short)` = 2 |
+| `int *p` | 3000 | 3004 | `sizeof(int)` = 4 |
+| `long *p` | 4000 | 4008 | `sizeof(long)` = 8 |
+
+You can use `+`, `-`, `++`, and `--` on pointers.
 
 You may only move within the array, or to the spot just one past its end (useful as an "end" marker, but you must not read from it).
 
@@ -285,4 +302,4 @@ Can `main` use `doubled`?
 :::
 :::
 
-**Next:** in [Structures](topic:structures) we group values of *different* types, such as a name, an ID, and grades, into a single record.
+**Next:** [Printing and reading values](topic:printf-and-scanf) uses what you now know about addresses and strings to look closely at `printf` and `scanf`.

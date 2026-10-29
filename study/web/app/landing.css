@@ -230,7 +230,7 @@ body:has(.landing) .reading-progress { display: none; }
 }
 .marquee-chip:nth-child(even) { rotate: -2deg; }
 .marquee-chip:nth-child(odd) { rotate: 1deg; }
-.marquee-chip span { font-variant-numeric: tabular-nums; opacity: 0.7; }
+.marquee-num { font-variant-numeric: tabular-nums; opacity: 0.7; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 [dir="rtl"] .marquee-track { animation-direction: reverse; }
 
@@ -244,6 +244,10 @@ body:has(.landing) .reading-progress { display: none; }
 .tone-mint { background: var(--mint); }
 .tone-coral { background: var(--coral); }
 .tone-sun { background: var(--sun); }
+/* The other three hero card colors, used by the lesson chips in the marquee. */
+.tone-card { background: var(--card-solid); color: var(--ink); }
+.tone-soft { background: linear-gradient(var(--accent-soft) 0 0), var(--card-solid); color: var(--ink); }
+.tone-accent { background: var(--accent); color: var(--on-accent); }
 .how-num {
   display: grid;
   place-items: center;

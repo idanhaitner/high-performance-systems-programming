@@ -36,7 +36,7 @@ Unlike lecture slides or a generic C tutorial, every page follows this course's 
 
 ## Evidence on Hand
 
-- Real course content: Lectures 1 and 2 (six lessons each), their glossary terms, their exercises and labs, and the changelog in `study/content/`.
+- Real course content: Lecture 1 (eight lessons, including the material of Tutorial 1, `ps1`) and Lecture 2 (six lessons), their glossary terms, their exercises and labs, and the changelog in `study/content/`.
 - Source lecture PDFs listed under `sources` in `course.yml`.
 - No testimonials, usage numbers, or endorsements exist. Do not invent any.
 

@@ -1,0 +1,16 @@
+cases:
+  - name: a small letter
+    args: []
+    stdin: "5\na\n"
+    expected: "Enter a number: Enter a character: x = 5, ch = 'a'\n"
+    hint: "ch should be 'a'. If it printed as a line break, %c read the newline left after the number. Put a space before %c."
+  - name: a negative number
+    args: []
+    stdin: "-12\nZ\n"
+    expected: "Enter a number: Enter a character: x = -12, ch = 'Z'\n"
+    hint: "x should be -12 and ch should be 'Z'. If ch is a line break, put a space before %c to skip the leftover newline."
+  - name: spaces before the letter
+    args: []
+    stdin: "42\n   q\n"
+    expected: "Enter a number: Enter a character: x = 42, ch = 'q'\n"
+    hint: "The letter comes after three spaces. A space before %c skips spaces as well as newlines, so ch should be 'q'."

@@ -25,16 +25,19 @@ changelog:
     note: Renamed the guided session to the lecture practice and made the order clear everywhere. First read a lecture's lessons, then do its practice.
   - date: 2026-10-29
     note: Added Lecture 2, memory management, as six lessons on pointers to pointers, pointer arithmetic, function pointers, malloc and free, realloc and arrays of strings, and choosing the stack or the heap, plus its practice with six coding exercises and a stack-limit lab.
+  - date: 2026-10-29
+    note: Brought the first practice session (Tutorial 1) into Lecture 1. Two new lessons cover printing and reading values and working with strings, other lessons gained compiling with warnings, programs in several files, constants, if and loops, and pointer tips, and the practice has two more exercises.
 
 lectures:
   - id: lecture-1
     number: 1
     title: Data, memory, and running programs
     summary: >
-      How a computer stores numbers, how memory and addresses work, how to group
-      data into records, how your C code becomes a running program, and how a
-      program reads the words you type after its name.
-    topics: [why-low-level, c-data-types, memory-and-pointers, structures, source-to-process, command-line-arguments]
+      How a computer stores numbers, how memory and addresses work, how to print
+      and read values and work with text, how to group data into records, how
+      your C code becomes a running program, and how a program reads the words
+      you type after its name.
+    topics: [why-low-level, c-data-types, memory-and-pointers, printf-and-scanf, strings, structures, source-to-process, command-line-arguments]
     session: sessions/lecture-1.md
   - id: lecture-2
     number: 2
@@ -79,6 +82,18 @@ sources:
       - prac-argc-count
       - prac-atoi-role
       - prac-argv-shape
+  - path: "ps1 (1).pdf"
+    type: exercise
+    status: incorporated
+    note: "Tutorial 1: setting up gcc, printf and scanf formats, the input buffer, constants, if and loops, string functions, pointer tips, and programs in several files."
+    problems:
+      - prac-print-negative
+      - prac-float-digits
+      - prac-leftover-newline
+      - prac-scanf-placeholders
+      - prac-string-cells
+      - prac-strcmp-sign
+      - prac-strtok-pieces
   - path: "Lecture 2 - Memory management.pptx"
     type: lecture
     status: incorporated
@@ -123,13 +138,27 @@ topics:
     summary: "Memory as numbered boxes, variables that hold box numbers (pointers), and arrays."
     exam_weight: taught
     prerequisites: [c-data-types]
+    unlocks: [printf-and-scanf]
+  - id: printf-and-scanf
+    file: topics/printf-and-scanf.md
+    title: Printing and reading values
+    summary: "How to print a value in different ways with printf, how to read values with scanf, and why scanf sometimes seems to skip what you type."
+    exam_weight: taught
+    prerequisites: [memory-and-pointers]
+    unlocks: [strings]
+  - id: strings
+    file: topics/strings.md
+    title: Working with strings
+    summary: "How C stores text, and the library functions that measure, copy, join, compare, search, and split it."
+    exam_weight: taught
+    prerequisites: [printf-and-scanf]
     unlocks: [structures]
   - id: structures
     file: topics/structures.md
     title: Structures
     summary: "Grouping several values into one record, like a student with a name, an ID, and grades."
     exam_weight: taught
-    prerequisites: [memory-and-pointers]
+    prerequisites: [strings]
     unlocks: [source-to-process]
   - id: source-to-process
     file: topics/source-to-process.md
@@ -213,6 +242,42 @@ glossary:
   - term: sizeof
     topic: c-data-types
     definition: A C operator that tells you how many bytes a type or variable takes, for example sizeof(int) is 4 on typical machines.
+  - term: format specifier
+    topic: printf-and-scanf
+    definition: A placeholder starting with % in a printf or scanf format string, such as %d for an int or %lf for reading a double. It says what type goes there and how to write it.
+  - term: input buffer (stdin)
+    topic: printf-and-scanf
+    definition: The waiting area for the characters you type, including the Enter key. scanf takes only what it needs and leaves the rest for the next read.
+  - term: getchar
+    topic: printf-and-scanf
+    definition: A function that takes one character from the input buffer and returns it. It returns EOF when the input has ended.
+  - term: magic number
+    topic: printf-and-scanf
+    definition: A number written in the code with no name or explanation, such as 32 for the distance between small and capital letters. Give it a name instead.
+  - term: const
+    topic: c-data-types
+    definition: A word that makes a variable read-only. const int limit = 30; cannot be changed by assignment later.
+  - term: "#define"
+    topic: c-data-types
+    definition: A preprocessor line that makes a name stand for some text. #define MAX 30 replaces every MAX with 30 before compiling. It has no type and no semicolon.
+  - term: string
+    topic: strings
+    definition: Text stored in a char array and ended by the character '\0'. The array needs one more cell than the number of letters.
+  - term: strcmp
+    topic: strings
+    definition: A function that compares two strings letter by letter. It returns 0 if they are equal, a negative number if the first comes first, and a positive number otherwise.
+  - term: strtok
+    topic: strings
+    definition: A function that splits a string into pieces at the delimiter characters you give it. Later calls pass NULL to continue in the same string. It changes the string.
+  - term: warning
+    topic: source-to-process
+    definition: A compiler message about code that builds but looks wrong. Turn more of them on with -Wall -Wextra and fix each one.
+  - term: header file
+    topic: source-to-process
+    definition: A .h file of declarations that several .c files share with #include, so each file knows how to call functions defined elsewhere.
+  - term: include guard
+    topic: source-to-process
+    definition: The lines #ifndef NAME, #define NAME, and #endif around a header's contents, which make sure the header is pasted only once into each file.
   - term: structure
     topic: structures
     definition: A record that groups several named values, possibly of different types, into one variable. For example, a student with a name, an ID, and a grade.

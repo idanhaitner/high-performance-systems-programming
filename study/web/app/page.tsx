@@ -12,6 +12,10 @@ import type { Session } from "@/lib/types";
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
+// The same six colors as the hero cards, so a lesson's chip matches its card.
+const CARD_TONES = ["mint", "sun", "coral", "card", "soft", "accent"];
+const cardTone = (lessonNumber: number) => CARD_TONES[(lessonNumber - 1) % CARD_TONES.length];
+
 function practiceSummary(session: Session | undefined) {
   if (!session) return "";
   const count = (kind: Session["steps"][number]["kind"]) => session.steps.filter((step) => step.kind === kind).length;
@@ -105,9 +109,9 @@ export default function HomePage() {
           {[0, 1].map((copy) => (
             <ul key={copy}>
               {lessons.concat(lessons).map((lesson, index) => (
-                <li key={`${lesson.id}-${index}`} className={`marquee-chip tone-${["mint", "sun", "coral"][index % 3]}`}>
-                  <span>{pad(lesson.lessonNumber)}</span>
-                  <Mixed text={lesson.title} />
+                <li key={`${lesson.id}-${index}`} className={`marquee-chip tone-${cardTone(lesson.lessonNumber)}`}>
+                  <span className="marquee-num">{pad(lesson.lessonNumber)}</span>
+                  <span><Mixed text={lesson.title} /></span>
                 </li>
               ))}
             </ul>

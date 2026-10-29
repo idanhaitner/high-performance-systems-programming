@@ -5,7 +5,7 @@ title: "Lecture 1 practice: data, memory, and running programs"
 ---
 
 :::learn title="How this practice works"
-You do this practice after you read the six lessons of Lecture 1. It does not teach new ideas. It walks through the lecture again, one small step at a time, so you can see what stuck and use it in real code.
+You do this practice after you read the eight lessons of Lecture 1. It does not teach new ideas. It walks through the lecture again, one small step at a time, so you can see what stuck and use it in real code.
 
 The steps follow the lessons in order. For each lesson you get a few kinds of steps:
 
@@ -88,6 +88,36 @@ Your code is built by godbolt.org, a free website that runs the C compiler. So y
 :::exercise ref=ex-swap
 :::
 
+:::learn from="printf-and-scanf#printing-with-printf"
+:::
+
+:::learn from="printf-and-scanf#the-input-buffer-why-scanf-skips-input"
+:::
+
+:::check ref=prac-print-negative-q2
+:::
+
+:::check ref=prac-leftover-newline-q2
+:::
+
+:::exercise ref=ex-number-then-letter
+:::
+
+:::learn from="strings#the-string-toolbox-string-h"
+:::
+
+:::learn from="strings#comparing-strings-with-strcmp"
+:::
+
+:::check ref=prac-strcmp-sign-q3
+:::
+
+:::check ref=prac-strtok-pieces-q3
+:::
+
+:::exercise ref=ex-compare-text
+:::
+
 :::learn from="structures#defining-and-using-a-structure"
 :::
 
@@ -104,6 +134,9 @@ Your code is built by godbolt.org, a free website that runs the C compiler. So y
 :::
 
 :::learn from="source-to-process#from-c-file-to-runnable-program-four-steps"
+:::
+
+:::learn from="source-to-process#a-program-in-several-files"
 :::
 
 :::learn from="source-to-process#where-each-variable-lives-in-the-program-file"

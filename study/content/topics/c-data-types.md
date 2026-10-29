@@ -3,6 +3,7 @@ id: c-data-types
 title: Values and types
 sources:
   - "Lecture 1 - Introduction.pdf"
+  - "ps1 (1).pdf"
 ---
 
 In the last lesson we saw that numbers live in boxes of a fixed size. This lesson shows how C lets you choose those boxes. You will learn the basic kinds of values in C, how many bytes each takes, how to print and read them, and two places where C behaves differently from a calculator: dividing whole numbers, and storing decimals.
@@ -24,6 +25,34 @@ The type tells the computer three things:
 1. **How big the box is** (how many bytes).
 2. **What the bits mean** (a whole number? a decimal? a letter?).
 3. **Which machine instructions to use** (adding two whole numbers is a different instruction from adding two decimals).
+
+### Declaring, starting, and changing a variable
+
+```c
+int age;        /* declared, no starting value yet */
+int year = 2;   /* declared and given a starting value (initialized) */
+age = 25;       /* assignment: store a new value in an existing box */
+```
+
+A local variable (one made inside a function) that you never give a value does **not** start at 0. It holds whatever bits were left in that memory, so reading it before you assign it gives an unpredictable number. Give every variable a value before you read it.
+
+### Named constants: #define and const
+
+Some values never change, like the largest class size. There are two ways to give such a value a name:
+
+```c
+#define MAX 30            /* no '=' and no ';' */
+const int limit = 30;     /* a normal declaration, ends with ';' */
+```
+
+- `#define MAX 30` is a **macro**. Before the real compiling starts, a step called the **preprocessor** replaces every `MAX` in your code with the text `30`. So `int count = MAX;` becomes `int count = 30;`. `MAX` has no type and takes no memory; it is pure text replacement. (You will meet the preprocessor again in [Programs and processes](topic:source-to-process).)
+- `const int limit = 30;` is a real variable with a type, but you may not change it. `limit = 40;` is a compile error.
+
+Do not put a `;` at the end of a `#define`. `#define MAX 30;` would paste `30;` everywhere, so `int a[MAX];` becomes `int a[30;];`, which does not compile.
+
+:::definition id=def-const-define title="const and #define" source="ps1 (1).pdf"
+`#define NAME text` makes the preprocessor replace `NAME` with `text` everywhere before compiling. `const type name = value;` makes a variable whose value cannot be changed by assignment.
+:::
 
 ## Whole numbers: char, short, int, long
 
@@ -252,6 +281,35 @@ C has the usual building blocks for controlling what runs:
 - `break` (leave a loop), `continue` (skip to the next round), and `return` (leave a function).
 
 One classic mistake: to compare, write `==`. A single `=` means "store". So `if (x = 0)` stores 0 in `x` and then tests 0, which counts as false, so the `if` never runs.
+
+**`if` and `else`.** An `if` may have no `else`. In place of one statement you can put a block in braces `{ ... }`. An `else` always belongs to the **nearest** `if` above it that has no `else` yet, whatever the indentation says:
+
+```c
+if (x > 0)
+    if (y > 0)
+        printf("both positive\n");
+else
+    printf("this belongs to if (y > 0), not to if (x > 0)\n");
+```
+
+Braces remove the doubt, so use them whenever you nest `if`s. To pick one of several cases, chain `else if`:
+
+```c
+if (x1 > x2 && x1 > x3) {
+    printf("%d", x1);
+} else if (x2 > x1 && x2 > x3) {
+    printf("%d", x2);
+} else {
+    printf("%d", x3);
+}
+printf(" is the biggest\n");
+```
+
+(`&&` means "and": both conditions must be true.)
+
+**`while`.** `while (condition) { ... }` checks the condition first, then runs the body, then checks again. If the condition is false at the start, the body never runs. If nothing in the body ever makes the condition false, the loop runs forever.
+
+**`for`.** `for (start; condition; step) { ... }` runs in this order: `start` once, then repeatedly the condition check, the body, and the step. So `for (int i = 0; i < 3; i++)` runs the body with `i` equal to 0, 1, and 2. Like `while`, it may run zero times, but `start` always runs.
 
 ## Practice
 
