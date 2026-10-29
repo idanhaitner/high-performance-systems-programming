@@ -201,7 +201,7 @@ export function Rail({
                       <span className="dot" aria-hidden="true">
                         <svg className="dot-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.5v9l7.5-4.5z" /></svg>
                       </span>
-                      <span>Guided session</span>
+                      <span>Practice the lecture<small>After the lessons</small></span>
                     </Link>
                   )}
                 </div>

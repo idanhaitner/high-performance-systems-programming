@@ -6,13 +6,31 @@ import { useEffect, useRef, useState } from "react";
 const LINKS = [
   { href: "#how", label: "How it works" },
   { href: "#deck", label: "The lessons" },
-  { href: "#faq", label: "Questions" },
   { href: "/glossary/", label: "Glossary" },
 ];
 
 export function LandingNav({ startHref }: { startHref: string }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
+
+  // The bar gains a shadow once the page has scrolled, read at most once a frame.
+  useEffect(() => {
+    let frame = 0;
+    const read = () => {
+      frame = 0;
+      setScrolled(window.scrollY > 16);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(read);
+    };
+    read();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -33,7 +51,7 @@ export function LandingNav({ startHref }: { startHref: string }) {
   }, [open]);
 
   return (
-    <header className={`landing-nav${open ? " is-open" : ""}`}>
+    <header className={`landing-nav${open ? " is-open" : ""}${scrolled ? " is-scrolled" : ""}`}>
       <div className="landing-bar">
         <Link className="landing-mark" href="/" aria-current="page">
           <span aria-hidden="true" />

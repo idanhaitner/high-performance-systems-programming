@@ -21,6 +21,7 @@ export function HeroCta({ courseId, lessons }: { courseId: string; lessons: Less
     <div className="hero-actions">
       <Link className="landing-cta" href={`/topics/${(resume ?? first).id}`}>
         {resume ? "Continue where you stopped" : "Start lecture 1"}
+        <span className="cta-arrow" aria-hidden="true">→</span>
       </Link>
       {resume && <span className="hero-resume">Next up: {resume.title}</span>}
     </div>

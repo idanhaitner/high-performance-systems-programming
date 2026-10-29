@@ -1,13 +1,20 @@
 ---
 id: lecture-1
 lecture: lecture-1
-title: "Lecture 1 session: data, memory, and running programs"
+title: "Lecture 1 practice: data, memory, and running programs"
 ---
 
-:::learn title="How a session works"
-This session walks you through Lecture 1 one step at a time. Some steps are short readings taken from the lessons. Some are quick questions. Some ask you to write a little C code right here on the page. One, the lab, you do on your own computer.
+:::learn title="How this practice works"
+You do this practice after you read the six lessons of Lecture 1. It does not teach new ideas. It walks through the lecture again, one small step at a time, so you can see what stuck and use it in real code.
 
-**Moving through the steps.** Press **Next** to go on. Next unlocks when a step is done: a reading is done as soon as you see it, a question when you answer it correctly, and a coding exercise when every test passes. If you are stuck, press **Skip for now**. The step is marked as skipped, and you can come back to it later with **Back**.
+The steps follow the lessons in order. For each lesson you get a few kinds of steps:
+
+- A **recap** is a short part copied from the lesson, to bring the idea back. Under each recap there is a link to the full lesson. If a recap feels new, open the lesson and read it before you go on.
+- A **quick question** checks that you understood the idea.
+- A **coding exercise** asks you to write a little C code right here on the page.
+- The **lab** is one step you do on your own computer, in VS Code, a free code editor.
+
+**Moving through the steps.** Press **Next** to go on. Next unlocks when a step is done: a recap is done as soon as you see it, a question when you answer it correctly, and a coding exercise when every test passes. If you are stuck, press **Skip for now**. The step is marked as skipped, and you can come back to it later with **Back**.
 
 **Coding exercises.** Each exercise gives you starter code in an editor. Comments marked `TODO` ("to do") show the part left for you. You change the code, then press one of these buttons:
 

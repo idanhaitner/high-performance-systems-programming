@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Blocks } from "@/components/Blocks";
 import type { RenderedStep } from "@/components/session/rendered";
@@ -28,11 +29,36 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     );
   }
   const courseId = course.id;
+  const lecture = course.lectures.find((item) => item.id === session.lectureId);
+  const lessonOf = new Map(course.topics.map((topic) => [topic.id, topic]));
+  const count = (kind: SessionStep["kind"]) => session.steps.filter((step) => step.kind === kind).length;
+  const recaps = session.steps.filter((step) => step.kind === "learn" && step.id.includes("#")).length;
+  const parts = [
+    [recaps, "short recap", "short recaps"],
+    [count("check"), "quick question", "quick questions"],
+    [count("exercise"), "coding exercise", "coding exercises"],
+    [count("lab"), "lab", "labs"],
+  ] as const;
   const render = (blocks: Block[], key?: string | number) => <Blocks key={key} blocks={blocks} courseId={courseId} />;
   const renderStep = (step: SessionStep): RenderedStep => {
     switch (step.kind) {
-      case "learn":
-        return { content: render(step.blocks) };
+      case "learn": {
+        // A recap is a section copied from a lesson, so it links back to the full lesson.
+        const [topicId, section] = step.id.replace(/^learn:/, "").split("#");
+        const topic = section ? lessonOf.get(topicId) : undefined;
+        if (!topic) return { content: render(step.blocks) };
+        return {
+          content: (
+            <>
+              {render(step.blocks)}
+              <p className="session-source">
+                From Lesson {String(topic.lessonNumber).padStart(2, "0")},{" "}
+                <Link href={`/topics/${topic.id}#${section}`}><Mixed text={topic.title} /></Link>. Open it if this recap feels new.
+              </p>
+            </>
+          ),
+        };
+      }
       case "check":
         return { content: render([step.block]) };
       case "lab":
@@ -48,10 +74,30 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   const rendered = Object.fromEntries(session.steps.map((step) => [step.id, renderStep(step)]));
   return (
     <article className="page chapter">
-      <header className="masthead">
+      <header className="masthead session-masthead">
+        {lecture && <p className="kicker">Lecture {lecture.number} · Step 2 of 2: practice</p>}
         <h1><Mixed text={session.title} /></h1>
+        {lecture && (
+          <div className="session-before">
+            <p>
+              <strong>Read the lessons first.</strong> This practice does not teach anything new. It goes over
+              the {lecture.lessons.length} lessons of Lecture {lecture.number} again and makes you use them:{" "}
+              {parts.filter(([n]) => n > 0).map(([n, one, many]) => `${n} ${n === 1 ? one : many}`).join(", ")}.
+            </p>
+            <ol className="session-lessons">
+              {lecture.lessons.map((lesson) => (
+                <li key={lesson.id}>
+                  <Link href={`/topics/${lesson.id}`}>
+                    <span>{String(lesson.lessonNumber).padStart(2, "0")}</span>
+                    <Mixed text={lesson.title} />
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
       </header>
-      <Stepper session={session} courseId={course.id} harness={course.harness} rendered={rendered} />
+      <Stepper session={session} courseId={course.id} harness={course.harness} rendered={rendered} lectureNumber={lecture?.number ?? null} />
     </article>
   );
 }

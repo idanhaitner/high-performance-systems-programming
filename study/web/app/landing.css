@@ -28,7 +28,10 @@ body:has(.landing) .reading-progress { display: none; }
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 2px solid var(--edge);
+  transition: box-shadow 0.3s var(--ease), translate 0.3s var(--ease);
 }
+/* Once the page scrolls, the bar lifts off the content with a hard card shadow (LandingNav.tsx). */
+.landing-nav.is-scrolled .landing-bar { box-shadow: 4px 4px 0 var(--edge); translate: -2px -2px; }
 .landing-mark {
   display: flex;
   align-items: center;
@@ -76,6 +79,8 @@ body:has(.landing) .reading-progress { display: none; }
 .landing-cta:active { transform: scale(0.97); box-shadow: none; transition-duration: 0.1s; }
 .deck-grid a:active { transform: scale(0.98); box-shadow: none; transition-duration: 0.1s; }
 .landing-cta-small { font-size: 0.875rem; line-height: 1.25rem; }
+.cta-arrow { display: inline-block; margin-inline-start: 8px; transition: transform 0.3s var(--ease-spring); }
+[dir="rtl"] .cta-arrow { rotate: 180deg; }
 
 .landing-toggle { display: none; width: 44px; min-height: 44px; height: 44px; padding: 0; border-radius: 9999px; place-items: center; }
 .landing-toggle span, .landing-toggle span::before { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 2px; position: relative; transition: transform 0.25s var(--ease); }
@@ -104,9 +109,15 @@ body:has(.landing) .reading-progress { display: none; }
 .hero-sub { max-width: 680px; margin: 0 0 32px; font-size: 1.25rem; line-height: 1.75rem; color: var(--muted); }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 .hero-resume { font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
-.hero-proof { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; font-size: 0.875rem; line-height: 1.25rem; }
-.hero-proof > * { padding: 4px 12px; border-radius: 9999px; background: var(--card-solid); color: var(--ink); font-weight: 600; }
-.hero-proof strong { background: var(--mint); color: var(--on-card); }
+
+/* Headline: each word rises out of its own line box, one after another (40ms apart). */
+.hero-line { display: block; }
+.hero-word { display: inline-block; overflow: clip; overflow-clip-margin: 0.15em; padding-bottom: 0.08em; margin-bottom: -0.08em; vertical-align: top; }
+.hero-word > span { display: inline-block; animation: word-up 0.9s var(--ease-spring) calc(0.05s + var(--w) * 0.04s) backwards; }
+@keyframes word-up { from { transform: translateY(110%) rotate(4deg); } }
+.hero-sub { animation: rise-in 0.8s var(--ease) 0.45s backwards; }
+.hero-copy .hero-actions { animation: rise-in 0.8s var(--ease) 0.55s backwards; }
+@keyframes rise-in { from { opacity: 0; transform: translateY(16px); } }
 
 .page.landing .fan { position: relative; height: 24rem; margin: 0; padding: 0; list-style: none; }
 .fan li {
@@ -118,16 +129,20 @@ body:has(.landing) .reading-progress { display: none; }
   margin-left: -6rem;
   --angle: calc((var(--i) - (var(--n) - 1) / 2) * 9deg);
   transform-origin: 50% 120%;
-  transform: rotate(var(--angle));
-  /* On load the six cards rise together as one squared-up deck, then fan out to their angles. */
-  animation: fan-out 0.75s var(--ease) 0.1s backwards;
+  /* --push is set by FanMotion.tsx: cards beside the one under the pointer lean 4 degrees away from it. */
+  rotate: calc(var(--angle) + var(--push, 0) * 4deg);
+  transition: rotate 0.6s var(--ease-spring);
+  /* On load the six cards rise together as one squared-up deck, then spread open on a soft spring.
+     The rise and the spread are separate properties with separate curves, and the spread starts while the
+     deck is still rising, so the motion never stops between the two. */
+  animation:
+    deck-rise 0.5s var(--ease) 0.1s backwards,
+    deck-spread 1s var(--ease-spring) 0.32s backwards;
 }
-/* The rise eases out; the spread uses an ease-in-out (cubic-bezier(0.77, 0, 0.175, 1)) so it sweeps open like a hand fanning cards. */
-@keyframes fan-out {
-  0% { opacity: 0; transform: translateY(40px) rotate(0deg); }
-  25% { opacity: 1; transform: translateY(0) rotate(0deg); animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
-  100% { opacity: 1; transform: translateY(0) rotate(var(--angle)); }
-}
+@keyframes deck-rise { from { opacity: 0; translate: 0 48px; scale: 0.94; } }
+@keyframes deck-spread { from { rotate: 0deg; } }
+/* The fan's pointer tilt (FanMotion.tsx) glides after the pointer instead of snapping to it. */
+.page.landing .fan { transition: transform 0.8s var(--ease); }
 /* The card being pointed at or focused comes to the front so its title is readable. */
 .fan li:has(> a:is(:hover, :focus-visible)) { z-index: 1; }
 .fan li:nth-child(6n + 1) a { background: var(--mint); }
@@ -148,15 +163,20 @@ body:has(.landing) .reading-progress { display: none; }
   border-radius: 24px;
   color: var(--on-card);
   text-decoration: none;
-  transition: transform 0.2s var(--ease);
+  transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease);
 }
 /* Fills the gap under a lifted card, so the pointer never falls off its bottom edge. */
 .fan a::after { content: ""; position: absolute; inset: 100% -2px auto; height: 16px; }
-.fan a:focus-visible { transform: translateY(-16px); outline: none; box-shadow: 0 0 0 4px var(--accent); }
+.fan a:focus-visible { transform: translateY(-24px) scale(1.04); outline: none; box-shadow: 0 0 0 4px var(--accent); }
 @media (hover: hover) and (pointer: fine) {
-  .fan a:hover { transform: translateY(-16px); }
+  .fan a:hover { transform: translateY(-24px) scale(1.04); box-shadow: 6px 6px 0 var(--edge); }
   .landing-cta:hover:not(:active) { transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
-  .deck-session:hover { background: var(--sun); color: var(--on-card); transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
+  .landing-cta:hover .cta-arrow { transform: translateX(4px); }
+  [dir="rtl"] .landing-cta:hover .cta-arrow { transform: translateX(-4px); }
+  .how-card:hover { translate: 0 -8px; }
+  .benefits li:hover { translate: -4px -4px; box-shadow: 4px 4px 0 var(--edge); }
+  .deck-practice:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--edge); }
+  .deck-practice:hover .deck-practice-go span { transform: translateX(4px); }
   .deck-grid a:hover:not(:active) { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--edge); }
 }
 .fan-num { font: 700 3.75rem/1 var(--serif); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
@@ -167,17 +187,58 @@ body:has(.landing) .reading-progress { display: none; }
 .tagline p { max-width: 680px; margin: 0 auto; font: 700 2.25rem/2.5rem var(--serif); letter-spacing: -0.035em; text-align: center; }
 .tagline-line { display: block; }
 /* Words start lit. Reveal.tsx arms the dimming only when motion is allowed, so without it the text stays readable. */
-.tagline-word { color: var(--ink); }
-.tagline.is-live .tagline-word { transition: color 0.6s var(--ease); }
-.tagline.is-armed .tagline-word:not(.is-lit) { color: color-mix(in oklch, var(--ink) 30%, transparent); }
+.tagline-word { display: inline-block; color: var(--ink); }
+.tagline.is-live .tagline-word { transition: color 0.6s var(--ease), translate 0.6s var(--ease), filter 0.6s var(--ease); }
+.tagline.is-armed .tagline-word:not(.is-lit) { color: color-mix(in oklch, var(--ink) 30%, transparent); translate: 0 0.25em; filter: blur(2px); }
 
 /* Section headings */
 .landing section > h2 { margin: 0 0 32px; font-size: 2.25rem; line-height: 2.5rem; letter-spacing: -0.03em; }
+
+/* Scroll reveals on the home page (ScrollReveal.tsx adds .rv, then .is-in once in view).
+   Headings wipe in from the left, cards are dealt: they rise, turn and grow into place. */
+.landing .rv { transition-property: opacity, translate, rotate, scale, clip-path; transition-duration: 0.8s; transition-timing-function: var(--ease); }
+.landing section > h2.rv { transition-duration: 0.9s; }
+.landing section > h2.rv:not(.is-in) { translate: 0 0; clip-path: inset(-0.25em 100% -0.25em 0); opacity: 1; }
+.landing section > h2.rv.is-in { clip-path: inset(-0.25em -1em -0.25em 0); }
+.how-card.rv { transition-timing-function: var(--ease-spring); transition-duration: 1s; }
+.how-card.rv:not(.is-in) { translate: 0 64px; rotate: -6deg; }
+.how-card.rv:nth-child(2):not(.is-in) { rotate: 0deg; }
+.how-card.rv:nth-child(3):not(.is-in) { rotate: 6deg; }
+.deck-grid li.rv:not(.is-in), .benefits li.rv:not(.is-in) { scale: 0.94; }
+.final.rv:not(.is-in) { translate: 0 48px; scale: 0.96; }
+
+/* A slow ribbon of lesson cards between the hero and the tagline. Pointing at it pauses it. */
+.marquee {
+  margin: 0 -24px;
+  padding: 16px 0;
+  overflow: clip;
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.marquee-track { display: flex; width: max-content; animation: marquee 40s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.page.landing .marquee ul { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 12px; margin: 0; padding: 0 12px 0 0; list-style: none; }
+.marquee-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 2px solid var(--edge);
+  border-radius: 9999px;
+  color: var(--on-card);
+  font: 600 1rem/1.5rem var(--serif);
+  white-space: nowrap;
+}
+.marquee-chip:nth-child(even) { rotate: -2deg; }
+.marquee-chip:nth-child(odd) { rotate: 1deg; }
+.marquee-chip span { font-variant-numeric: tabular-nums; opacity: 0.7; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+[dir="rtl"] .marquee-track { animation-direction: reverse; }
 
 /* How it works */
 .how { padding: 64px 0; }
 .page.landing .how-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0; list-style: none; }
 .how-card { padding: 24px; border: 2px solid var(--edge); border-radius: 24px; color: var(--on-card); }
+.how-card, .benefits li { transition: rotate 0.4s var(--ease), translate 0.4s var(--ease), box-shadow 0.4s var(--ease); }
 .how-card:nth-child(1) { transform: rotate(-1deg); }
 .how-card:nth-child(3) { transform: rotate(1deg); }
 .tone-mint { background: var(--mint); }
@@ -221,16 +282,6 @@ body:has(.landing) .reading-progress { display: none; }
 }
 .deck-head h3 { margin: 0 0 8px; font-size: 1.5rem; line-height: 2rem; }
 .deck-head p { margin: 0 0 12px; max-width: 40rem; color: var(--muted); font-size: 1rem; line-height: 1.5rem; }
-.deck-session {
-  padding: 8px 12px;
-  border-radius: 9999px;
-  border: 2px solid var(--edge);
-  color: var(--ink);
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease), background-color 0.16s var(--ease);
-}
 .page.landing .deck-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
 .deck-grid a {
   display: flex;
@@ -248,38 +299,61 @@ body:has(.landing) .reading-progress { display: none; }
 .deck-num { font: 700 1.875rem/2.25rem var(--serif); color: var(--accent-ink); }
 .deck-grid strong { font: 700 1.125rem/1.75rem var(--serif); letter-spacing: -0.02em; }
 .deck-blurb { font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+/* Each lecture reads as two numbered steps: the lessons, then the practice. */
+.deck-step { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; font: 700 1.125rem/1.75rem var(--serif); letter-spacing: -0.02em; }
+.deck-step span {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--edge);
+  border-radius: 9999px;
+  background: var(--mint);
+  color: var(--on-card);
+  font: 700 1rem/1 var(--sans);
+}
+.deck-grid + .deck-step { margin-top: 32px; }
+.deck-grid + .deck-step span { background: var(--sun); }
+.deck-practice {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 24px;
+  align-items: center;
+  padding: 20px 24px;
+  border: 2px solid var(--edge);
+  border-radius: 16px;
+  background: var(--sun);
+  color: var(--on-card);
+  text-decoration: none;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.deck-practice:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.deck-practice strong { font: 700 1.25rem/1.75rem var(--serif); letter-spacing: -0.02em; }
+.deck-practice > span:not(.deck-practice-go) { grid-column: 1; font-size: 0.9375rem; line-height: 1.375rem; }
+.deck-practice-go { grid-column: 2; grid-row: 1 / span 2; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 18px; border: 2px solid var(--edge); border-radius: 9999px; background: var(--card-solid); font-weight: 700; white-space: nowrap; }
+.deck-practice-go span { transition: transform 0.2s var(--ease); }
+[dir="rtl"] .deck-practice-go span { display: inline-block; rotate: 180deg; }
 .deck-later { margin: 24px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.5rem; }
 
-/* FAQ */
-.faq { padding: 64px 0; }
-.faq-list { display: grid; gap: 12px; max-width: 48rem; }
-.faq details { border-radius: 24px; background: var(--card-solid); }
-.faq summary {
-  cursor: pointer;
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px 24px;
-  font: 700 1.125rem/1.75rem var(--serif);
-  letter-spacing: -0.02em;
-}
-.faq summary::-webkit-details-marker { display: none; }
-.faq summary::after { content: "+"; font-size: 1.5rem; line-height: 1.75rem; color: var(--accent-ink); transition: transform 0.2s var(--ease); }
-.faq details[open] summary::after { transform: rotate(45deg); }
-.faq summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 24px; }
-.faq details p { margin: 0; padding: 0 24px 24px; color: var(--muted); font-size: 1rem; line-height: 1.5rem; }
-.faq details[open] p { animation: fade-in 0.2s var(--ease) both; }
-/* Answers slide open where the browser can animate <details> (Chrome 131+); elsewhere they open at once.
-   This animates height, which is accepted for an accordion because no transform can do it. */
-@supports selector(::details-content) {
-  .faq-list { interpolate-size: allow-keywords; }
-  .faq details::details-content { block-size: 0; overflow: clip; transition: block-size 0.25s var(--ease), content-visibility 0.25s allow-discrete; }
-  .faq details[open]::details-content { block-size: auto; }
-}
-
 /* Final call to action */
-.final { margin: 64px 0 48px; padding: 64px 32px; border-radius: 32px; background: var(--accent); color: var(--on-accent); text-align: center; }
+.final { position: relative; isolation: isolate; overflow: clip; margin: 64px 0 48px; padding: 80px 32px; border-radius: 32px; background: var(--accent); color: var(--on-accent); text-align: center; }
+
+/* Four loose cards drift slowly around the edges of the final block. */
+.final-cards span {
+  position: absolute;
+  z-index: -1;
+  width: 96px;
+  height: 128px;
+  border: 2px solid var(--edge);
+  border-radius: 16px;
+  animation: drift 7s ease-in-out infinite alternate;
+}
+.final-cards span:nth-child(1) { top: -32px; left: 6%; background: var(--mint); rotate: -14deg; }
+.final-cards span:nth-child(2) { bottom: -48px; left: 16%; background: var(--sun); rotate: 10deg; animation-delay: -2s; }
+.final-cards span:nth-child(3) { top: -24px; right: 10%; background: var(--coral); rotate: 12deg; animation-delay: -4s; }
+.final-cards span:nth-child(4) { bottom: -56px; right: 4%; background: var(--card-solid); rotate: -8deg; animation-delay: -5.5s; }
+@keyframes drift { from { transform: translateY(0) rotate(0deg); } to { transform: translateY(-16px) rotate(4deg); } }
 .landing .final h2 { margin: 0 auto 16px; max-width: 680px; font-size: 3rem; line-height: 1; }
 .final p { margin: 0 0 32px; font-size: 1.125rem; line-height: 1.75rem; }
 .final .hero-actions { justify-content: center; }
@@ -328,15 +402,19 @@ body:has(.landing) .reading-progress { display: none; }
   .fan-num { font-size: 2.25rem; line-height: 2.5rem; }
   .fan-title { font-size: 0.875rem; line-height: 1.25rem; }
   .tagline { padding: 48px 0; }
+  .marquee { margin: 0 -16px; }
   .tagline p { font-size: 1.875rem; line-height: 2.25rem; }
   .landing section > h2 { font-size: 1.875rem; line-height: 2.25rem; }
   .page.landing :is(.how-cards, .benefits ul, .deck-grid) { grid-template-columns: minmax(0, 1fr); }
   .how-card:nth-child(n) { transform: none; }
   .deck-lecture { padding: 24px 16px; border-radius: 24px; }
   .deck-head { grid-template-columns: minmax(0, 1fr); }
-  .deck-session { justify-self: start; }
+  .deck-practice { grid-template-columns: minmax(0, 1fr); }
+  .deck-practice-go { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 8px; }
   .final { padding: 48px 16px; }
   .landing .final h2 { font-size: 1.875rem; line-height: 2.25rem; }
+  .final-cards span { width: 64px; height: 88px; }
+  .final-cards span:nth-child(n + 3) { display: none; }
 }
 
 @keyframes menu-in { from { opacity: 0; transform: translateY(24px); } }
@@ -344,6 +422,8 @@ body:has(.landing) .reading-progress { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .faq details::details-content { transition: none; }
   .landing-cta:active, .deck-grid a:active { transform: none; }
-  .fan a:is(:hover, :focus-visible), .landing-cta:hover:not(:active), .deck-session:hover, .deck-grid a:hover:not(:active) { transform: none; }
+  .fan a:is(:hover, :focus-visible), .landing-cta:hover:not(:active), .deck-practice:hover, .deck-grid a:hover:not(:active) { transform: none; }
   .landing-menu a { animation: none; }
+  .tagline.is-armed .tagline-word:not(.is-lit) { translate: none; filter: none; }
+  .landing-nav.is-scrolled .landing-bar { translate: none; }
 }

@@ -18,6 +18,13 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
   const topic = course.topics[index];
   const previous = course.topics[index - 1];
   const next = course.topics[index + 1];
+  // After a lecture's last lesson, its practice comes next, before the next lecture.
+  const lecture = course.lectures.find((item) => item.id === topic.lectureId);
+  const lastInLecture = !next || next.lectureId !== topic.lectureId;
+  const practice =
+    lastInLecture && lecture?.sessionId
+      ? { href: `/sessions/${lecture.sessionId}/`, title: `Lecture ${lecture.number} practice`, num: "", kicker: "Lessons done. Next: practice", go: "Start practice" }
+      : null;
   return (
     <article className="page chapter lesson">
       <Visit courseId={course.id} slug={topic.id} />
@@ -30,7 +37,7 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
         blocks={topic.blocks}
         courseId={course.id}
         previousLesson={previous ? { href: `/topics/${previous.id}`, title: previous.title, num: String(previous.lessonNumber).padStart(2, "0") } : null}
-        nextLesson={next ? { href: `/topics/${next.id}`, title: next.title, num: String(next.lessonNumber).padStart(2, "0") } : null}
+        nextLesson={practice ?? (next ? { href: `/topics/${next.id}`, title: next.title, num: String(next.lessonNumber).padStart(2, "0") } : null)}
       />
     </article>
   );

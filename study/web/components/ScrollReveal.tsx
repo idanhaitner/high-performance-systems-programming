@@ -21,7 +21,16 @@ export function ScrollReveal({ selector, step = 60 }: { selector: string; step?:
       { rootMargin: "0px 0px -8% 0px" },
     );
 
+    // Once an element has arrived, drop the reveal classes so its own hover transitions take over again.
+    const settle = (event: TransitionEvent) => {
+      const item = event.currentTarget as HTMLElement;
+      if (event.target !== item || event.propertyName !== "opacity" || !item.classList.contains("is-in")) return;
+      item.classList.remove("rv", "is-in");
+      item.removeEventListener("transitionend", settle);
+    };
+
     for (const item of items) {
+      item.addEventListener("transitionend", settle);
       const siblings = item.parentElement ? [...item.parentElement.children].filter((el) => el.matches(selector)) : [item];
       item.style.setProperty("--reveal-delay", `${Math.min(siblings.indexOf(item) * step, 300)}ms`);
       item.classList.add("rv");
@@ -30,7 +39,10 @@ export function ScrollReveal({ selector, step = 60 }: { selector: string; step?:
 
     return () => {
       seen.disconnect();
-      for (const item of items) item.classList.remove("rv", "is-in");
+      for (const item of items) {
+        item.removeEventListener("transitionend", settle);
+        item.classList.remove("rv", "is-in");
+      }
     };
   }, [selector, step]);
 

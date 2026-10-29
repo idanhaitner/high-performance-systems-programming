@@ -51,6 +51,8 @@
   --r-sm: 14px;
   --r-pill: 9999px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* A soft spring (about 8% overshoot, settled by 75% of the duration), for things that should feel alive. */
+  --ease-spring: linear(0, 0.06, 0.201, 0.378, 0.559, 0.721, 0.854, 0.954, 1.021, 1.062, 1.08, 1.083, 1.076, 1.063, 1.047, 1.033, 1.02, 1.009, 1.002, 0.997, 0.994, 0.993, 0.993, 0.994, 0.995, 0.996, 0.998, 0.999, 0.999, 1, 1, 1);
   --sans: var(--font-body), var(--font-sans), system-ui, sans-serif;
   --serif: var(--font-display), var(--font-sans), system-ui, sans-serif;
   --mono: var(--font-mono), ui-monospace, monospace;
@@ -318,6 +320,7 @@ main { min-width: 0; }
 }
 .chapters-nav a.rail-session { color: var(--ink); }
 .rail-session .dot { background: var(--sun); color: var(--on-card); }
+.rail-session small { display: block; color: var(--muted); font-size: 0.75rem; font-weight: 500; line-height: 1rem; }
 
 /* The deck in the rail: two finished cards behind the current one. */
 .rail-deck { position: relative; height: 128px; margin: 4px 10px 8px; }
@@ -679,7 +682,17 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .glossary-card a { display: inline-block; margin-top: 10px; font-size: 0.875rem; font-weight: 600; }
 .glossary-card:target a { color: var(--on-card); }
 
-/* ---------- Guided sessions ---------- */
+/* ---------- Lecture practice ---------- */
+
+.session-before { margin-top: 16px; padding: 16px 20px; border: 2px solid var(--edge); border-radius: var(--r-sm); background: var(--card-solid); color: var(--on-card); }
+.session-before p { margin: 0 0 12px; }
+.page ol.session-lessons { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.page ol.session-lessons li { margin: 0; }
+.session-lessons a { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 12px; border: 2px solid var(--edge); border-radius: var(--r-pill); color: var(--on-card); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
+.session-lessons a span { color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.session-lessons a:hover { background: var(--mint); }
+.session-source { margin: 24px 0 0; padding-top: 12px; border-top: 2px dashed var(--line); color: var(--muted); font-size: 0.9375rem; }
+.chapter-hop.is-practice { background: var(--sun); color: var(--on-card); }
 
 .session { scroll-margin-top: calc(var(--bar-h) + 16px); }
 .session-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 8px; }
@@ -808,6 +821,29 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 /* Scroll reveal (ScrollReveal.tsx). Uses the translate property, so it adds to any rotation an element already has. */
 .page-enter { animation: page-enter 0.22s var(--ease) backwards; }
 @keyframes page-enter { from { opacity: 0; transform: translateY(8px); } }
+
+/* Paper cards thrown by a right answer (Celebrate.tsx). */
+.confetti { position: fixed; z-index: 50; width: 8px; height: 12px; border: 1.5px solid var(--edge); border-radius: 2px; pointer-events: none; }
+
+/* Page changes (ViewTransitions.tsx). The old page lifts away fast, the new one rises in on a spring.
+   The rail and the reading bar keep their own names, so they stay put while the page changes beside them,
+   and a clicked lesson card's title flies into the new lesson's heading. */
+/* The new page's fade is short and separate from its spring rise, so the two pages overlap and the screen never goes blank. */
+::view-transition-old(root) { animation: vt-out 0.2s cubic-bezier(0.23, 1, 0.32, 1) both; }
+::view-transition-new(root) { animation: vt-rise 0.7s var(--ease-spring) both, vt-fade-in 0.2s var(--ease) both; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-16px) scale(0.98); } }
+@keyframes vt-rise { from { transform: translateY(32px) scale(0.98); } }
+.rail { view-transition-name: rail; }
+.reading-progress { view-transition-name: reading-progress; }
+.masthead h1 { view-transition-name: lesson-title; }
+::view-transition-group(lesson-title) { animation-duration: 0.55s; animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+/* Keep the title's shape while it travels: scale the picture to the box height instead of stretching it. */
+::view-transition-old(lesson-title), ::view-transition-new(lesson-title) { height: 100%; width: auto; object-fit: contain; object-position: left top; }
+::view-transition-old(lesson-title) { animation: vt-fade-out 0.25s var(--ease) both; }
+::view-transition-new(lesson-title) { animation: vt-fade-in 0.35s var(--ease) 0.15s both; }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+
 .rv { transition: opacity 0.5s var(--ease) var(--reveal-delay, 0ms), translate 0.5s var(--ease) var(--reveal-delay, 0ms); }
 .rv:not(.is-in) { opacity: 0; translate: 0 var(--reveal-rise, 24px); }
 /* Lesson cards only fade: they must not move while someone is reading, and the side column measures their position. */

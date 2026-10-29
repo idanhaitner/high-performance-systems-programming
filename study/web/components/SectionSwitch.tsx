@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Inline } from "@/lib/inline";
 
-export type LessonHop = { href: string; title: string; num: string };
+// `kicker` and `go` replace the default "Next lesson" / "Lesson 03" wording, for a hop to a lecture's practice.
+export type LessonHop = { href: string; title: string; num: string; kicker?: string; go?: string };
 
 function DirectionMark({ way }: { way: "back" | "forward" }) {
   const ltr = way === "back" ? "←" : "→";
@@ -18,8 +19,8 @@ function LessonCard({ lesson, side }: { lesson: LessonHop; side: "prev" | "next"
   const isPrev = side === "prev";
   const copy = (
     <span className="chapter-hop-copy">
-      <span className="chapter-hop-kicker">{isPrev ? "Previous lesson" : "Next lesson"}</span>
-      <span className="chapter-hop-title">
+      <span className="chapter-hop-kicker">{lesson.kicker ?? (isPrev ? "Previous lesson" : "Next lesson")}</span>
+      <span className="chapter-hop-title" data-vt-title>
         <Inline text={lesson.title} />
       </span>
     </span>
@@ -33,14 +34,14 @@ function LessonCard({ lesson, side }: { lesson: LessonHop; side: "prev" | "next"
         </>
       ) : (
         <>
-          Lesson {lesson.num}
+          {lesson.go ?? `Lesson ${lesson.num}`}
           <DirectionMark way="forward" />
         </>
       )}
     </span>
   );
   return (
-    <Link className={`chapter-hop is-${side}`} href={lesson.href}>
+    <Link className={`chapter-hop is-${side}${lesson.go ? " is-practice" : ""}`} href={lesson.href}>
       {isPrev ? (
         <>
           {go}

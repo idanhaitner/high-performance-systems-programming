@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Mixed } from "@/lib/bidi";
 import { readSession, writeSession, type SessionState } from "@/lib/session-store";
@@ -25,11 +26,26 @@ function StepView({ step, courseId, done, onComplete, harness, rendered }: StepP
   }
 }
 
-const KIND: Record<SessionStep["kind"], string> = { learn: "Read", check: "Quick check", exercise: "Coding exercise", lab: "Lab" };
+const KIND: Record<SessionStep["kind"], string> = { learn: "Recap", check: "Quick question", exercise: "Coding exercise", lab: "Lab" };
+
+// A recap copies a lesson section ("learn:topic#section"); any other reading is the practice's own.
+const kindLabel = (step: SessionStep) => (step.kind === "learn" && !step.id.includes("#") ? "Start here" : KIND[step.kind]);
 
 const label = (step: SessionStep) => (step.kind === "learn" ? step.title : step.kind === "lab" ? step.lab.title : step.kind === "exercise" ? step.exercise.title : "Quick check");
 
-export function Stepper({ session, courseId, harness, rendered }: { session: Session; courseId: string; harness: string; rendered: Record<string, RenderedStep> }) {
+export function Stepper({
+  session,
+  courseId,
+  harness,
+  rendered,
+  lectureNumber,
+}: {
+  session: Session;
+  courseId: string;
+  harness: string;
+  rendered: Record<string, RenderedStep>;
+  lectureNumber: number | null;
+}) {
   const total = session.steps.length;
   const [state, setState] = useState<SessionState>({ step: 0, done: [], skipped: [] });
   const [ready, setReady] = useState(false);
@@ -105,7 +121,7 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
         })}
       </ol>
       <div className="session-head">
-        {current && <span className="step-kind" data-kind={current.kind}>{KIND[current.kind]}</span>}
+        {current && <span className="step-kind" data-kind={current.kind}>{kindLabel(current)}</span>}
         <p className="session-count">{finished ? "All steps seen" : `Step ${state.step + 1} of ${total}`}</p>
       </div>
 
@@ -115,8 +131,10 @@ export function Stepper({ session, courseId, harness, rendered }: { session: Ses
         </div>
       ) : (
         <div className="session-step session-finished">
-          <h2>Session finished</h2>
+          <h2>{lectureNumber ? `Lecture ${lectureNumber} practice finished` : "Practice finished"}</h2>
           <p>{doneCount} done, {skippedCount} skipped.</p>
+          {skippedCount > 0 && <p>Skipped steps are striped in the bar above. Click one to go back and try it again.</p>}
+          <p><Link href="/#deck">Back to all lectures</Link></p>
         </div>
       )}
 

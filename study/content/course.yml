@@ -21,6 +21,8 @@ changelog:
     note: Rewrote the overview, every Lecture 1 lesson, and the glossary for readers starting from zero, explaining each term before using it.
   - date: 2026-10-28
     note: Added the Lecture 1 guided session, with short readings, quick questions, six coding exercises you solve in the page, and a timing lab for VS Code.
+  - date: 2026-10-29
+    note: Renamed the guided session to the lecture practice and made the order clear everywhere. First read a lecture's lessons, then do its practice.
 
 lectures:
   - id: lecture-1
