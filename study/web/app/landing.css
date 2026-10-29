@@ -230,7 +230,6 @@ body:has(.landing) .reading-progress { display: none; }
 }
 .marquee-chip:nth-child(even) { rotate: -2deg; }
 .marquee-chip:nth-child(odd) { rotate: 1deg; }
-.marquee-num { font-variant-numeric: tabular-nums; opacity: 0.7; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 [dir="rtl"] .marquee-track { animation-direction: reverse; }
 

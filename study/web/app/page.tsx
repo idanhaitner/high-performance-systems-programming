@@ -110,7 +110,6 @@ export default function HomePage() {
             <ul key={copy}>
               {lessons.concat(lessons).map((lesson, index) => (
                 <li key={`${lesson.id}-${index}`} className={`marquee-chip tone-${cardTone(lesson.lessonNumber)}`}>
-                  <span className="marquee-num">{pad(lesson.lessonNumber)}</span>
                   <span><Mixed text={lesson.title} /></span>
                 </li>
               ))}
