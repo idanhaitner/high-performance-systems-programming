@@ -131,7 +131,7 @@ body:has(.landing) .reading-progress { display: none; }
   transform-origin: 50% 120%;
   /* --push is set by FanMotion.tsx: cards beside the one under the pointer lean 4 degrees away from it. */
   rotate: calc(var(--angle) + var(--push, 0) * 4deg);
-  transition: rotate 0.6s var(--ease-spring);
+  transition: rotate 0.3s var(--ease-spring);
   /* On load the six cards rise together as one squared-up deck, then spread open on a soft spring.
      The rise and the spread are separate properties with separate curves, and the spread starts while the
      deck is still rising, so the motion never stops between the two. */
@@ -163,7 +163,7 @@ body:has(.landing) .reading-progress { display: none; }
   border-radius: 24px;
   color: var(--on-card);
   text-decoration: none;
-  transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease);
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease);
 }
 /* Fills the gap under a lifted card, so the pointer never falls off its bottom edge. */
 .fan a::after { content: ""; position: absolute; inset: 100% -2px auto; height: 16px; }
@@ -420,7 +420,6 @@ body:has(.landing) .reading-progress { display: none; }
 @keyframes menu-in { from { opacity: 0; transform: translateY(24px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .faq details::details-content { transition: none; }
   .landing-cta:active, .deck-grid a:active { transform: none; }
   .fan a:is(:hover, :focus-visible), .landing-cta:hover:not(:active), .deck-practice:hover, .deck-grid a:hover:not(:active) { transform: none; }
   .landing-menu a { animation: none; }
