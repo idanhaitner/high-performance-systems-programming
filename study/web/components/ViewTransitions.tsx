@@ -5,9 +5,9 @@ import { useEffect, useRef } from "react";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-// Moving to another page of the site runs as a view transition (globals.css ::view-transition-*): the old page
-// lifts away and the new one rises in, and the title of the lesson card you clicked flies into the new page's
-// heading. Browsers without view transitions, and reduced motion, keep the plain page-enter fade (PageEnter.tsx).
+// Moving to another page of the site runs as a view transition (globals.css ::view-transition-*): a short
+// crossfade between the two pages. Browsers without view transitions, and reduced motion, keep the plain
+// page-enter fade (PageEnter.tsx).
 export function ViewTransitions() {
   const router = useRouter();
   const path = usePathname();
@@ -33,13 +33,6 @@ export function ViewTransitions() {
 
       event.preventDefault();
       const href = url.pathname.slice(basePath.length) + url.search + url.hash;
-      // The clicked card's title becomes the shared element that flies into the next page's heading.
-      const title = link.querySelector<HTMLElement>("[data-vt-title]");
-      if (title) {
-        // Only one element per page may carry a name, so the current lesson heading steps aside.
-        document.querySelectorAll<HTMLElement>(".masthead h1").forEach((heading) => (heading.style.viewTransitionName = "none"));
-        title.style.viewTransitionName = "lesson-title";
-      }
       const root = document.documentElement;
       root.dataset.vt = "on";
 
@@ -54,7 +47,6 @@ export function ViewTransitions() {
       );
       transition.finished.finally(() => {
         delete root.dataset.vt;
-        if (title) title.style.viewTransitionName = "";
       });
     };
 

@@ -825,24 +825,14 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 /* Paper cards thrown by a right answer (Celebrate.tsx). */
 .confetti { position: fixed; z-index: 50; width: 8px; height: 12px; border: 1.5px solid var(--edge); border-radius: 2px; pointer-events: none; }
 
-/* Page changes (ViewTransitions.tsx). The old page lifts away fast, the new one rises in on a spring.
-   The rail and the reading bar keep their own names, so they stay put while the page changes beside them,
-   and a clicked lesson card's title flies into the new lesson's heading. */
-/* The new page's fade is short and separate from its spring rise, so the two pages overlap and the screen never goes blank. */
-::view-transition-old(root) { animation: vt-out 0.2s cubic-bezier(0.23, 1, 0.32, 1) both; }
-::view-transition-new(root) { animation: vt-rise 0.7s var(--ease-spring) both, vt-fade-in 0.2s var(--ease) both; }
-@keyframes vt-out { to { opacity: 0; transform: translateY(-16px) scale(0.98); } }
-@keyframes vt-rise { from { transform: translateY(32px) scale(0.98); } }
+/* Page changes (ViewTransitions.tsx): the browser's own crossfade, shortened. It blends the two pages, so the
+   screen never dips to blank, and nothing travels across it.
+   The rail and the reading bar keep their own names, so they stay put while the page changes beside them. */
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 0.2s; animation-timing-function: var(--ease); }
 .rail { view-transition-name: rail; }
 .reading-progress { view-transition-name: reading-progress; }
-.masthead h1 { view-transition-name: lesson-title; }
-::view-transition-group(lesson-title) { animation-duration: 0.55s; animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
-/* Keep the title's shape while it travels: scale the picture to the box height instead of stretching it. */
-::view-transition-old(lesson-title), ::view-transition-new(lesson-title) { height: 100%; width: auto; object-fit: contain; object-position: left top; }
-::view-transition-old(lesson-title) { animation: vt-fade-out 0.25s var(--ease) both; }
-::view-transition-new(lesson-title) { animation: vt-fade-in 0.35s var(--ease) 0.15s both; }
-@keyframes vt-fade-out { to { opacity: 0; } }
-@keyframes vt-fade-in { from { opacity: 0; } }
 
 .rv { transition: opacity 0.5s var(--ease) var(--reveal-delay, 0ms), translate 0.5s var(--ease) var(--reveal-delay, 0ms); }
 .rv:not(.is-in) { opacity: 0; translate: 0 var(--reveal-rise, 24px); }

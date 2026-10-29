@@ -20,7 +20,7 @@ function LessonCard({ lesson, side }: { lesson: LessonHop; side: "prev" | "next"
   const copy = (
     <span className="chapter-hop-copy">
       <span className="chapter-hop-kicker">{lesson.kicker ?? (isPrev ? "Previous lesson" : "Next lesson")}</span>
-      <span className="chapter-hop-title" data-vt-title>
+      <span className="chapter-hop-title">
         <Inline text={lesson.title} />
       </span>
     </span>
