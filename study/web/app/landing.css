@@ -178,6 +178,7 @@ body:has(.landing) .reading-progress { display: none; }
   .deck-practice:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--edge); }
   .deck-practice:hover .deck-practice-go span { transform: translateX(4px); }
   .deck-grid a:hover:not(:active) { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--edge); }
+  .deck-tab:hover:not([aria-selected="true"]) { border-color: color-mix(in oklch, var(--edge) 25%, transparent); background: color-mix(in oklch, var(--card-solid) 70%, transparent); }
 }
 .fan-num { font: 700 3.75rem/1 var(--serif); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .fan-title { font: 700 1.125rem/1.75rem var(--serif); letter-spacing: -0.02em; }
@@ -204,7 +205,8 @@ body:has(.landing) .reading-progress { display: none; }
 .how-card.rv:not(.is-in) { translate: 0 64px; rotate: -6deg; }
 .how-card.rv:nth-child(2):not(.is-in) { rotate: 0deg; }
 .how-card.rv:nth-child(3):not(.is-in) { rotate: 6deg; }
-.deck-grid li.rv:not(.is-in), .benefits li.rv:not(.is-in) { scale: 0.94; }
+.benefits li.rv:not(.is-in) { scale: 0.94; }
+.deck-tab.rv:not(.is-in) { translate: -24px 0; }
 .final.rv:not(.is-in) { translate: 0 48px; scale: 0.96; }
 
 /* A slow ribbon of lesson cards between the hero and the tagline. Pointing at it pauses it. */
@@ -214,7 +216,8 @@ body:has(.landing) .reading-progress { display: none; }
   overflow: clip;
   mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
 }
-.marquee-track { display: flex; width: max-content; animation: marquee 40s linear infinite; }
+/* The speed stays the same however many lessons ride on it (page.tsx sets --chips). */
+.marquee-track { display: flex; width: max-content; animation: marquee calc(var(--chips, 14) * 2.85s) linear infinite; }
 .marquee:hover .marquee-track { animation-play-state: paused; }
 .page.landing .marquee ul { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 12px; margin: 0; padding: 0 12px 0 0; list-style: none; }
 .marquee-chip {
@@ -268,9 +271,86 @@ body:has(.landing) .reading-progress { display: none; }
 .benefits strong { font: 700 1.25rem/1.75rem var(--serif); letter-spacing: -0.02em; }
 .benefits span { font-size: 1rem; line-height: 1.5rem; color: var(--muted); }
 
-/* The deck of lessons */
+/* The deck of lessons: a card file of lecture tabs beside the one open lecture (LectureIndex.tsx). */
 .deck { padding: 64px 0; }
+.landing .deck > h2 { margin-bottom: 12px; }
+.deck-intro { margin: 0 0 32px; max-width: 40rem; color: var(--muted); font-size: 1.125rem; line-height: 1.75rem; }
+.deck-index { display: grid; grid-template-columns: 19rem minmax(0, 1fr); gap: 24px; align-items: start; }
+.deck-tabs { position: relative; display: flex; flex-direction: column; gap: 4px; }
+.deck-tab {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background-color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.deck-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.deck-tab-num {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 52px;
+  border: 2px solid var(--edge);
+  border-radius: 12px;
+  background: var(--card-solid);
+  font: 700 1.25rem/1 var(--serif);
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.deck-tab-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.deck-tab strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font: 700 1rem/1.375rem var(--serif);
+  letter-spacing: -0.02em;
+}
+.deck-tab-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; color: var(--muted); font-size: 0.8125rem; line-height: 1.125rem; }
+.deck-tab-here { padding: 0 8px; border-radius: 9999px; background: var(--sun); color: var(--on-card); font-weight: 700; }
+.deck-tab-bar { display: block; height: 4px; border-radius: 9999px; background: var(--accent-soft); overflow: hidden; }
+.deck-tab-bar span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(var(--fill)); }
+[dir="rtl"] .deck-tab-bar span { transform-origin: right; }
+/* The open lecture's tab is a raised card, its number the same badge as the lecture's own. */
+.deck-tab[aria-selected="true"] { border-color: var(--edge); background: var(--card-solid); box-shadow: 4px 4px 0 var(--edge); transform: translate(-4px, -4px); }
+.deck-tab[aria-selected="true"] .deck-tab-num { border-color: var(--accent); background: var(--accent); color: var(--on-accent); box-shadow: 4px -4px 0 var(--coral); }
+.deck-soon {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border: 2px dashed color-mix(in oklch, var(--edge) 35%, transparent);
+  border-radius: 20px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.deck-soon span {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 52px;
+  border: 2px dashed color-mix(in oklch, var(--edge) 35%, transparent);
+  border-radius: 12px;
+  font: 700 1.5rem/1 var(--serif);
+}
 .deck-lecture { padding: 32px; border-radius: 32px; background: var(--card-solid); }
+/* After the student switches lectures, the new one slides in and its lesson cards are dealt. */
+.deck-index.is-live .deck-lecture:not([hidden]) { animation: lecture-in 0.4s var(--ease) both; }
+.deck-index.is-live .deck-lecture:not([hidden]) .deck-grid li { animation: deal-in 0.6s var(--ease-spring) backwards; animation-delay: calc(min(var(--i), 8) * 40ms + 80ms); }
+@keyframes lecture-in { from { opacity: 0; translate: 0 16px; } }
+@keyframes deal-in { from { opacity: 0; translate: 0 32px; rotate: -3deg; scale: 0.94; } }
 .deck-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 24px; align-items: start; margin-bottom: 32px; }
 .deck-badge {
   display: grid;
@@ -337,7 +417,6 @@ body:has(.landing) .reading-progress { display: none; }
 .deck-practice-go { grid-column: 2; grid-row: 1 / span 2; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 18px; border: 2px solid var(--edge); border-radius: 9999px; background: var(--card-solid); font-weight: 700; white-space: nowrap; }
 .deck-practice-go span { transition: transform 0.2s var(--ease); }
 [dir="rtl"] .deck-practice-go span { display: inline-block; rotate: 180deg; }
-.deck-later { margin: 24px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.5rem; }
 
 /* Final call to action */
 .final { position: relative; isolation: isolate; overflow: clip; margin: 64px 0 48px; padding: 80px 32px; border-radius: 32px; background: var(--accent); color: var(--on-accent); text-align: center; }
@@ -373,6 +452,7 @@ body:has(.landing) .reading-progress { display: none; }
   .hero { grid-template-columns: minmax(0, 1fr); padding: 64px 0; }
   .page.landing .fan { height: 20rem; }
   .page.landing .deck-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .deck-index { grid-template-columns: 16rem minmax(0, 1fr); }
 }
 
 @media (max-width: 860px) {
@@ -410,6 +490,14 @@ body:has(.landing) .reading-progress { display: none; }
   .landing section > h2 { font-size: 1.875rem; line-height: 2.25rem; }
   .page.landing :is(.how-cards, .benefits ul, .deck-grid) { grid-template-columns: minmax(0, 1fr); }
   .how-card:nth-child(n) { transform: none; }
+  /* On phones the tabs become a strip you swipe sideways, above the open lecture. */
+  .deck-index { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .deck-tabs { flex-direction: row; margin: 0 -16px; padding: 8px 16px 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; }
+  .deck-tabs::-webkit-scrollbar { display: none; }
+  .deck-tab { flex: none; width: 15rem; background: color-mix(in oklch, var(--card-solid) 60%, transparent); scroll-snap-align: start; }
+  .deck-tab[aria-selected="true"] { transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
+  .deck-soon { margin: 0; padding: 0; border: 0; }
+  .deck-soon span { display: none; }
   .deck-lecture { padding: 24px 16px; border-radius: 24px; }
   .deck-head { grid-template-columns: minmax(0, 1fr); }
   .deck-practice { grid-template-columns: minmax(0, 1fr); }
@@ -426,6 +514,8 @@ body:has(.landing) .reading-progress { display: none; }
   .landing-cta:active, .deck-grid a:active { transform: none; }
   .fan a:is(:hover, :focus-visible), .landing-cta:hover:not(:active), .deck-practice:hover, .deck-grid a:hover:not(:active) { transform: none; }
   .landing-menu a { animation: none; }
+  .deck-tab[aria-selected="true"] { transform: none; }
+  .deck-index.is-live .deck-lecture:not([hidden]), .deck-index.is-live .deck-lecture:not([hidden]) .deck-grid li { animation: none; }
   .tagline.is-armed .tagline-word:not(.is-lit) { translate: none; filter: none; }
   .landing-nav.is-scrolled .landing-bar { translate: none; }
 }

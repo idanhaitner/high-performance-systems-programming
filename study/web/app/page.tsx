@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Fragment } from "react";
-import { ChapterProgress } from "@/components/ChapterProgress";
 import { FanMotion } from "@/components/landing/FanMotion";
 import { HeroCta } from "@/components/landing/HeroCta";
 import { LandingNav } from "@/components/landing/LandingNav";
+import { LectureIndex } from "@/components/landing/LectureIndex";
 import { Reveal } from "@/components/landing/Reveal";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Mixed } from "@/lib/bidi";
@@ -68,7 +68,7 @@ export default function HomePage() {
     <article className="page landing">
       <Reveal />
       <FanMotion />
-      <ScrollReveal selector=".landing section > h2, .how-card, .benefits li, .deck-head, .deck-step, .deck-grid li, .deck-practice, .deck-later, .final" />
+      <ScrollReveal selector=".landing section > h2, .how-card, .benefits li, .deck-tab, .deck-soon, .deck-panels, .final" />
       <LandingNav startHref={startHref} />
 
       <section className="hero" aria-labelledby="hero-title">
@@ -105,7 +105,7 @@ export default function HomePage() {
       </section>
 
       <div className="marquee" aria-hidden="true">
-        <div className="marquee-track">
+        <div className="marquee-track" style={{ "--chips": lessons.length } as React.CSSProperties}>
           {[0, 1].map((copy) => (
             <ul key={copy}>
               {lessons.concat(lessons).map((lesson, index) => (
@@ -159,50 +159,18 @@ export default function HomePage() {
 
       <section className="deck" id="deck" aria-labelledby="deck-title">
         <h2 id="deck-title">The lessons</h2>
-        {lectures.map((lecture) => (
-          <div className="deck-lecture" id={lecture.id} key={lecture.id}>
-            <header className="deck-head">
-              <span className="deck-badge" aria-hidden="true">{pad(lecture.number)}</span>
-              <div>
-                <h3>Lecture {lecture.number}: <Mixed text={lecture.title} /></h3>
-                <p><Mixed text={lecture.summary} /></p>
-                <ChapterProgress courseId={course.id} practiceIds={lecture.lessons.flatMap((lesson) => lesson.practiceIds)} />
-              </div>
-            </header>
-            {lecture.sessionId && (
-              <p className="deck-step">
-                <span aria-hidden="true">1</span> First, read the lessons in order
-              </p>
-            )}
-            <ol className="deck-grid">
-              {lecture.lessons.map((lesson) => (
-                <li key={lesson.id}>
-                  <Link href={`/topics/${lesson.id}`}>
-                    <span className="deck-num">{pad(lesson.lessonNumber)}</span>
-                    <strong data-vt-title><Mixed text={lesson.title} /></strong>
-                    {lesson.blurb && <span className="deck-blurb"><Mixed text={lesson.blurb} /></span>}
-                    <ChapterProgress courseId={course.id} practiceIds={lesson.practiceIds} />
-                  </Link>
-                </li>
-              ))}
-            </ol>
-            {lecture.sessionId && (
-              <>
-                <p className="deck-step">
-                  <span aria-hidden="true">2</span> Then, practice the whole lecture
-                </p>
-                <Link className="deck-practice" href={`/sessions/${lecture.sessionId}/`}>
-                  <strong>Lecture {lecture.number} practice</strong>
-                  <span>{practiceSummary(course.sessions.find((session) => session.id === lecture.sessionId))}</span>
-                  <span className="deck-practice-go">Start practice <span aria-hidden="true">→</span></span>
-                </Link>
-              </>
-            )}
-          </div>
-        ))}
-        <p className="deck-later">
-          More lectures arrive through the semester: caches, the processor, many core machines, and graphics cards.
+        <p className="deck-intro">
+          {lectures.length} {lectures.length === 1 ? "lecture" : "lectures"} and {lessons.length} lessons so far.
+          Pick a lecture to see its lessons and its practice.
         </p>
+        <LectureIndex
+          courseId={course.id}
+          lectures={lectures.map((lecture) => ({
+            ...lecture,
+            practiceSummary: practiceSummary(course.sessions.find((session) => session.id === lecture.sessionId)),
+          }))}
+          later="More lectures arrive through the semester: caches, the processor, many core machines, and graphics cards."
+        />
       </section>
 
       <section className="final" aria-labelledby="final-title">
@@ -223,9 +191,7 @@ export default function HomePage() {
       <footer className="landing-foot">
         <span>High Performance Systems Programming</span>
         <nav aria-label="Footer">
-          {lectures.map((lecture) => (
-            <Link key={lecture.id} href={`/#${lecture.id}`}>Lecture {lecture.number}</Link>
-          ))}
+          <a href="#deck">All lectures</a>
           <Link href="/glossary/">Glossary</Link>
         </nav>
       </footer>
