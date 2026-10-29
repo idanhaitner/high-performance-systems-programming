@@ -23,6 +23,8 @@ changelog:
     note: Added the Lecture 1 guided session, with short readings, quick questions, six coding exercises you solve in the page, and a timing lab for VS Code.
   - date: 2026-10-29
     note: Renamed the guided session to the lecture practice and made the order clear everywhere. First read a lecture's lessons, then do its practice.
+  - date: 2026-10-29
+    note: Added Lecture 2, memory management, as six lessons on pointers to pointers, pointer arithmetic, function pointers, malloc and free, realloc and arrays of strings, and choosing the stack or the heap, plus its practice with six coding exercises and a stack-limit lab.
 
 lectures:
   - id: lecture-1
@@ -34,6 +36,17 @@ lectures:
       program reads the words you type after its name.
     topics: [why-low-level, c-data-types, memory-and-pointers, structures, source-to-process, command-line-arguments]
     session: sessions/lecture-1.md
+  - id: lecture-2
+    number: 2
+    title: Memory management
+    summary: >
+      How to follow a pointer that points to another pointer, move a pointer
+      through an array, and keep the address of a function in a variable. Then
+      the main topic: asking for memory while the program runs, growing it,
+      giving it back, and choosing between a function's own short-lived memory
+      and memory that stays until you free it.
+    topics: [pointers-to-pointers, pointer-arithmetic, function-pointers, malloc-and-free, realloc-and-strings, stack-or-heap]
+    session: sessions/lecture-2.md
 
 sources:
   - path: "Lecture 1 - Introduction.pdf"
@@ -66,6 +79,29 @@ sources:
       - prac-argc-count
       - prac-atoi-role
       - prac-argv-shape
+  - path: "Lecture 2 - Memory management.pptx"
+    type: lecture
+    status: incorporated
+    note: "Pointers to pointers, pointer arithmetic, function pointers, malloc, calloc, realloc, free, and stack versus heap."
+    problems:
+      - prac-double-deref
+      - prac-move-middle
+      - prac-float-step
+      - prac-sizeof-array-pointer
+      - prac-count-between
+      - prac-which-crash
+      - prac-read-declaration
+      - prac-apply-output
+      - prac-menu-index
+      - prac-malloc-bytes
+      - prac-free-errors
+      - prac-calloc-vs-malloc
+      - prac-strlen-plus-one
+      - prac-free-order
+      - prac-realloc-pattern
+      - prac-stack-or-heap
+      - prac-dangling-return
+      - prac-initialize-trace
 topics:
   - id: why-low-level
     file: topics/why-low-level.md
@@ -108,6 +144,48 @@ topics:
     summary: "How a program receives the words typed after its name, and how to turn them into numbers."
     exam_weight: taught
     prerequisites: [source-to-process]
+    unlocks: [pointers-to-pointers]
+  - id: pointers-to-pointers
+    file: topics/pointers-to-pointers.md
+    title: Pointers to pointers
+    summary: "A quick recap of pointers, then a pointer that holds the address of another pointer, and why a function needs one to change your pointer."
+    exam_weight: taught
+    prerequisites: [command-line-arguments]
+    unlocks: [pointer-arithmetic]
+  - id: pointer-arithmetic
+    file: topics/pointer-arithmetic.md
+    title: Pointer arithmetic and pointer mistakes
+    summary: "Moving a pointer through an array, measuring the distance between two pointers, and the pointer mistakes that crash programs."
+    exam_weight: taught
+    prerequisites: [pointers-to-pointers]
+    unlocks: [function-pointers]
+  - id: function-pointers
+    file: topics/function-pointers.md
+    title: Pointers to functions
+    summary: "Keeping the address of a function in a variable, so you can pass a function to another function, store several in an array, or return one."
+    exam_weight: taught
+    prerequisites: [pointer-arithmetic]
+    unlocks: [malloc-and-free]
+  - id: malloc-and-free
+    file: topics/malloc-and-free.md
+    title: "Memory on request: malloc and free"
+    summary: "Asking for memory while the program runs, giving it back when you are done, and the mistakes that break a program when you give it back wrongly."
+    exam_weight: taught
+    prerequisites: [function-pointers]
+    unlocks: [realloc-and-strings]
+  - id: realloc-and-strings
+    file: topics/realloc-and-strings.md
+    title: Resizing memory and arrays of strings
+    summary: "Growing a block of memory that turned out too small, and storing names of different lengths without wasting a byte."
+    exam_weight: taught
+    prerequisites: [malloc-and-free]
+    unlocks: [stack-or-heap]
+  - id: stack-or-heap
+    file: topics/stack-or-heap.md
+    title: Stack or heap?
+    summary: "When a function's own short-lived memory is the better choice, when you need memory that stays until you free it, and how a function hands back an array it made."
+    exam_weight: taught
+    prerequisites: [realloc-and-strings]
     unlocks: []
 
 glossary:
@@ -177,4 +255,61 @@ glossary:
   - term: argv
     topic: command-line-arguments
     definition: The list of words on the command line, as text. argv[0] is the program name, argv[1] is the first word after it, and so on.
+  - term: pointer to pointer
+    topic: pointers-to-pointers
+    definition: A variable that holds the address of another pointer, with a type like int **. One star reaches the middle pointer, two stars reach the final value.
+  - term: pointer arithmetic
+    topic: pointer-arithmetic
+    definition: Adding a number to a pointer, or subtracting two pointers. It counts whole elements, not bytes, so for an int pointer p + 1 is 4 bytes further on.
+  - term: NULL
+    topic: pointer-arithmetic
+    definition: A special pointer value that means "points nowhere". Following a NULL pointer crashes the program, so check for it first.
+  - term: segmentation fault
+    topic: pointer-arithmetic
+    definition: A crash the operating system causes when a program touches memory it may not use, such as address 0 (NULL).
+  - term: function pointer
+    topic: function-pointers
+    definition: A variable that holds the address of a function. Calling through it runs that function, so a program can choose which function to run while it is running.
+  - term: typedef
+    topic: function-pointers
+    definition: A way to give an existing type a new, shorter name, such as typedef void (*func)(int *); for a function pointer type.
+  - term: dynamic memory allocation
+    topic: malloc-and-free
+    definition: Asking for memory while the program runs, with malloc, calloc, or realloc, instead of fixing the size when you write the code. The memory comes from the heap.
+  - term: malloc
+    topic: malloc-and-free
+    definition: A function that reserves a block of the given number of bytes on the heap and returns its address, or NULL if there is no memory left. The bytes start as garbage.
+  - term: free
+    topic: malloc-and-free
+    definition: A function that gives a heap block back. It needs the exact address malloc returned, and each block may be freed only once.
+  - term: calloc
+    topic: malloc-and-free
+    definition: Like malloc, but takes a count and the size of one element, and sets every byte of the new block to zero.
+  - term: "void *"
+    topic: malloc-and-free
+    definition: A pointer to a value of unknown type. malloc returns one, and C converts it to the pointer type you store it in.
+  - term: memory leak
+    topic: malloc-and-free
+    definition: Heap memory that was reserved and never freed. It stays taken until the program ends.
+  - term: dangling pointer
+    topic: malloc-and-free
+    definition: A pointer that holds the address of memory that is no longer yours, such as a freed block or a local variable of a function that has returned.
+  - term: double free
+    topic: malloc-and-free
+    definition: Calling free twice on the same block. It is a bug that usually stops the program. Setting the pointer to NULL after free prevents it.
+  - term: realloc
+    topic: realloc-and-strings
+    definition: A function that changes the size of a heap block, keeping its contents. It may move the block, so you must use the address it returns.
+  - term: strlen
+    topic: realloc-and-strings
+    definition: A function that counts the characters in a string, not counting the '\0' at the end. strlen("Mili") is 4.
+  - term: strcpy
+    topic: realloc-and-strings
+    definition: A function that copies one string, including its '\0', into another place in memory. The destination must be big enough.
+  - term: fgets
+    topic: realloc-and-strings
+    definition: A function that reads one line of text into an array, never more than the size you give it. It keeps the newline if it fits.
+  - term: stack overflow
+    topic: stack-or-heap
+    definition: A crash that happens when a program needs more stack memory than its limit, for example for a huge local array.
 exams: []

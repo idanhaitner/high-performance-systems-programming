@@ -220,7 +220,9 @@ export default function HomePage() {
       <footer className="landing-foot">
         <span>High Performance Systems Programming</span>
         <nav aria-label="Footer">
-          <Link href={startHref}>Lecture 1</Link>
+          {lectures.map((lecture) => (
+            <Link key={lecture.id} href={`/#${lecture.id}`}>Lecture {lecture.number}</Link>
+          ))}
           <Link href="/glossary/">Glossary</Link>
         </nav>
       </footer>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+
+  <rect width="720" height="300" fill="#f7f6ff"/>
+  <g class="step" style="animation-delay:0.08s">
+    <rect x="24" y="40" width="220" height="150" rx="14" fill="#ffffff" stroke="#1b1740" stroke-width="2"/>
+    <text x="44" y="70" class="m" font-size="13" font-weight="700">STACK</text>
+    <text x="44" y="104" class="t" font-size="18" font-weight="700">A</text>
+    <text x="44" y="136" class="m" font-size="13">value</text>
+    <text x="120" y="136" class="mono" font-size="16">5000</text>
+    <text x="44" y="170" class="mono" font-size="12">int *A = malloc(...);</text>
+  </g>
+  <g class="step" style="animation-delay:0.20s">
+    <rect x="306" y="40" width="390" height="150" rx="14" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="330" y="70" class="m" font-size="13" font-weight="700">HEAP</text>
+    <rect x="330" y="96" width="70" height="56" fill="#ffffff" stroke="#1b1740" stroke-width="1.5"/>
+    <text x="365" y="130" class="mono" font-size="14" text-anchor="middle">A[0]</text>
+    <rect x="400" y="96" width="70" height="56" fill="#ffffff" stroke="#1b1740" stroke-width="1.5"/>
+    <text x="435" y="130" class="mono" font-size="14" text-anchor="middle">A[1]</text>
+    <rect x="470" y="96" width="70" height="56" fill="#ffffff" stroke="#1b1740" stroke-width="1.5"/>
+    <text x="505" y="130" class="mono" font-size="14" text-anchor="middle">A[2]</text>
+    <rect x="540" y="96" width="70" height="56" fill="#ffffff" stroke="#1b1740" stroke-width="1.5"/>
+    <text x="575" y="130" class="mono" font-size="14" text-anchor="middle">…</text>
+    <rect x="610" y="96" width="84" height="56" fill="#ffffff" stroke="#1b1740" stroke-width="1.5"/>
+    <text x="652" y="130" class="mono" font-size="14" text-anchor="middle">A[999]</text>
+    <text x="330" y="176" class="m" font-size="13">starts at address</text>
+    <text x="450" y="176" class="mono" font-size="14">5000</text>
+  </g>
+  <g class="step" style="animation-delay:0.32s">
+    <path d="M244 124 H322" stroke="#4b3cf5" stroke-width="2" fill="none"/>
+    <path d="M320 118 L330 124 L320 130" fill="#4b3cf5"/>
+  </g>
+  <g class="step" style="animation-delay:0.44s">
+    <text x="24" y="240" class="t" font-size="15">malloc(1000 * sizeof(int)) reserves 4000 bytes on the heap.</text>
+    <text x="24" y="266" class="m" font-size="14">A lives on the stack and only holds the block&#8217;s first address.</text>
+  </g>
+
+</svg>

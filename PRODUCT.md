@@ -23,7 +23,7 @@ Unlike lecture slides or a generic C tutorial, every page follows this course's 
 - Students study on laptops, often at night and in long sittings, and sometimes on phones to review.
 - The in-page editor runs code through Compiler Explorer (godbolt.org). Labs that need a real machine are done in VS Code.
 - Content lives in `study/content/` (`course.yml`, `topics/`, `exercises/`) and follows `.cursor/rules/beginner-first-writing.mdc`.
-- Course lectures arrive over the semester. Lecture 1 is written; later lectures (caches, the processor, many-core machines, GPUs) are still to come.
+- Course lectures arrive over the semester. Lectures 1 (data, memory, and running programs) and 2 (memory management) are written; later lectures (caches, the processor, many-core machines, GPUs) are still to come.
 
 ## Capabilities and Constraints
 
@@ -36,7 +36,7 @@ Unlike lecture slides or a generic C tutorial, every page follows this course's 
 
 ## Evidence on Hand
 
-- Real course content: Lecture 1 (six lessons), its glossary, its exercises, and its changelog in `study/content/`.
+- Real course content: Lectures 1 and 2 (six lessons each), their glossary terms, their exercises and labs, and the changelog in `study/content/`.
 - Source lecture PDFs listed under `sources` in `course.yml`.
 - No testimonials, usage numbers, or endorsements exist. Do not invent any.
 

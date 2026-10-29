@@ -133,6 +133,8 @@ A local variable (declared inside a function, without `static`) is created when 
 Memory you ask for while the program runs, with `malloc` (and give back with `free`), comes from an area called the **heap**.
 :::
 
+Lecture 2 shows how to use the heap, in [Memory on request: malloc and free](topic:malloc-and-free).
+
 ![A common placement of the sample objects. Section names and stack allocation are implementation choices.](../assets/figures/program-sections.svg)
 
 **Putting it together for our program:**
