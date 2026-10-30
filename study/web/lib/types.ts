@@ -71,6 +71,7 @@ export type Exercise = {
   mode: "function" | "program";
   statement: Block[];
   hints: Block[][];
+  examples: Block[][];
   caseHints: Record<string, Block[]>;
   starter: string;
   solution: string;

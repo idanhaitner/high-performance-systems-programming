@@ -42,6 +42,7 @@ KNOWN_DIRECTIVES = {
     "proof",
     "problem",
     "hint",
+    "example",
     "solution",
     "check",
     "trap",
@@ -1297,11 +1298,13 @@ def _load_exercise(directory: Path, rel: str, errors: list):
     title = str((meta or {}).get("title") or "").strip() if isinstance(meta, dict) else ""
     if not title:
         errors.append(f"{rel}/README.md: frontmatter needs title")
-    statement, hints, case_hints = [], [], {}
+    statement, hints, examples, case_hints = [], [], [], {}
     for block in blocks:
         name = block["name"] if block["type"] == "directive" else ""
         if name == "hint":
             hints.append(block["children"])
+        elif name == "example":
+            examples.append(block["children"])
         elif name == "case":
             case_name = str(block["attrs"].get("name") or "")
             if not case_name:
@@ -1356,7 +1359,7 @@ def _load_exercise(directory: Path, rel: str, errors: list):
             errors.append(f"{rel}/README.md: case hint {name!r} is not a case of this exercise")
     return {
         "id": exercise_id, "title": title, "mode": "function" if has_test else "program",
-        "statement": statement, "hints": hints, "caseHints": case_hints,
+        "statement": statement, "hints": hints, "examples": examples, "caseHints": case_hints,
         "starter": files["starter.c"], "solution": files["solution.c"],
         "test": test, "caseNames": case_names if has_test else [], "cases": cases,
     }

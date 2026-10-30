@@ -58,6 +58,18 @@ class ExportTests(unittest.TestCase):
         self.assertIsNotNone(ex["test"])
         self.assertEqual(ex["cases"], [])
 
+    def exercise(self, id):
+        for step in self.session["steps"]:
+            if step["kind"] == "exercise" and step["exercise"]["id"] == id:
+                return step["exercise"]
+        self.fail(f"no exercise {id}")
+
+    def test_examples_are_separated_from_the_statement(self):
+        exercise = self.exercise("add-two")
+        self.assertEqual(len(exercise["examples"]), 1)
+        names = [b.get("name") for b in exercise["statement"]]
+        self.assertNotIn("example", names)
+
     def test_program_exercise(self):
         ex = self.session["steps"][4]["exercise"]
         self.assertEqual(ex["mode"], "program")

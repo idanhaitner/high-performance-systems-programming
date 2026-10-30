@@ -67,6 +67,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
         return {
           content: render(step.exercise.statement),
           hints: step.exercise.hints.map((blocks, index) => render(blocks, index)),
+          examples: step.exercise.examples.map((blocks, index) => render(blocks, index)),
           caseHints: Object.fromEntries(Object.entries(step.exercise.caseHints).map(([name, blocks]) => [name, render(blocks)])),
         };
     }

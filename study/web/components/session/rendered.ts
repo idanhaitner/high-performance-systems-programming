@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 export type RenderedStep = {
   content?: ReactNode;
   hints?: ReactNode[];
+  examples?: ReactNode[];
   caseHints?: Record<string, ReactNode>;
   // The lesson this step practices, for a student who needs to reread it.
   lesson?: { id: string; title: string };

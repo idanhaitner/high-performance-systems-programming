@@ -9,6 +9,7 @@ const base: Exercise = {
   mode: "function",
   statement: [{ type: "paragraph", text: "Write `add(a, b)` returning the **sum**." }],
   hints: [],
+  examples: [],
   caseHints: {},
   starter: "int add(int a, int b) { return 0; }\n",
   solution: "int add(int a, int b) { return a + b; }\n",
@@ -100,5 +101,12 @@ describe("exerciseZip", () => {
     };
     const r = files(exerciseZip(ex, "c", "h"))["README.txt"];
     expect(r).toContain("Call read_line_from and use size_t or size_t. Also emphasis and bold.");
+  });
+
+  it("includes the examples in README.txt", () => {
+    const ex = { ...base, examples: [[{ type: "paragraph", text: "add(2, 3) is 5" }]] } as Exercise;
+    const r = files(exerciseZip(ex, ex.starter, ""))["README.txt"];
+    expect(r).toContain("Examples");
+    expect(r).toContain("add(2, 3) is 5");
   });
 });

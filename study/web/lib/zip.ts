@@ -47,8 +47,12 @@ function blockText(block: Block): string {
   }
 }
 
-const readme = (ex: Exercise): string =>
-  `${ex.title}\n${"=".repeat(ex.title.length)}\n\n${ex.statement.map(blockText).filter(Boolean).join("\n\n")}\n\nRun \`make test\` in this folder.\n`;
+const readme = (ex: Exercise): string => {
+  const examples = ex.examples.length
+    ? `Examples\n--------\n\n${ex.examples.map((blocks) => blocks.map(blockText).filter(Boolean).join("\n\n")).join("\n\n")}\n\n`
+    : "";
+  return `${ex.title}\n${"=".repeat(ex.title.length)}\n\n${ex.statement.map(blockText).filter(Boolean).join("\n\n")}\n\n${examples}Run \`make test\` in this folder.\n`;
+};
 
 const functionMakefile = `CFLAGS = ${FLAGS}
 

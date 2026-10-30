@@ -247,6 +247,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     <div className="session-step code-step">
       <h2><Mixed text={ex.title} /></h2>
       {rendered.content}
+      {rendered.examples}
 
       <div className={asmOpen ? "code-split has-asm" : "code-split"}>
         <Editor value={code} onChange={edit} diagnostics={diagnostics} onHoverLine={setHoverC} onFormat={tidy} highlightLines={linked} />
