@@ -5,139 +5,138 @@ title: "Lecture 2 practice: memory management"
 ---
 
 :::learn title="How this practice works"
-You do this practice after you read the six lessons of Lecture 2. It does not teach new ideas. It walks through the lecture again, one small step at a time, so you can see what stuck and use it in real code. If you did the Lecture 1 practice, everything works the same way.
+You have read the lessons, so now you use them. Each lesson gets one new question, and most get a small coding exercise. One lab, done on your own computer in VS Code (a free code editor), comes last.
 
-The steps follow the lessons in order. For each lesson you get a few kinds of steps:
+Press **Next** when a step is done. If you are stuck, press **Skip for now**, or use the **Reread** link at the top of the step to open that step's lesson.
 
-- A **recap** is a short part copied from the lesson, to bring the idea back. Under each recap there is a link to the full lesson. If a recap feels new, open the lesson and read it before you go on.
-- A **quick question** checks that you understood the idea.
-- A **coding exercise** asks you to write a little C code right here on the page.
-- The **lab** is one step you do on your own computer, in VS Code, a free code editor.
+In a coding exercise, comments marked `TODO` show the part left for you. **Run** shows what your code prints. **Test** checks it against small test cases, and all of them must pass. **Assembly** shows the machine instructions the compiler made; it is there if you are curious. If you get stuck, **Show a hint** opens one hint at a time, and **Show solution** appears after two Test runs that do not pass.
 
-**Moving through the steps.** Press **Next** to go on. Next unlocks when a step is done: a recap is done as soon as you see it, a question when you answer it correctly, and a coding exercise when every test passes. If you are stuck, press **Skip for now**. The step is marked as skipped, and you can come back to it later with **Back**.
-
-**Coding exercises.** Each exercise gives you starter code in an editor. Comments marked `TODO` ("to do") show the part left for you. You change the code, then press one of these buttons:
-
-- **Run** builds your code and shows what it printed, or the compiler's error messages if it could not be built.
-- **Test** builds your code and checks it against a few small test cases. Each case shows whether it passed. A failed case also shows what was expected and, often, a hint for that case.
-- **Assembly** shows the machine instructions the compiler made from your C code. You do not need it to finish the exercises.
-
-Your code is built by godbolt.org, a free website that runs the C compiler. So your code is sent there when you press one of these buttons. The build also adds a memory checker. In this lecture that helps a lot: if your code writes past the end of a block from `malloc`, or frees something twice, the checker stops the program and says so, instead of letting it quietly go wrong.
-
-**Hints.** Under each exercise, **Show a hint** opens one hint at a time. The first is gentle, and each one after it is more specific. Try the first hint before the next.
-
-**The solution.** After two Test runs that do not pass, a **Show solution** button appears. Look at it once you have really tried, and then write the code yourself.
-
-**The lab.** The lab step has a zip file to download. You open it in VS Code, run it, and tick the box when you are done.
+Your code is built by godbolt.org, a free website that runs the C compiler, so your code is sent there when you press one of these buttons.
 :::
 
-:::learn from="pointers-to-pointers#a-pointer-to-a-pointer"
+:::check id=q-copy-of-the-pointer lesson=pointers-to-pointers
+What does this print?
+
+```c
+void aim(int *q, int *target) {
+    q = target;
+}
+
+int main(void) {
+    int a = 1, b = 2;
+    int *p = &a;
+    aim(p, &b);
+    *p = 7;
+    printf("%d %d\n", a, b);
+}
+```
+
+- [ ] `1 7`
+- [x] `7 2`
+- [ ] `7 7`
+
+`q` is only a copy of `p`, so changing `q` leaves `p` pointing at `a`. Then `*p = 7` changes `a`. To change `p` itself, `aim` would need a pointer to `p`, an `int **`.
 :::
 
-:::learn from="pointers-to-pointers#changing-the-middle-pointer"
+:::exercise ref=ex-point-to-max lesson=pointers-to-pointers
 :::
 
-:::check ref=chk-star-two-jobs
+:::check id=q-two-names-one-array lesson=pointer-arithmetic
+What does this print?
+
+```c
+int A[5] = {10, 20, 30, 40, 50};
+int *p = &A[1];
+int *q = p + 2;
+printf("%d %d\n", *q, p[1]);
+```
+
+- [ ] `30 20`
+- [ ] `40 20`
+- [x] `40 30`
+
+`p` points at `A[1]`, so `q` points two elements later, at `A[3]`, which holds 40. `p[1]` means "one element after `p`", which is `A[2]`, and it holds 30.
 :::
 
-:::check ref=prac-double-deref-q2
+:::exercise ref=ex-find-first lesson=pointer-arithmetic
 :::
 
-:::exercise ref=ex-point-to-max
+:::check id=q-repoint-function lesson=function-pointers
+What does this print?
+
+```c
+int twice(int x) { return x * 2; }
+int plus_one(int x) { return x + 1; }
+
+int main(void) {
+    int (*f)(int) = twice;
+    int r = f(3);
+    f = plus_one;
+    printf("%d\n", f(r));
+}
+```
+
+- [ ] `8`
+- [x] `7`
+- [ ] `4`
+
+The first call goes to `twice`, so `r` is 6. Then `f` is pointed at `plus_one`, so `f(r)` is 6 + 1, which is 7.
 :::
 
-:::learn from="pointer-arithmetic#four-ways-to-name-the-same-element"
+:::exercise ref=ex-count-if lesson=function-pointers
 :::
 
-:::learn from="pointer-arithmetic#subtracting-two-pointers"
+:::check id=q-lost-address lesson=malloc-and-free
+What is wrong with this code?
+
+```c
+int *A = malloc(4 * sizeof(int));
+A = malloc(8 * sizeof(int));
+free(A);
+```
+
+- [x] The first block is never freed, because its address was overwritten
+- [ ] `free(A)` frees the second block twice
+- [ ] Nothing is wrong: `free(A)` frees both blocks
+
+The second line replaces the only copy of the first block's address. Now nobody can free that block, so it is a memory leak. `free(A)` frees only the block `A` points to now.
 :::
 
-:::learn from="pointer-arithmetic#mistakes-the-compiler-does-not-catch"
+:::exercise ref=ex-reverse-copy lesson=malloc-and-free
 :::
 
-:::check ref=prac-count-between-q1
+:::check id=q-what-realloc-keeps lesson=realloc-and-strings
+After this code succeeds, what do you know about `B`?
+
+```c
+int *A = malloc(2 * sizeof(int));
+A[0] = 1;
+A[1] = 2;
+int *B = realloc(A, 4 * sizeof(int));
+```
+
+- [ ] `B[0]`, `B[1]`, and `B[2]` all hold unknown values
+- [ ] `B[0]` is 1, `B[1]` is 2, and `B[2]` is 0
+- [x] `B[0]` is 1, `B[1]` is 2, and `B[2]` holds an unknown value
+
+`realloc` keeps the values that were already in the block, even if it has to move them. The new room is not cleared, so it holds whatever was there before, just as with `malloc`.
 :::
 
-:::check ref=chk-sizeof-pointer
+:::exercise ref=ex-copy-text lesson=realloc-and-strings
 :::
 
-:::check ref=prac-which-crash-q1
+:::exercise ref=ex-append lesson=realloc-and-strings
 :::
 
-:::exercise ref=ex-find-first
+:::check id=q-who-needs-the-heap lesson=stack-or-heap
+Which of these really needs the heap?
+
+- [ ] A small array of 3 `int`s that one function uses and then forgets
+- [ ] A loop counter
+- [x] A list of names that keeps growing as the user types, and other functions still read it after the function that made it has returned
+
+The list needs the heap for two reasons: its size changes while the program runs, and it must outlive the function that made it. The other two are small, fixed in size, and short-lived, so the stack suits them better.
 :::
 
-:::learn from="function-pointers#making-and-using-a-function-pointer"
-:::
-
-:::learn from="function-pointers#passing-a-function-to-a-function"
-:::
-
-:::check ref=prac-read-declaration-q2
-:::
-
-:::check ref=prac-apply-output-q1
-:::
-
-:::exercise ref=ex-count-if
-:::
-
-:::learn from="malloc-and-free#asking-for-memory-with-malloc"
-:::
-
-:::learn from="malloc-and-free#giving-memory-back-with-free"
-:::
-
-:::learn from="malloc-and-free#three-ways-free-goes-wrong"
-:::
-
-:::check ref=prac-malloc-bytes-q1
-:::
-
-:::check ref=prac-free-errors-q2
-:::
-
-:::exercise ref=ex-reverse-copy
-:::
-
-:::learn from="realloc-and-strings#growing-a-block-with-realloc"
-:::
-
-:::learn from="realloc-and-strings#three-string-tools"
-:::
-
-:::learn from="realloc-and-strings#freeing-everything-in-the-right-order"
-:::
-
-:::check ref=prac-strlen-plus-one-q2
-:::
-
-:::check ref=prac-free-order-q2
-:::
-
-:::exercise ref=ex-copy-text
-:::
-
-:::check ref=prac-realloc-pattern-q2
-:::
-
-:::exercise ref=ex-append
-:::
-
-:::learn from="stack-or-heap#reason-1-for-the-heap-big-arrays"
-:::
-
-:::learn from="stack-or-heap#reason-2-for-the-heap-memory-that-outlives-the-function"
-:::
-
-:::learn from="stack-or-heap#why-the-stack-is-still-a-good-choice"
-:::
-
-:::check ref=prac-dangling-return-q1
-:::
-
-:::check ref=prac-stack-or-heap-q2
-:::
-
-:::lab ref=lab-stack-limit
+:::lab ref=lab-stack-limit lesson=stack-or-heap
 :::

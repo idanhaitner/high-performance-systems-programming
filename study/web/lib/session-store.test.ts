@@ -5,6 +5,7 @@ import {
   readCode,
   readFails,
   readSession,
+  resumeStep,
   writeCode,
   writeFails,
   writeSession,
@@ -38,6 +39,26 @@ describe("session state", () => {
   it("does not clamp step (the caller does)", () => {
     writeSession("c", "s1", { step: 99, done: [], skipped: [] });
     expect(readSession("c", "s1").step).toBe(99);
+  });
+});
+
+describe("resumeStep", () => {
+  const ids = ["a", "b", "c"];
+
+  it("starts at the first step when nothing is done", () => {
+    expect(resumeStep(ids, { step: 0, done: [], skipped: [] })).toBe(0);
+  });
+
+  it("passes done and skipped steps", () => {
+    expect(resumeStep(ids, { step: 0, done: ["a"], skipped: ["b"] })).toBe(2);
+  });
+
+  it("ignores a stale step number and ids that no longer exist", () => {
+    expect(resumeStep(ids, { step: 18, done: ["a", "gone"], skipped: [] })).toBe(1);
+  });
+
+  it("goes past the end when every step is handled", () => {
+    expect(resumeStep(ids, { step: 1, done: ["a", "b"], skipped: ["c"] })).toBe(3);
   });
 });
 

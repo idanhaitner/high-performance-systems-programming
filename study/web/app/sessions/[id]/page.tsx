@@ -71,7 +71,11 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
         };
     }
   };
-  const rendered = Object.fromEntries(session.steps.map((step) => [step.id, renderStep(step)]));
+  const lessonLink = (step: SessionStep) => {
+    const topic = step.lesson ? lessonOf.get(step.lesson) : undefined;
+    return topic ? { lesson: { id: topic.id, title: topic.title } } : {};
+  };
+  const rendered = Object.fromEntries(session.steps.map((step) => [step.id, { ...renderStep(step), ...lessonLink(step) }]));
   return (
     <article className="page chapter">
       <header className="masthead session-masthead">
@@ -80,8 +84,8 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
         {lecture && (
           <div className="session-before">
             <p>
-              <strong>Read the lessons first.</strong> This practice does not teach anything new. It goes over
-              the {lecture.lessons.length} lessons of Lecture {lecture.number} again and makes you use them:{" "}
+              <strong>Read the lessons first.</strong> This practice does not teach anything new. It makes you
+              use the {lecture.lessons.length} lessons of Lecture {lecture.number}:{" "}
               {parts.filter(([n]) => n > 0).map(([n, one, many]) => `${n} ${n === 1 ? one : many}`).join(", ")}.
             </p>
             <ol className="session-lessons">

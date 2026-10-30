@@ -45,6 +45,10 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(step["id"], "chk-x")
         self.assertEqual(step["block"]["name"], "check")
 
+    def test_step_lesson(self):
+        self.assertEqual(self.session["steps"][3]["lesson"], "topic-one")
+        self.assertNotIn("lesson", self.session["steps"][2])
+
     def test_function_exercise(self):
         ex = self.session["steps"][3]["exercise"]
         self.assertEqual(ex["mode"], "function")
@@ -88,6 +92,22 @@ class ValidationTests(unittest.TestCase):
 
     def test_unknown_from_slug(self):
         self.broken(self.edit("sessions/lecture-1.md", "#pointers-arrays", "#nope"), "topic-one#nope")
+
+    def inline_check(self, body):
+        # A session holding a question of its own, in place of the shared one.
+        return self.edit("sessions/lecture-1.md", ":::check ref=chk-x\n:::", f":::check id=q-own\n{body}\n:::")
+
+    def test_session_check_is_validated(self):
+        self.broken(self.inline_check("Pick one.\n\n- [ ] a\n- [ ] b\n\nBecause."), "exactly one [x]")
+
+    def test_session_check_id_cannot_repeat_a_lesson_check(self):
+        self.broken(
+            self.edit("sessions/lecture-1.md", ":::check ref=chk-x\n:::", ":::check id=chk-x\nPick one.\n\n- [x] a\n- [ ] b\n\nBecause.\n:::"),
+            "duplicate check id chk-x",
+        )
+
+    def test_unknown_lesson(self):
+        self.broken(self.edit("sessions/lecture-1.md", "lesson=topic-one", "lesson=nope"), "lesson=nope")
 
     def test_unknown_check_ref(self):
         self.broken(self.edit("sessions/lecture-1.md", "ref=chk-x", "ref=chk-zzz"), "chk-zzz")

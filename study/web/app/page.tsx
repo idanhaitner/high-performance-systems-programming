@@ -25,7 +25,7 @@ function practiceSummary(session: Session | undefined) {
     [count("lab"), "lab", "labs"],
   ] as const;
   const list = parts.filter(([n]) => n > 0).map(([n, one, many]) => `${n} ${n === 1 ? one : many}`);
-  return `Short recaps of every lesson, then ${list.join(", ")}. Do it after the lessons.`;
+  return `${list.join(", ")}. Do it after the lessons.`;
 }
 
 const HEADLINE = ["See why programs run fast,", "starting from zero."];
@@ -41,12 +41,12 @@ const STEPS = [
   {
     tone: "coral",
     title: "Then do the lecture's practice",
-    body: "When you finish a lecture's lessons, its practice goes over them again, one step at a time: a short recap, a question, and C code you write and run right in the page. It ends with a lab you open in VS Code, a free code editor.",
+    body: "When you finish a lecture's lessons, its practice makes you use them, one step at a time: a new question, then C code you write and run right in the page. It ends with a lab you open in VS Code, a free code editor.",
   },
   {
     tone: "sun",
     title: "Come back before the exam",
-    body: "Your answers and your place stay in this browser. Skipped a step? It stays marked, so you can return to it. Forgot an idea? Every recap links back to its lesson.",
+    body: "Your answers and your place stay in this browser. Skipped a step? It stays marked, so you can return to it. Forgot an idea? Every step links back to its lesson.",
   },
 ];
 

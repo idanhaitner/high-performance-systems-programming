@@ -14,7 +14,7 @@ A short warm-up paragraph.
 :::check ref=chk-x
 :::
 
-:::exercise ref=add-two
+:::exercise ref=add-two lesson=topic-one
 :::
 
 :::exercise ref=sum-args

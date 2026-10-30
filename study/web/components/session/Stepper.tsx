@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Mixed } from "@/lib/bidi";
-import { readSession, writeSession, type SessionState } from "@/lib/session-store";
+import { readSession, resumeStep, writeSession, type SessionState } from "@/lib/session-store";
 import type { Session, SessionStep } from "@/lib/types";
 import { CheckStep } from "./CheckStep";
 import { ExerciseStep } from "./ExerciseStep";
@@ -47,6 +47,8 @@ export function Stepper({
   lectureNumber: number | null;
 }) {
   const total = session.steps.length;
+  // A string, so a re-render with the same steps does not send the student back to the resume point.
+  const stepIds = session.steps.map((step) => step.id).join("\n");
   const [state, setState] = useState<SessionState>({ step: 0, done: [], skipped: [] });
   const [ready, setReady] = useState(false);
   // Which way the student last moved: 1 forward, -1 back, 0 before any move (no entrance on page load).
@@ -54,9 +56,9 @@ export function Stepper({
 
   useEffect(() => {
     const stored = readSession(courseId, session.id);
-    setState({ ...stored, step: Math.min(Math.max(stored.step, 0), total) });
+    setState({ ...stored, step: resumeStep(stepIds.split("\n"), stored) });
     setReady(true);
-  }, [courseId, session.id, total]);
+  }, [courseId, session.id, stepIds]);
 
   useEffect(() => {
     if (ready) writeSession(courseId, session.id, state);
@@ -78,6 +80,7 @@ export function Stepper({
   const finished = state.step >= total;
   const current = finished ? null : session.steps[state.step];
   const currentId = current?.id;
+  const lesson = currentId ? rendered[currentId]?.lesson : undefined;
 
   const complete = useCallback(() => {
     if (!currentId) return;
@@ -123,6 +126,11 @@ export function Stepper({
       <div className="session-head">
         {current && <span className="step-kind" data-kind={current.kind}>{kindLabel(current)}</span>}
         <p className="session-count">{finished ? "All steps seen" : `Step ${state.step + 1} of ${total}`}</p>
+        {lesson && (
+          <Link className="session-lesson" href={`/topics/${lesson.id}`}>
+            Reread: <Mixed text={lesson.title} />
+          </Link>
+        )}
       </div>
 
       {!ready ? null : current ? (

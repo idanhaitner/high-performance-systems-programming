@@ -82,10 +82,10 @@ export type Exercise = {
 export type Lab = { id: string; title: string; body: Block[]; zip: string };
 
 export type SessionStep =
-  | { kind: "learn"; id: string; title: string; blocks: Block[] }
-  | { kind: "check"; id: string; block: Block }
-  | { kind: "exercise"; id: string; exercise: Exercise }
-  | { kind: "lab"; id: string; lab: Lab };
+  | { kind: "learn"; id: string; title: string; blocks: Block[]; lesson?: string }
+  | { kind: "check"; id: string; block: Block; lesson?: string }
+  | { kind: "exercise"; id: string; exercise: Exercise; lesson?: string }
+  | { kind: "lab"; id: string; lab: Lab; lesson?: string };
 
 export type Session = { id: string; lectureId: string; title: string; steps: SessionStep[] };
 

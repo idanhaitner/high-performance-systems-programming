@@ -36,6 +36,14 @@ export function readSession(courseId: string, sessionId: string): SessionState {
   }
 }
 
+// Where to reopen: the first step not yet done or skipped. Stored step numbers go
+// stale when a session's content changes, but step ids stay true. Past the last
+// step means every step has been handled.
+export function resumeStep(stepIds: string[], state: SessionState): number {
+  const open = stepIds.findIndex((id) => !state.done.includes(id) && !state.skipped.includes(id));
+  return open === -1 ? stepIds.length : open;
+}
+
 export function writeSession(courseId: string, sessionId: string, state: SessionState) {
   set(`${storageKey(courseId)}:session:${sessionId}`, JSON.stringify(state));
 }

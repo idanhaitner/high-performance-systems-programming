@@ -27,6 +27,8 @@ changelog:
     note: Added Lecture 2, memory management, as six lessons on pointers to pointers, pointer arithmetic, function pointers, malloc and free, realloc and arrays of strings, and choosing the stack or the heap, plus its practice with six coding exercises and a stack-limit lab.
   - date: 2026-10-29
     note: Brought the first practice session (Tutorial 1) into Lecture 1. Two new lessons cover printing and reading values and working with strings, other lessons gained compiling with warnings, programs in several files, constants, if and loops, and pointer tips, and the practice has two more exercises.
+  - date: 2026-10-30
+    note: Shortened the practice of both lectures. Copied recaps are gone, each lesson now has one new question and its coding exercise, every step links to its lesson, and the Lecture 1 lab comes last.
 
 lectures:
   - id: lecture-1

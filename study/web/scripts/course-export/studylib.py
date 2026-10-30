@@ -1410,6 +1410,11 @@ def _load_session(model, lecture_id: str, session_ref: str, errors: list):
             continue
         name, attrs = block["name"], block["attrs"]
         ref = str(attrs.get("ref") or "")
+        lesson = str(attrs.get("lesson") or "")
+        if lesson and lesson not in model["topic_sections"]:
+            errors.append(f"{where}: lesson={lesson} names no topic")
+            lesson = ""
+        step_count = len(steps)
         if name == "learn":
             source = str(attrs.get("from") or "")
             if source:
@@ -1423,6 +1428,10 @@ def _load_session(model, lecture_id: str, session_ref: str, errors: list):
                 steps.append({"kind": "learn", "id": f"learn:{index}", "title": attrs["title"], "blocks": block["children"]})
             else:
                 errors.append(f"{where}: learn needs from=topic#section, or a title and content")
+        elif name == "check" and attrs.get("id"):
+            # A question written for the session itself, checked with the lessons' questions.
+            model["session_checks"].append((label, block))
+            steps.append({"kind": "check", "id": str(attrs["id"]), "block": block})
         elif name == "check":
             found = model["checks"].get(ref)
             if found is None:
@@ -1441,6 +1450,8 @@ def _load_session(model, lecture_id: str, session_ref: str, errors: list):
                 errors.append(f"{where}: lab ref={ref or '?'} names no folder in labs/")
                 continue
             steps.append({"kind": "lab", "id": ref, "lab": found})
+        if lesson and len(steps) > step_count:
+            steps[-1]["lesson"] = lesson
     ids = [step["id"] for step in steps]
     for step_id in sorted({item for item in ids if ids.count(item) > 1}):
         errors.append(f"{label}: step {step_id} appears more than once")
@@ -1452,6 +1463,7 @@ def load_sessions(model) -> None:
     content = model["content"]
     errors: list = []
     model["session_errors"] = errors
+    model["session_checks"] = []
     model["topic_sections"] = {}
     model["checks"] = {}
     for topic in model["topics"]:
@@ -1625,6 +1637,8 @@ def validate_content(model) -> list[str]:
             elif ledger[source_path].get("status") != "incorporated":
                 errors.append(f"{rel}: source {source_path} is not incorporated")
         _validate_directives(topic["blocks"], rel, topic_id, problems, errors, seen_checks)
+    for label, block in model.get("session_checks") or []:
+        _validate_directives([block], label, "", problems, errors, seen_checks)
 
     known_topics = set(topic_ids)
     for topic in model["topics"]:
