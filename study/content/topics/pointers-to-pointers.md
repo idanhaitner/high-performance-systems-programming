@@ -83,8 +83,14 @@ So `**` is called a **double dereference**: follow the address once, then follow
 A pointer to a pointer is a variable whose value is the address of another pointer. Its type has two stars, for example `int **`. One star (`*pp`) reaches the middle pointer; two stars (`**pp`) reach the final value.
 :::
 
-:::check id=chk-one-star
-Use the boxes above: `x` lives at 1020, `ptr` at 1024, and `ptr_to_ptr` at 1032.
+:::check id=chk-one-star place=text
+Here are the three boxes from `int **ptr_to_ptr = &ptr;`:
+
+| Box | Lives at | Holds |
+| --- | --- | --- |
+| `x` | 1020 | 10 |
+| `ptr` | 1024 | 1020 |
+| `ptr_to_ptr` | 1032 | 1024 |
 
 What is `*ptr_to_ptr`?
 
@@ -140,8 +146,10 @@ int main(void) {
 
 You will use exactly this pattern later in the lecture, when a function hands back memory it asked for.
 
-:::check id=chk-change-callers-pointer
-Inside `point_at_smaller`, which line changes the pointer `p` that lives in `main`?
+:::check id=chk-change-callers-pointer place=text
+The function is `void point_at_smaller(int **pp, int *a, int *b)`. `main` has its own pointer `p` and calls `point_at_smaller(&p, &a, &b);`.
+
+Which line inside the function changes `p`?
 
 - [x] `*pp = b;`
 - [ ] `pp = b;`

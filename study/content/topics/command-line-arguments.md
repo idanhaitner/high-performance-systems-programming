@@ -133,7 +133,7 @@ If both checks pass, the whole word was a number. For `./a.out Omer 2 3` the pro
 (A fully careful program would also catch numbers too big to fit in a `long`, using a variable called `errno`. You do not need that yet.)
 
 :::check id=chk-argv0
-For `./calc 7`, what is `argc`?
+You start a program by typing `./calc 7`. What is `argc`?
 
 - [ ] 1
 - [x] 2

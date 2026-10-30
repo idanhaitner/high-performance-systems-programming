@@ -30,8 +30,8 @@ Addresses are usually written in **hexadecimal** (base 16), with a `0x` in front
 
 Two small notes for later: on the 64-bit machines in this course, an address is 8 bytes long. And the addresses your program sees are not the physical positions on the memory chip; the operating system translates them. For now, just think of them as house numbers.
 
-:::check id=chk-byte
-In the course's byte diagram, which bit is drawn on the left?
+:::check id=chk-byte place=text
+In this course's diagrams, a byte is drawn as its 8 bits in a row. Which bit is drawn on the left?
 
 - [ ] The least significant (lowest-value) bit
 - [x] The most significant (highest-value) bit

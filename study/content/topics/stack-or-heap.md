@@ -59,8 +59,10 @@ int *createArray(int n) {
 
 There is a price: the job of calling `free` now passes to the **caller**. Whoever receives the address must free it, exactly once.
 
-:::check id=chk-who-frees
-`main` calls `int *B = createArray(10);`, the heap version. Who should call `free`?
+:::check id=chk-who-frees place=text
+`createArray` gets a block from `malloc`, keeps its address in `A`, and ends with `return A;`. `main` runs `int *B = createArray(10);`.
+
+Who should call `free`?
 
 - [x] `main`, with `free(B);` once it is done with the array
 - [ ] `createArray`, just before `return A;`

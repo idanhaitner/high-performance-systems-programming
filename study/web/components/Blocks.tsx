@@ -147,6 +147,7 @@ function Directive({ block, courseId }: { block: Extract<Block, { type: "directi
         prompt={parts.mode === "blank" ? parts.prompt : undefined}
         choices={parts.choices}
         why={<Blocks blocks={parts.why} courseId={courseId} />}
+        inText={attrs.place === "text"}
       />
     );
   }

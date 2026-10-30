@@ -216,12 +216,14 @@ export function CheckCard({
   choices,
   why,
   prompt,
+  inText,
 }: {
   id: string;
   question: React.ReactNode;
   choices: Choice[];
   why: React.ReactNode;
   prompt?: Block[];
+  inText?: boolean;
 }) {
   const blanks = prompt ? blanksIn(prompt) : [];
   const blankMode = blanks.length > 0;
@@ -263,6 +265,7 @@ export function CheckCard({
     <form
       className="card check"
       id={id}
+      data-in-text={inText ? "" : undefined}
       onSubmit={(event) => {
         event.preventDefault();
         setGraded(true);

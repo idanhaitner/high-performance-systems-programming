@@ -56,8 +56,10 @@ The lecture's slides write `void main()`. Standard C wants `int main(void)` and 
 Dropping the parentheses around `*pf`. `int *pf(int, int);` declares a **function** named `pf` that returns an `int *`, not a pointer to a function. The parentheses in `int (*pf)(int, int);` are what make `pf` a pointer.
 :::
 
-:::check id=chk-store-function
-With `int (*pf)(int, int);` declared, which line makes `pf` point to `f`?
+:::check id=chk-store-function place=text
+`f` is a function that adds two `int`s and returns the sum. `pf` is declared as `int (*pf)(int, int);`.
+
+Which line makes `pf` point to `f`?
 
 - [x] `pf = f;`
 - [ ] `pf = f(4, 5);`
@@ -104,7 +106,9 @@ int main(void) {
 
 `apply` never changes. Only the function you hand it changes. The C library uses the same idea: its sorting function `qsort` receives a function that says which of two values should come first.
 
-:::check id=chk-apply-twice
+:::check id=chk-apply-twice place=text
+`apply(A, size, f)` runs the function `f` on every element of the array `A`. `sqr` squares an element and stores the result back in it. `print` prints an element.
+
 Start with `int B[] = {2, 3};` and run:
 
 ```c

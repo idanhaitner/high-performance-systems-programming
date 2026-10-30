@@ -6,8 +6,9 @@ import { useEffect } from "react";
 // Cards at the end of a section would hang past the next heading, so each section's cards are
 // lifted, as one stack, up beside the section's earlier text. Only when a section has more cards
 // than room, or a card would sit too far below its paragraph, is a card marked data-inline and
-// shown in the text instead.
-const CARDS = ".page.lesson :is(.formal, .card.check):not(.practice *)";
+// shown in the text instead. A question that needs the code or table before it is written with
+// place=text (data-in-text) and never goes to the side.
+const CARDS = ".page.lesson :is(.formal, .card.check):not(.practice *):not([data-in-text])";
 const MAX_DRIFT = 160; // px a side card may sit below the paragraph before it
 const GAP = 16; // px kept between side cards, and between a card and a heading
 
