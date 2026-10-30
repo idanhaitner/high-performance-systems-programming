@@ -64,11 +64,3 @@ export function clearCode(courseId: string, exerciseId: string) {
   }
 }
 
-export function readFails(courseId: string, exerciseId: string): number {
-  const n = Number(get(`${storageKey(courseId)}:fails:${exerciseId}`));
-  return Number.isInteger(n) && n > 0 ? n : 0;
-}
-
-export function writeFails(courseId: string, exerciseId: string, n: number) {
-  set(`${storageKey(courseId)}:fails:${exerciseId}`, String(n));
-}

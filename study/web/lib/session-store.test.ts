@@ -3,11 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   clearCode,
   readCode,
-  readFails,
   readSession,
   resumeStep,
   writeCode,
-  writeFails,
   writeSession,
 } from "./session-store";
 
@@ -62,7 +60,7 @@ describe("resumeStep", () => {
   });
 });
 
-describe("code and fails", () => {
+describe("code", () => {
   it("round-trips code under study:<course>:code:<id>", () => {
     expect(readCode("c", "e1")).toBeNull();
     writeCode("c", "e1", "int x;");
@@ -70,18 +68,6 @@ describe("code and fails", () => {
     expect(localStorage.getItem("study:c:code:e1")).toBe("int x;");
     clearCode("c", "e1");
     expect(readCode("c", "e1")).toBeNull();
-  });
-
-  it("round-trips fails under study:<course>:fails:<id>", () => {
-    expect(readFails("c", "e1")).toBe(0);
-    writeFails("c", "e1", 3);
-    expect(readFails("c", "e1")).toBe(3);
-    expect(localStorage.getItem("study:c:fails:e1")).toBe("3");
-  });
-
-  it("treats a bad fails value as 0", () => {
-    localStorage.setItem("study:c:fails:e1", "abc");
-    expect(readFails("c", "e1")).toBe(0);
   });
 });
 
@@ -98,13 +84,11 @@ describe("when localStorage throws", () => {
   it("reads return defaults", () => {
     expect(readSession("c", "s")).toEqual({ step: 0, done: [], skipped: [] });
     expect(readCode("c", "e")).toBeNull();
-    expect(readFails("c", "e")).toBe(0);
   });
 
   it("writes do not throw", () => {
     expect(() => writeSession("c", "s", { step: 1, done: [], skipped: [] })).not.toThrow();
     expect(() => writeCode("c", "e", "x")).not.toThrow();
     expect(() => clearCode("c", "e")).not.toThrow();
-    expect(() => writeFails("c", "e", 1)).not.toThrow();
   });
 });

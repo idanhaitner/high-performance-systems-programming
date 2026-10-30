@@ -886,12 +886,17 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .code-editor:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
 .code-editor-loading { min-height: 12rem; padding: 16px; color: var(--code-muted); font-family: var(--mono); font-size: 0.875rem; }
 .code-foot { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 16px; }
-.code-foot .btn-subtle { margin-inline: -8px; }
+.code-foot .btn-subtle { margin-inline: -10px; }
 .code-privacy { flex: 1 1 24rem; margin: 0; color: var(--muted); font-size: 0.875rem; }
 .code-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
 .code-split + .code-actions { margin: 16px 0 8px; }
-.code-actions .session-skip, .code-confirm { margin-inline-start: auto; }
-.code-confirm { display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center; font-weight: 600; }
+/* The text, not its hover pill, lines up with the editor's right edge, like Show assembly below it. */
+.code-actions .code-reset { margin-inline: auto -20px; }
+/* Takes over the whole row, so the question and its answers read as one thing. The negative margin holds the row's height. */
+.code-confirm { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-block: -6px; padding: 6px 6px 6px 20px; border-radius: 28px; background: var(--coral-soft); animation: fade-in 0.2s var(--ease) backwards; }
+.code-confirm p { flex: 1 1 16rem; margin: 0; font-weight: 600; }
+.code-confirm-actions { display: flex; gap: 8px; }
+.code-confirm .btn-danger { background: var(--card-solid); }
 .code-result { margin: 0 0 16px; padding: 16px 20px; border: 2px solid var(--edge); border-radius: var(--r-sm); background: var(--card-solid); }
 .code-result[data-state="ok"] { background: var(--mint-soft); }
 .code-result[data-state="bad"] { background: var(--coral-soft); }
@@ -907,8 +912,12 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .code-casehint, .code-hint { margin-top: 8px; padding: 10px 14px; border-radius: 10px; background: var(--sun-soft); }
 .code-casehint > :last-child, .code-hint > :last-child { margin-bottom: 0; }
 .code-hint .code-label, .code-casehint .code-label { margin-top: 0; }
-.code-hints, .code-solution { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 16px; }
-.code-hints > .code-hint, .code-solution > .code-editor { align-self: stretch; }
+.code-help { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; padding-top: 16px; border-top: 2px solid var(--line); }
+.code-help-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.code-help-label { margin: 0 8px 0 0; font-weight: 700; }
+.code-hints, .code-solution { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; animation: fade-in 0.2s var(--ease) backwards; }
+.code-hints > .code-hint, .code-solution > .code-editor { align-self: stretch; margin-top: 0; }
+.code-solution .code-label { margin: 0; }
 
 /* Assembly */
 .asm-panel { min-width: 0; padding: 12px 14px; border: 2px solid var(--edge); border-radius: var(--r-sm); background: var(--card-solid); }
@@ -1020,6 +1029,10 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
   .session-nav button { flex: 1 1 auto; }
   .session-nav .session-skip { margin-inline-start: 0; }
   .code-actions button { flex: 1 1 auto; }
+  .code-actions .code-reset { margin-inline: 0; }
+  .code-confirm { margin-block: 0; padding: 12px; border-radius: var(--r-sm); }
+  .code-confirm p { flex-basis: 100%; }
+  .code-confirm-actions { flex: 1 1 100%; }
   input, select, textarea { font-size: max(1rem, 16px); }
 }
 

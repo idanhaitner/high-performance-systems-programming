@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { Mixed } from "@/lib/bidi";
 import { COOLDOWN_MS, GodboltError, compileAsm, runProgram } from "@/lib/godbolt";
 import { splitDiagnostics, type AsmLine, type Diagnostic, type RunOutcome } from "@/lib/run-result";
-import { clearCode, readCode, readFails, writeCode, writeFails } from "@/lib/session-store";
+import { clearCode, readCode, writeCode } from "@/lib/session-store";
 import { buildTestSource } from "@/lib/test-output";
 import { functionVerdict, programVerdict, type ProgramRun, type TestVerdict } from "@/lib/test-verdict";
 import type { SessionStep } from "@/lib/types";
@@ -44,8 +44,9 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
   const [busy, setBusy] = useState(false);
   const [cooling, setCooling] = useState(false);
   const [wait, setWait] = useState(0);
+  // How many hints are revealed, and whether they are on screen. Closing keeps the count, so reopening does not start over.
   const [hintsShown, setHintsShown] = useState(0);
-  const [fails, setFails] = useState(() => readFails(courseId, ex.id));
+  const [hintsOpen, setHintsOpen] = useState(false);
   const [solutionOpen, setSolutionOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [lastAction, setLastAction] = useState<Action>("test");
@@ -57,8 +58,9 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
   const codeRef = useRef(code);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const coolTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const failsRef = useRef(fails);
-  failsRef.current = fails;
+  const keepRef = useRef<HTMLButtonElement>(null);
+  const resetRef = useRef<HTMLButtonElement>(null);
+  const refocusReset = useRef(false);
 
   const flush = useCallback(() => {
     if (saveTimer.current) {
@@ -94,11 +96,16 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     setDiagnostics(splitDiagnostics(found, studentLines).inEditor);
   };
 
-  const failRun = () => {
-    const n = failsRef.current + 1;
-    failsRef.current = n;
-    setFails(n);
-    writeFails(courseId, ex.id, n);
+  // The prompt replaces the buttons that had focus, so focus moves with it and comes back when it closes.
+  useEffect(() => {
+    if (confirmReset) keepRef.current?.focus();
+    else if (refocusReset.current) resetRef.current?.focus();
+    refocusReset.current = false;
+  }, [confirmReset]);
+
+  const closeConfirm = () => {
+    refocusReset.current = true;
+    setConfirmReset(false);
   };
 
   const doRun = async () => {
@@ -131,7 +138,6 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     }
     if (verdict.kind === "outcome") {
       setResult({ kind: "outcome", outcome: verdict.outcome, studentLines });
-      failRun();
       return;
     }
     const hints = new Map<string, ReactNode>(
@@ -142,7 +148,6 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     const cases = verdict.cases.map((c) => ({ ...c, hint: hints.get(c.name) ?? null }));
     setResult({ kind: "cases", cases, outcome: verdict.outcome, studentLines });
     if (verdict.done) onComplete();
-    else failRun();
   };
 
   const doAsm = async (opt: boolean) => {
@@ -195,7 +200,12 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     setCode(ex.starter);
     setResultState(null);
     setDiagnostics([]);
-    setConfirmReset(false);
+    closeConfirm();
+  };
+
+  const toggleHints = () => {
+    setHintsShown((n) => Math.max(n, 1));
+    setHintsOpen((open) => !open);
   };
 
   const openAsm = () => {
@@ -215,6 +225,8 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
 
   const linked = useMemo(() => (hoverAsm === null ? [] : [hoverAsm]), [hoverAsm]);
   const hintNodes = rendered.hints ?? [];
+  const hintNoun = hintNodes.length > 1 ? "hints" : "hint";
+  const hintToggle = hintsOpen ? `Hide ${hintNoun}` : hintsShown > 0 ? `Show ${hintNoun}` : "Show hint";
   const locked = busy || cooling || wait > 0;
   const error = result?.kind === "error" ? result.error : null;
 
@@ -240,17 +252,21 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
       </div>
 
       <div className="code-actions">
-        {/* Once the step is solved, Next in the bar below is the one primary action. */}
-        <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test my code"}</button>
-        <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
         {confirmReset ? (
-          <span className="code-confirm" role="alert">
-            Replace your code with the starter code?
-            <button type="button" className="btn-danger" onClick={reset}>Yes, reset</button>
-            <button type="button" className="btn-quiet" onClick={() => setConfirmReset(false)}>Cancel</button>
-          </span>
+          <div className="code-confirm" role="alert" onKeyDown={(e) => { if (e.key === "Escape") closeConfirm(); }}>
+            <p>Replace your code with the starter code?</p>
+            <div className="code-confirm-actions">
+              <button type="button" className="btn-quiet" ref={keepRef} onClick={closeConfirm}>Keep my code</button>
+              <button type="button" className="btn-danger" onClick={reset}>Yes, reset</button>
+            </div>
+          </div>
         ) : (
-          <button type="button" className="session-skip btn-quiet" onClick={() => setConfirmReset(true)}>Reset to starter</button>
+          <>
+            {/* Once the step is solved, Next in the bar below is the one primary action. */}
+            <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test my code"}</button>
+            <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
+            <button type="button" className="code-reset btn-quiet" ref={resetRef} onClick={() => setConfirmReset(true)}>Reset to starter</button>
+          </>
         )}
       </div>
       <div className="code-foot">
@@ -279,34 +295,37 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
         </div>
       </div>
 
-      {hintNodes.length > 0 && (
-        <div className="code-hints">
-          {hintNodes.slice(0, hintsShown).map((hint, i) => (
-            <div key={i} className="code-hint">
-              <p className="code-label">Hint {i + 1}</p>
-              {hint}
-            </div>
-          ))}
-          {hintsShown < hintNodes.length && (
-            <button type="button" className="btn-help" onClick={() => setHintsShown((n) => n + 1)}>Show hint {hintsShown + 1} of {hintNodes.length}</button>
+      <div className="code-help">
+        {/* The toggles stay put when a panel opens, so the same spot closes it again. */}
+        <div className="code-help-bar">
+          <p className="code-help-label">Stuck?</p>
+          {hintNodes.length > 0 && (
+            <button type="button" className="btn-help" aria-expanded={hintsOpen} onClick={toggleHints}>{hintToggle}</button>
           )}
-        </div>
-      )}
-
-      {fails >= 2 && (
-        <div className="code-solution">
-          {/* The button stays put when the panel opens, so the same spot closes it again. */}
           <button type="button" className="btn-quiet" aria-expanded={solutionOpen} onClick={() => setSolutionOpen((open) => !open)}>
             {solutionOpen ? "Hide solution" : "Show solution"}
           </button>
-          {solutionOpen && (
-            <>
-              <p className="code-label">Solution (read only)</p>
-              <Editor value={ex.solution} onChange={() => {}} diagnostics={[]} readOnly />
-            </>
-          )}
         </div>
-      )}
+        {hintsOpen && (
+          <div className="code-hints">
+            {hintNodes.slice(0, hintsShown).map((hint, i) => (
+              <div key={i} className="code-hint">
+                <p className="code-label">Hint {i + 1} of {hintNodes.length}</p>
+                {hint}
+              </div>
+            ))}
+            {hintsShown < hintNodes.length && (
+              <button type="button" className="btn-help" onClick={() => setHintsShown((n) => n + 1)}>Next hint ({hintsShown + 1} of {hintNodes.length})</button>
+            )}
+          </div>
+        )}
+        {solutionOpen && (
+          <div className="code-solution">
+            <p className="code-label">Solution (read only)</p>
+            <Editor value={ex.solution} onChange={() => {}} diagnostics={[]} readOnly />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
