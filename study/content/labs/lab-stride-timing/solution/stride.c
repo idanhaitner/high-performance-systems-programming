@@ -81,7 +81,7 @@ int main(void) {
     printf("column by column: sum = %lld, time = %.4f s\n", by_cols, cols_time);
 
     if (by_rows != expected || by_cols != expected) {
-        printf("WRONG: both sums should be %lld. Finish the TODOs in stride.c.\n", expected);
+        printf("WRONG: both sums should be %lld. Finish sum_rows and sum_cols in stride.c.\n", expected);
         return 1;
     }
     printf("OK: both sums are %lld.\n", expected);

@@ -12,16 +12,14 @@ move_right(&a, 5);
 /* now a.x is 6 and a.y is still 2 */
 ```
 
-The starter moves a copy of the point, so `a` does not change. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
-`copy` is a separate structure, so changing it does not reach the caller. You do not need a copy at all.
+A copy made with `struct point copy = *p;` is a separate structure, so changing it does not reach the caller. You do not need a copy at all.
 :::
 
 :::hint
-Write `p->x = p->x + dx;`, and remove the lines that use `copy`.
+Write `p->x = p->x + dx;`.
 :::
 
 :::case name="moves right"

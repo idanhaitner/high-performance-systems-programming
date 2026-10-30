@@ -1,7 +1,5 @@
-#include <stdlib.h> /* malloc */
+#include <stdlib.h>
 
-/* Return a new heap array of n ints holding a in reverse order.
-   a itself does not change. The caller frees the result. */
 int *reverse_copy(int *a, int n) {
     int *r = malloc(n * sizeof(int)); /* on the heap, so it outlives this function */
     if (r == NULL)

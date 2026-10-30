@@ -24,13 +24,13 @@ export class GodboltError extends Error {
 }
 
 export function flagsFor(optimize: boolean): string {
-  if (optimize) return "-std=c17 -Wall -Wextra -O2 -g";
-  const base = "-std=c17 -Wall -Wextra -O0 -g";
+  if (optimize) return "-std=c17 -Wall -Wextra -Wno-unused-parameter -O2 -g";
+  const base = "-std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g";
   return SANITIZE ? `${base} -fsanitize=address,undefined` : base;
 }
 
 // Assembly is for reading, so it never carries the sanitizer instrumentation.
-export const asmFlagsFor = (optimize: boolean): string => `-std=c17 -Wall -Wextra ${optimize ? "-O2" : "-O0"} -g`;
+export const asmFlagsFor = (optimize: boolean): string => `-std=c17 -Wall -Wextra -Wno-unused-parameter ${optimize ? "-O2" : "-O0"} -g`;
 
 async function post(body: unknown, fetchImpl: typeof fetch): Promise<unknown> {
   const controller = new AbortController();

@@ -8,7 +8,7 @@ In the lesson "Stack or heap?" you read that the stack is small, usually about 8
 
 This lab has two parts. Part 1 is the stack limit. Part 2 is a final exercise that uses everything from Lecture 2.
 
-- `bigarray.c`: a program that adds up `N` numbers twice. `sum_on_stack` keeps them in a local array, on the stack. `sum_on_heap` should keep them in a heap block from `malloc`, but it is left for you: it has a `TODO` comment and returns 0 for now. Before it starts, the program prints your stack limit and the size of the array.
+- `bigarray.c`: a program that adds up `N` numbers twice. `sum_on_stack` keeps them in a local array, on the stack. `sum_on_heap` should keep them in a heap block from `malloc`, but it is left for you: it returns 0 for now. Before it starts, the program prints your stack limit and the size of the array.
 - `Makefile`: a small recipe file for `make`, a tool that runs the long `gcc` commands for you, as in the Lecture 1 lab.
 - `final/` and `tests/`: the code for Part 2.
 
@@ -17,7 +17,7 @@ This lab has two parts. Part 1 is the stack limit. Part 2 is a final exercise th
 1. Download the zip below and unzip it. In VS Code, choose **File → Open Folder…** and open the unzipped folder.
 2. Open a terminal inside VS Code: **Terminal → New Terminal**. You need `gcc` and `make`, installed as in the Lecture 1 lab (`xcode-select --install` on macOS, `sudo apt install build-essential` on Linux or WSL).
 3. Type `make test` and press Enter. It runs the heap version on 1000 numbers. Right now it prints `heap:  WRONG`, because `sum_on_heap` returns 0, and then make prints a line like `make: *** [test] Error 1`. That is expected.
-4. Open `bigarray.c` and write `sum_on_heap`, following its four `TODO` steps: `malloc` room for `n` `int`s (return -1 if you get `NULL`), fill element `i` with `i % 7`, add them all up, and `free` the block.
+4. Open `bigarray.c` and write `sum_on_heap`. It does the same work as `sum_on_stack`, but in a block from `malloc`, and it gives the block back at the end. It returns -1 if `malloc` fails.
 5. Run `make test` again until it prints `heap:  OK, sum = 2997`.
 6. Type `make run`. It tries 10 million `int`s, about 40 MB: first on the heap, then as a local array on the stack.
 
@@ -62,7 +62,15 @@ banana
 
 (`printf '...' | ./words` feeds those lines to the program as if you had typed them. `\n` is a line break, and `|` connects the output of one command to the input of the next.)
 
-The code is in the `final/` folder. Each `TODO` comment says what is missing.
+The code is in the `final/` folder. The list is a heap array of pointers, and each pointer holds the address of a word in its own heap block. The functions are there with nothing inside them. This is what each one must do:
+
+- `copy_word(word)` returns a new heap block holding a copy of `word`, exactly `strlen(word) + 1` bytes, or `NULL` if there is no memory.
+- `add_word(list, n, word)` adds a copy of `word` to the end of the caller's list, and adds 1 to `*n`. `*list` is `NULL` when `*n` is 0. It returns 0 if it worked, or -1 if there is no memory, and then the list stays as it was.
+- `is_long(word)` returns 1 if the word has 5 letters or more, otherwise 0.
+- `count_matching(list, n, keep)` returns how many of the `n` words make `keep(word)` return non-zero.
+- `print_matching(list, n, keep)` prints each word that `keep` accepts, on its own line, in order. It walks through the list with a pointer, a `char **`.
+- `free_words(list, n)` frees every word and then the list itself.
+- `main` reads each line with `fgets` until the input ends, removes the newline, and adds the line to the list. If `add_word` fails, it frees the list and returns 1. Otherwise it prints the output shown earlier, and frees everything.
 
 | You write | What it practices | Lesson |
 | --- | --- | --- |
@@ -78,8 +86,8 @@ A `char ***` looks scary, but you have seen each piece. The list is a `char **`,
 ### What to do
 
 1. Type `make final`. It builds your code and prints one line for each check: `OK` or `WRONG`, and the reason. Most say `WRONG` for now, and make ends with an error line. That is expected.
-2. Open `final/wordlist.c` and write each `TODO`, one function at a time, in order. `add_word` uses `copy_word`, so start at the top. Run `make final` after each function, and watch the `WRONG` lines disappear.
-3. Open `final/main.c` and write its two `TODO`s.
+2. Open `final/wordlist.c` and write each function, one at a time, in order. `add_word` uses `copy_word`, so start at the top. Run `make final` after each function, and watch the `WRONG` lines disappear.
+3. Open `final/main.c` and write `main`.
 4. Try it yourself. Type `make words`, and then `./words`. Type a few words, pressing Enter after each one. To say the input has ended, press **Ctrl+D** on a new line.
 
 `make final` also counts your memory. It builds your code with a small counter in the middle of every `malloc`, `realloc`, and `free`, and fails if any block is left unfreed when the program ends. So a memory leak, which is normally silent, shows up here as `WRONG`.

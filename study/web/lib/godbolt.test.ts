@@ -22,10 +22,10 @@ afterEach(() => {
 
 describe("flagsFor", () => {
   it("uses -O0 with sanitizers when not optimizing", () => {
-    expect(flagsFor(false)).toBe("-std=c17 -Wall -Wextra -O0 -g -fsanitize=address,undefined");
+    expect(flagsFor(false)).toBe("-std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g -fsanitize=address,undefined");
   });
   it("uses -O2 without sanitizers when optimizing", () => {
-    expect(flagsFor(true)).toBe("-std=c17 -Wall -Wextra -O2 -g");
+    expect(flagsFor(true)).toBe("-std=c17 -Wall -Wextra -Wno-unused-parameter -O2 -g");
   });
 });
 
@@ -136,14 +136,14 @@ describe("compileAsm", () => {
     await compileAsm("int f(void){return 1;}", { optimize: false, fetchImpl: fetchImpl as unknown as typeof fetch });
     const init = (fetchImpl.mock.calls[0] as unknown as [string, RequestInit])[1];
     const body = JSON.parse(init.body as string);
-    expect(body.options.userArguments).toBe("-std=c17 -Wall -Wextra -O0 -g");
+    expect(body.options.userArguments).toBe("-std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g");
     expect(body.options.userArguments).not.toContain("-fsanitize");
   });
 });
 
 describe("asmFlagsFor", () => {
   it("builds plain -O0 and -O2 flags", () => {
-    expect(asmFlagsFor(false)).toBe("-std=c17 -Wall -Wextra -O0 -g");
-    expect(asmFlagsFor(true)).toBe("-std=c17 -Wall -Wextra -O2 -g");
+    expect(asmFlagsFor(false)).toBe("-std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g");
+    expect(asmFlagsFor(true)).toBe("-std=c17 -Wall -Wextra -Wno-unused-parameter -O2 -g");
   });
 });

@@ -13,8 +13,6 @@ int *r = reverse_copy(a, 3);
 free(r);
 ```
 
-The starter makes a local array, which is destroyed when the function returns, so it returns `NULL` instead. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint

@@ -4,7 +4,7 @@ title: Read a number, then a letter
 
 Pressing Enter leaves a newline in the input buffer, and `%c` reads it as if it were your letter.
 
-This is a whole program, with its own `main`. It asks for a number and then a character, and prints both. The tests type the answers for you, each followed by Enter. For example, when the input is
+Write a whole program, with its own `main`. It asks for a number and then a character, and prints both. The tests type the answers for you, each followed by Enter. For example, when the input is
 
 ```text
 5
@@ -19,12 +19,10 @@ Enter a number: Enter a character: x = 5, ch = 'a'
 
 (The two questions appear on one line because the typed answers are not printed: in a real terminal, your typing would show up between them.)
 
-The starter reads the character with `scanf("%c", &ch)`. Press Test my code first and look at what it prints for `ch`.
-
 You are done when Test shows all three cases passing.
 
 :::hint
-Look at the output of a failed case: `ch` is printed as `'` followed by a line break. Which character is waiting in the buffer right after you typed the number and pressed Enter?
+If `ch` is printed as `'` followed by a line break, which character was waiting in the buffer right after you typed the number and pressed Enter?
 :::
 
 :::hint

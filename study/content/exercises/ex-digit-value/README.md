@@ -6,7 +6,7 @@ A `char` holds a character's code, and `'0'` has the code 48, not 0.
 
 Write `digit_value(c)`. It receives a digit character, from `'0'` to `'9'`, and returns the number that digit stands for. So `digit_value('7')` is 7.
 
-C promises that the digit characters have codes in a row: `'0'`, then `'1'`, then `'2'`, and so on. The starter returns the code itself, so `digit_value('7')` gives 55. Press Test my code first and see which cases fail.
+C promises that the digit characters have codes in a row: `'0'`, then `'1'`, then `'2'`, and so on.
 
 You are done when Test shows all three cases passing.
 

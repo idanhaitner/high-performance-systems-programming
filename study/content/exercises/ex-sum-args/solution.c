@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Print the sum of all the numbers typed after the program's name. */
 int main(int argc, char *argv[]) {
     int sum = 0;
 

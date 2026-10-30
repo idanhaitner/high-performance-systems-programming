@@ -6,8 +6,6 @@ A **grid** (a 2D array) is a table of numbers, and `grid[i][j]` is the number in
 
 Write `sum_row(grid, row)`. The grid has 3 rows and 4 columns. The function returns the sum of the 4 numbers in the row you are asked for. For example, if row 1 holds 10, 20, 30, 40, then `sum_row(grid, 1)` is 100.
 
-The starter adds only the first number of the row. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
@@ -15,7 +13,7 @@ The row number stays the same the whole time. Only the column number changes. Wh
 :::
 
 :::hint
-Use `for (int j = 0; j < 4; j++)`, and inside it add `grid[row][j]` to `total`.
+Start a `total` at 0. Use `for (int j = 0; j < 4; j++)`, and inside it add `grid[row][j]` to `total`.
 :::
 
 :::case name="first row"

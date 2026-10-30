@@ -23,8 +23,6 @@ Two details about the inputs:
 
 If several students share the highest grade, return the **first** of them, the one with the smallest index. `n` is always at least 1. For example, with grades 70, 85, 92 the answer is 2, and with grades 80, 95, 95, 50 the answer is 1.
 
-The starter always returns 0. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint

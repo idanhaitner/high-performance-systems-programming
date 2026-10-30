@@ -1,7 +1,7 @@
 import { strToU8, zipSync } from "fflate";
 import type { Block, Exercise } from "./types";
 
-const FLAGS = "-std=c17 -Wall -Wextra -O0 -g";
+const FLAGS = "-std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g";
 
 const plain = (text: string): string => {
   // Code spans are kept exactly as written, so identifiers like read_line_from survive.

@@ -15,8 +15,6 @@ free(copy);
 
 The copy must be separate: changing `name` afterwards must not change `copy`. The code that calls `copy_text` frees the copy when it is done.
 
-The starter returns `text` itself, which is the same block, not a copy. Press Test my code first and see which cases fail.
-
 You are done when Test shows all four cases passing.
 
 :::hint

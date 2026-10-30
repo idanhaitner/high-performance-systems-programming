@@ -6,8 +6,6 @@ A string has no stored length, so you walk along it until you reach `'\0'`.
 
 Write `count_letter(text, letter)`. It returns how many times `letter` appears in `text`. For example, `count_letter("banana", 'a')` is 3. A capital letter is a different character, so `count_letter("Aa", 'a')` is 1.
 
-The starter always returns 0. Press Test my code first and see which cases fail.
-
 You are done when Test shows all four cases passing.
 
 :::hint

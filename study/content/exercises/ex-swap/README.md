@@ -17,12 +17,10 @@ swap(&x, &y);
 
 The function returns nothing, which C writes as `void`. Its only job is to change the two boxes.
 
-The starter code swaps two local copies, so the caller sees no change. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
-Inside `swap`, `x` and `y` are new boxes that only hold copies. Changing them does not reach the caller. Which expression is the caller's first box itself?
+A new local variable only holds a copy, so changing it does not reach the caller. Which expression is the caller's first box itself?
 :::
 
 :::hint
@@ -30,7 +28,7 @@ Inside `swap`, `x` and `y` are new boxes that only hold copies. Changing them do
 :::
 
 :::hint
-As soon as you store into `*a`, its old value is gone. The starter already saved both values for you: `y` holds the second value and `old_x` holds the first. Store `y` into `*a`, then store `old_x` into `*b`.
+As soon as you store into `*a`, its old value is gone. Save it first in a local variable, then store `*b` into `*a`, and the saved value into `*b`.
 :::
 
 :::case name="two positives"

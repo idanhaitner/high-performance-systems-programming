@@ -19,7 +19,7 @@ The processor never fetches just one number. It fetches a 64-byte block, a **cac
 
 This lab has two parts. Part 1 is the timing. Part 2 is a final exercise that uses everything from Lecture 1.
 
-- `stride.c`: a program that fills a 4096 × 4096 grid of `int`s (64 MB), adds up every number twice, times both, and prints the results. The two adding functions, `sum_rows` and `sum_cols`, are left for you. Each has a `TODO` comment and returns 0 for now.
+- `stride.c`: a program that fills a 4096 × 4096 grid of `int`s (64 MB), adds up every number twice, times both, and prints the results. The two adding functions, `sum_rows` and `sum_cols`, are left for you. Each returns 0 for now.
 - `Makefile`: a small recipe file for `make`. **make** is a tool that reads the recipe and runs the long `gcc` commands for you, so you only type a short command.
 - `final/` and `tests/`: the code for Part 2.
 
@@ -28,7 +28,7 @@ This lab has two parts. Part 1 is the timing. Part 2 is a final exercise that us
 1. Download the zip below and unzip it. In VS Code, choose **File → Open Folder…** and open the unzipped folder.
 2. Open a terminal inside VS Code: **Terminal → New Terminal**. This lab needs `gcc` and `make`. On macOS, install them by typing `xcode-select --install`. There, `gcc` is really Apple's compiler `clang` under another name, which is fine for this lab. On Linux, type `sudo apt install build-essential`. On Windows, use WSL (the Linux system built into Windows) and the same Linux command.
 3. Type `make test` and press Enter. It builds a small 1024 × 1024 grid and checks both sums. Right now it prints `WRONG`, because both functions return 0. After that, make prints a line like `make: *** [test] Error 1`. This is expected: it just means the test failed.
-4. Open `stride.c` and write `sum_rows`: an outer loop over the rows `i`, an inner loop over the columns `j`, adding `grid[i][j]` to `total`. Then write `sum_cols` with the two loops the other way round: the outer loop over the columns `j`, the inner loop over the rows `i`.
+4. Open `stride.c` and write both functions. `sum_rows` adds up every number in `grid` row by row, so its inner loop moves along one row. `sum_cols` adds them up column by column, so its inner loop moves down one column.
 5. Run `make test` again until it prints `OK: both sums are 1072693248.`
 6. Type `make run`. This builds the full 4096 × 4096 grid with `-O2`, the option that asks the compiler to make the code fast, the way real programs are built. Then it runs the timing.
 
@@ -75,7 +75,14 @@ Average: 82.33
 Best: Dana (90)
 ```
 
-The code is split into three files in the `final/` folder. Each `TODO` comment says what is missing.
+The code is split into three files in the `final/` folder. The functions are there with nothing inside them. This is what each one must do:
+
+- `read_players(argc, argv, list)` reads pairs of words, a name and then its points, from `argv[1]` onward, into `list`. It returns how many players it read, or -1 if there are no words, an odd number of words, or more than `MAX_PLAYERS` players. A name too long for its array is cut short, and it still ends with `'\0'`.
+- `total_points(list, n)` returns the sum of all the points.
+- `average_points(list, n)` returns the average, with its fraction, so 7 points for 2 players is 3.5. `n` is at least 1.
+- `best_player(list, n)` returns a pointer to the player with the most points, and the first of them if players tie. `n` is at least 1.
+- `print_report(list, n)` prints the report in exactly the shape shown earlier, with 2 digits after the point in the average.
+- `main` calls `read_players`. If that returns -1, it prints a short message that shows how to use the program, and returns 1. Otherwise it calls `print_report` and returns 0.
 
 | You write | What it practices | Lesson |
 | --- | --- | --- |
@@ -93,8 +100,8 @@ A `long long` is a whole number type of 8 bytes on typical machines, big enough 
 ### What to do
 
 1. Type `make final`. It stops with an error like ``call to undeclared function 'best_player'`` (the exact words depend on your compiler). The compiler is reading another file that calls `best_player`, but `players.h` never told it about that function. This error is expected, and fixing it is your first task.
-2. Open `final/players.h` and add the declaration of `best_player`, as its `TODO` says. Type `make final` again. Now it builds, and it prints one line for each check: `OK` or `WRONG`, and the reason. Most say `WRONG` for now.
-3. Open `final/players.c` and `final/main.c`, and write each `TODO`, one function at a time. Run `make final` after each function, and watch the `WRONG` lines disappear.
+2. Open `final/players.h` and add the declaration of `best_player`: copy its first line from `players.c`, and end it with a semicolon. Type `make final` again. Now it builds, and it prints one line for each check: `OK` or `WRONG`, and the reason. Most say `WRONG` for now.
+3. Open `final/players.c` and `final/main.c`, and write each function, one at a time. Run `make final` after each function, and watch the `WRONG` lines disappear.
 4. Try your own players: `./report Ana 10 Ben 20`. Also try a mistake, `./report Ana`, and it should print how to use the program.
 5. Finally, build the program by hand, one step at a time, to see the steps from the lesson. Type these inside the `final` folder (first type `cd final`):
 

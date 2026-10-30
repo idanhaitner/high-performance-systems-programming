@@ -6,12 +6,10 @@ title: Return a pointer to the last element
 
 Write `last_element(a, n)`. The array `a` has `n` elements, at least one. The function returns a pointer to the last element. For example, for `int A[4]`, it returns `&A[3]`.
 
-The starter returns `a + n`. That address is one place **past** the end of the array, and reading from it is a mistake. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
-Elements are counted from 0, so what is the index of the last of `n` elements?
+`a + n` is one place **past** the end of the array. Elements are counted from 0, so what is the index of the last of `n` elements?
 :::
 
 :::hint

@@ -8,24 +8,24 @@ Think of the ticket machine at a post office. Each person who presses the button
 
 Write the **function** `next_ticket()`. (A function is a named piece of code that gives back, or **returns**, an answer each time it is called.) It takes no input. The first call returns 1, the second returns 2, the third returns 3, and so on.
 
-The starter keeps the count in a plain local variable. A local variable is created fresh, at its starting value, every time the function starts, and destroyed when it returns. So the count goes back to 0 on every call, and every call returns 1.
+A plain local variable cannot do this. It is created fresh, at its starting value, every time the function starts, and destroyed when it returns.
 
 C has a word for a local variable that remembers: `static`. Writing `static` in front of a local variable changes where it lives. It moves off the stack and into the program's global data: `.bss` if it starts at 0, `.data` otherwise. It is set to its starting value only once, before the program starts running, and it keeps its value between calls. Only code inside the function can use its name, just like a normal local.
 
-The tests call `next_ticket()` many times in a row, in one run: once, once more, then ten more times. Press Test my code first and see which cases fail.
+The tests call `next_ticket()` many times in a row, in one run: once, once more, then ten more times.
 
 You are done when Test shows all three cases passing.
 
 :::hint
-Run Test. The first case passes but the second fails, because the second call also returns 1. What happens to `count` when the function returns?
+If the first case passes but the second fails, the second call also returned 1. What happens to your count when the function returns?
 :::
 
 :::hint
-`count` must survive from one call to the next. A plain local variable cannot, because it is destroyed when the function returns.
+The count must survive from one call to the next, so it needs the word from the text.
 :::
 
 :::hint
-Put `static` at the start of the line that creates `count`. The `= 0` then happens only once, not on every call.
+Write `static int count = 0;`. The `= 0` then happens only once, not on every call.
 :::
 
 :::case name="first call is 1"

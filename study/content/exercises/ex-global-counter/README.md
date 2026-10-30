@@ -6,8 +6,6 @@ A **global** variable, written outside every function, lives for the whole run. 
 
 Here `total_calls` is a global. Other code reads it, so it must be the one that counts. Fix `count_call()` so that each call adds 1 to the global `total_calls`.
 
-The starter has a trap. Its function creates a local variable with the same name. Inside the function, that name now means the local one, so the global never changes. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint

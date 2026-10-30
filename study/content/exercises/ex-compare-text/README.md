@@ -12,8 +12,6 @@ Write `compare_text(a, b)` without using `<string.h>`. Like `strcmp`, it returns
 
 For example, `compare_text("aab", "aaa")` is positive, and `compare_text("aaa", "aaaaa")` is negative, because the shorter string runs out first. Only the sign matters; any negative or positive number is fine.
 
-The starter stops at the first character and only compares that one. Press Test my code first and see which cases fail.
-
 You are done when Test shows all four cases passing.
 
 :::hint

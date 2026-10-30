@@ -26,17 +26,8 @@ static long long sum_on_stack(long n) {
     return total;
 }
 
-/* Does the same with a heap block.
-   Returns -1 if malloc fails. */
 static long long sum_on_heap(long n) {
-    long long total = 0;
-    /* TODO:
-       1. Reserve room for n ints with malloc. If it returns NULL, return -1.
-       2. Fill element i with i % 7, exactly like sum_on_stack does.
-       3. Add all n elements into total.
-       4. Free the block. */
-    (void)n;
-    return total;
+    return 0;
 }
 
 int main(int argc, char *argv[]) {

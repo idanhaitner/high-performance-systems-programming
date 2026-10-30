@@ -12,8 +12,6 @@ Write a program that prints how many words were typed **after** the program's na
 | `./count hello` | 2 | `1` |
 | `./count a b c` | 4 | `3` |
 
-The starter prints `argc` as it is. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint

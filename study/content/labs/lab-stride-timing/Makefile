@@ -4,9 +4,9 @@
 # SRC_DIR is the folder that holds the code (make test SRC_DIR=solution checks the answer).
 SRC_DIR ?= .
 CC = gcc
-CFLAGS = -std=c17 -Wall -Wextra -O2 -g
+CFLAGS = -std=c17 -Wall -Wextra -Wno-unused-parameter -O2 -g
 FINAL_DIR = $(SRC_DIR)/final
-FINAL_CFLAGS = -std=c17 -Wall -Wextra -O0 -g -Werror=implicit-function-declaration
+FINAL_CFLAGS = -std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g -Werror=implicit-function-declaration
 FINAL_FILES = $(FINAL_DIR)/players.c $(FINAL_DIR)/players.h
 
 .PHONY: run test final clean

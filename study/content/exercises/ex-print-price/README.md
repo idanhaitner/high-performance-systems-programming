@@ -4,7 +4,7 @@ title: Print a line in an exact format
 
 Placeholders such as `%d` and `%.2f` say where each value goes and how it looks.
 
-The program reads a whole number and a decimal number, already written for you. Change the last `printf` so it prints exactly this shape, with 2 digits after the point:
+Write a program that reads a whole number and a decimal number, and prints exactly this shape, with 2 digits after the point:
 
 | Input | Prints |
 | --- | --- |
@@ -12,7 +12,7 @@ The program reads a whole number and a decimal number, already written for you. 
 | `10 0.75` | `10 items cost 0.75 each` |
 | `2 19.999` | `2 items cost 20.00 each` |
 
-Every letter and space counts. The starter prints the two values with nothing around them. Press Test my code first and see which cases fail.
+Every letter and space counts.
 
 You are done when Test shows all three cases passing.
 

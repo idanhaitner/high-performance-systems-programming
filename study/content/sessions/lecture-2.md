@@ -9,7 +9,7 @@ You have read the lessons, so now you use them. Each lesson gets one new questio
 
 Press **Next** when a step is done. If you are stuck, press **Skip for now**, or use the **Reread** link at the top of the step to open that step's lesson.
 
-In a coding exercise, comments marked `TODO` show the part left for you. **Run** shows what your code prints. **Test my code** checks it against small test cases, and all of them must pass. **Show assembly** shows the machine instructions the compiler made; it is there if you are curious. If you get stuck, **Show hint** opens one hint at a time, and **Show solution** shows a finished answer. Try the exercise first, because you learn more that way.
+A coding exercise gives you the function's first line, and the task above the editor says what it must do. You write the rest. **Format** tidies your code, and it also runs by itself when you press Run or Test. **Run** shows what your code prints. **Test my code** checks it against small test cases, and all of them must pass. **Show assembly** shows the machine instructions the compiler made; it is there if you are curious. If you get stuck, **Show hint** opens one hint at a time, and **Show solution** shows a finished answer. Try the exercise first, because you learn more that way.
 
 Your code is built by godbolt.org, a free website that runs the C compiler, so your code is sent there when you press one of these buttons.
 :::
@@ -144,13 +144,13 @@ int *B = realloc(A, 4 * sizeof(int));
 :::
 
 :::check id=q-who-needs-the-heap lesson=stack-or-heap
-Which of these really needs the heap?
+Which of these needs the heap?
 
-- [ ] A small array of 3 `int`s that one function uses and then forgets
-- [ ] A loop counter
-- [x] A list of names that keeps growing as the user types, and other functions still read it after the function that made it has returned
+- [ ] `int counts[26];`, used only inside one function
+- [x] `char *line`, filled in a function and returned to its caller
+- [ ] `int board[8][8];`, made in `main` and passed to other functions
 
-The list needs the heap for two reasons: its size changes while the program runs, and it must outlive the function that made it. The other two are small, fixed in size, and short-lived, so the stack suits them better.
+The returned text must outlive the function that made it, so a local array cannot hold it. The other two stay alive as long as they are used: `board` lives until `main` ends, and functions that `main` calls can use it through a pointer.
 :::
 
 :::exercise ref=ex-heap-box lesson=stack-or-heap

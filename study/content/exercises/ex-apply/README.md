@@ -6,8 +6,6 @@ A function can receive another function, and call it through a pointer.
 
 Write `apply(f, x)`. It calls the function `f` on the number `x` and returns the answer. For example, if `twice` doubles a number, `apply(twice, 5)` is 10.
 
-The starter returns `x` and never calls `f`. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
@@ -15,7 +13,7 @@ A function pointer is called just like a normal function, by writing its name an
 :::
 
 :::hint
-Write `return f(x);`, and remove the line `(void)f;`.
+Write `return f(x);`.
 :::
 
 :::case name="calls twice"

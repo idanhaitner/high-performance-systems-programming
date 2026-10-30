@@ -43,7 +43,7 @@ describe("exerciseZip", () => {
     expect(f["harness.h"]).toBe("#include <stdio.h>\n");
     expect(f["test.c"]).toBe(base.test);
     expect(f["Makefile"]).toContain("cat main.c harness.h test.c > all.c");
-    expect(f["Makefile"]).toContain("-std=c17 -Wall -Wextra -O0 -g");
+    expect(f["Makefile"]).toContain("-std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g");
     expect(f["README.txt"]).toContain("Add two numbers");
     expect(f["README.txt"]).toContain("Write add(a, b) returning the sum.");
     expect(f["README.txt"]).toContain("Run `make test` in this folder.");
@@ -60,7 +60,7 @@ describe("exerciseZip", () => {
     expect(f["cases/1.out"]).toBe("7\n");
     expect(f["cases/2.args"]).toBe("");
     expect(f["Makefile"]).toContain("diff");
-    expect(f["Makefile"]).toContain("-std=c17 -Wall -Wextra -O0 -g");
+    expect(f["Makefile"]).toContain("-std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g");
   });
 
   it("uses real tabs on every Makefile recipe line", () => {

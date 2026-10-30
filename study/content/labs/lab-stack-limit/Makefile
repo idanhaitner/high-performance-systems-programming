@@ -7,7 +7,7 @@
 SRC_DIR ?= .
 N ?= 10000000
 CC = gcc
-CFLAGS = -std=c17 -Wall -Wextra -O0 -g
+CFLAGS = -std=c17 -Wall -Wextra -Wno-unused-parameter -O0 -g
 FINAL_DIR = $(SRC_DIR)/final
 FINAL_FILES = $(FINAL_DIR)/wordlist.c $(FINAL_DIR)/wordlist.h
 # These send every memory call of your code to tests/counting_alloc.c.

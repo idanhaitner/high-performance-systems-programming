@@ -13,12 +13,12 @@ Write `sum_squares(n)`. It must return the sum of the squares from 1 up to `n`, 
 
 The function returns a `long long`. That is a whole-number type that takes 8 bytes (64 bits) on the computers you will use; C only promises at least 64 bits. So it can hold numbers with up to 19 digits. On this course's machines it is the same size as `long`.
 
-The starter code already has a loop. A **loop** repeats the lines inside it. Here, `for (int i = 1; i <= n; i++)` runs once with `i` equal to 1, then 2, and so on up to `n`. (`i++` means "add 1 to `i`".) Press Test my code first and see which case fails.
+You will need a **loop**, which repeats the lines inside it. `for (int i = 1; i <= n; i++)` runs once with `i` equal to 1, then 2, and so on up to `n`. (`i++` means "add 1 to `i`".)
 
 You are done when Test shows all three cases passing.
 
 :::hint
-Run Test and read the failing case. You added only positive squares, yet the answer came out negative. The lesson showed one way a positive calculation can come out negative.
+If a big case fails with a negative answer, you added only positive squares and still got a negative total. The lesson showed one way a positive calculation can come out negative.
 :::
 
 :::hint
@@ -26,7 +26,7 @@ For n = 2000 the true total is about 2.7 billion. The biggest number an `int` ca
 :::
 
 :::hint
-Give the running total the same 8-byte type that the function returns. Nothing else needs to change for these tests.
+Give the running total the same 8-byte type that the function returns.
 :::
 
 :::case name="n = 2000 needs a bigger type"

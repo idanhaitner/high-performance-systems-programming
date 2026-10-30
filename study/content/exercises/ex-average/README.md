@@ -12,12 +12,10 @@ Write the **function** `average(total, count)`. (A function is a named piece of 
 
 `count` is never 0 in the tests, so you do not need to handle dividing by zero here.
 
-The starter returns `total / count`. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
-The function returns a `double`, but look at the types on the two sides of the `/`. Which kind of division does C choose?
+Writing `return total / count;` looks right, and it fails. The function returns a `double`, but look at the types on the two sides of the `/`. Which kind of division does C choose?
 :::
 
 :::hint

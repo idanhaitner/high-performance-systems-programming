@@ -12,12 +12,10 @@ set_to_zero(&x);
 /* now x is 0 */
 ```
 
-The starter changes `p` itself, which is only the function's own copy of the address, so `x` stays 42. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
-`p` is the address. Which expression is the box at that address?
+`p = 0;` changes only the function's own copy of the address. `p` is the address. Which expression is the box at that address?
 :::
 
 :::hint

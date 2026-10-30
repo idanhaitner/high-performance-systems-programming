@@ -15,8 +15,6 @@ point_to_max(&p, a, 3);
 
 The pointer must point **into** the array, not to a copy. So after the call, `*p = 0;` changes `a[1]`.
 
-The starter finds nothing yet, and never changes the caller's pointer, so `p` stays `NULL`. Press Test my code first and see which cases fail.
-
 You are done when Test shows all four cases passing.
 
 :::hint

@@ -1,6 +1,5 @@
-#include <stddef.h> /* NULL */
+#include <stddef.h>
 
-/* Make the caller's pointer NULL. pp holds the address of that pointer. */
 void clear_pointer(int **pp) {
     *pp = NULL;
 }

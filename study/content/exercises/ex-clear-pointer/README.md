@@ -13,12 +13,10 @@ clear_pointer(&p);
 /* now p is NULL, and a is still 1 */
 ```
 
-The starter changes `pp`, which is only the function's own copy of that address. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
-`pp` holds the address of the caller's pointer. Which expression *is* the caller's pointer?
+`pp = NULL;` changes only the function's own copy of the address. `pp` holds the address of the caller's pointer, so which expression *is* the caller's pointer?
 :::
 
 :::hint

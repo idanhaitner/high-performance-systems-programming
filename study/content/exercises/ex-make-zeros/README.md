@@ -6,8 +6,6 @@ title: Make a heap array of zeros
 
 Write `make_zeros(n)`. It returns a new heap block holding `n` `int`s, all 0. The caller will free it. If there is no memory, `calloc` returns `NULL`, and you just pass that on. Using `malloc` with a loop that stores the zeros is also fine.
 
-The starter returns `NULL` every time. Press Test my code first and see which cases fail.
-
 You are done when Test shows all three cases passing.
 
 :::hint
@@ -15,7 +13,7 @@ With `calloc`, the size of one item is `sizeof(int)`, and you ask for `n` of the
 :::
 
 :::hint
-Write `return calloc(n, sizeof(int));`, and remove the two starter lines.
+Write `return calloc(n, sizeof(int));`.
 :::
 
 :::case name="five zeros"

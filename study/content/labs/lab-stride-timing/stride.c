@@ -2,7 +2,7 @@
 
    This program fills a grid of N x N ints, then adds up every number twice:
    once row by row, and once column by column. It times both and prints
-   the results. Your job is to write the two functions marked TODO. */
+   the results. */
 
 #define _POSIX_C_SOURCE 199309L /* lets <time.h> offer clock_gettime */
 
@@ -18,24 +18,12 @@
    You will learn why in the lesson "Programs and processes". */
 int grid[N][N];
 
-/* Add up every number in grid, row by row: all of row 0, then all of
-   row 1, and so on. The inner loop should move along one row, changing
-   the column number j, so each read is the neighbor of the one before. */
 long long sum_rows(void) {
-    long long total = 0;
-    /* TODO: an outer loop over the rows i, and inside it a loop over the
-       columns j. Add grid[i][j] to total. */
-    return total;
+    return 0;
 }
 
-/* Add up every number in grid, column by column: all of column 0, then
-   all of column 1, and so on. The inner loop should move down one column,
-   changing the row number i, so each read jumps a whole row ahead. */
 long long sum_cols(void) {
-    long long total = 0;
-    /* TODO: an outer loop over the columns j, and inside it a loop over
-       the rows i. Add grid[i][j] to total. */
-    return total;
+    return 0;
 }
 
 /* Puts i + j in row i, column j. */
@@ -75,7 +63,7 @@ int main(void) {
     printf("column by column: sum = %lld, time = %.4f s\n", by_cols, cols_time);
 
     if (by_rows != expected || by_cols != expected) {
-        printf("WRONG: both sums should be %lld. Finish the TODOs in stride.c.\n", expected);
+        printf("WRONG: both sums should be %lld. Finish sum_rows and sum_cols in stride.c.\n", expected);
         return 1;
     }
     printf("OK: both sums are %lld.\n", expected);

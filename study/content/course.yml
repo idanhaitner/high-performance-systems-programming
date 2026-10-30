@@ -31,6 +31,8 @@ changelog:
     note: Shortened the practice of both lectures. Copied recaps are gone, each lesson now has one new question and its coding exercise, every step links to its lesson, and the Lecture 1 lab comes last.
   - date: 2026-10-30
     note: Added a very small code question to every lesson's practice, 14 in all, and a final exercise at the end of both labs that uses everything from the lecture.
+  - date: 2026-10-30
+    note: Made the practice harder and cleaner. Exercises and labs now start from the bare function with no comments, the questions ask you to reason through traps instead of recalling a fact, and the code editor can format your code.
 
 lectures:
   - id: lecture-1

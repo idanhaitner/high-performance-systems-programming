@@ -14,14 +14,12 @@ int *miss = find_first(a, 4, 5);
 /* miss == NULL */
 ```
 
-Use a pointer that walks through the array, instead of an index. It starts at `a` and stops before `a + n`, the spot just past the last element.
-
-The starter always returns `a`, the start of the array, so it finds the wrong element and never says "not found". Press Test my code first and see which cases fail.
+Use a pointer that walks through the array, instead of an index.
 
 You are done when Test shows all four cases passing.
 
 :::hint
-The loop is already there: `p` starts at `a`, and `p++` moves it one `int` forward each time. Inside the loop, `*p` is the current element.
+Loop with a pointer: `for (int *p = a; p < a + n; p++)`. `a + n` is the spot just past the last element, and inside the loop `*p` is the current element.
 :::
 
 :::hint
