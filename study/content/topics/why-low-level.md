@@ -47,13 +47,13 @@ Neither is "better". They are different trade-offs. This course uses C because i
 The same algorithm can run many times faster or slower depending only on how its data is stored and how it walks through memory. That is why programmers who build compilers, operating systems, games, and embedded devices need this knowledge.
 
 :::check id=chk-no-magic
-Which statement best describes the cost of an abstraction?
+`a[i]` is written the same way whether `i` is the next element or one far away. Why can those two reads take very different times?
 
-- [ ] The cost is decided by the language's name, before any code runs
-- [x] The cost is the work done by the software or hardware underneath it
-- [ ] There is a cost only if you rewrite the program in assembly
+- [x] The hardware serves data near the last read faster than data far from it
+- [ ] The compiler creates more instructions when `i` is a bigger number
+- [ ] Far elements need a bigger type of address than near ones
 
-An abstraction is a convenient surface. Underneath, real instructions run and real memory is read. That work is the cost.
+The line of C is the same, and so is the instruction. What changes is whether the data is already close at hand. A convenient surface does not remove the work underneath.
 :::
 
 ## Surprise 1: a positive number times itself can come out negative
@@ -224,25 +224,25 @@ We begin with the first layer, plus a picture of how a running program's memory 
 A new number this time: $x = 50000$, stored in a 32-bit `int`. Its true square is $2\,500\,000\,000$, which is `0x9502F900` in hexadecimal.
 
 :::check id=prac-square-sign-q1
-Does $2\,500\,000\,000$ fit in an `int`? {{=No, it is bigger than 2147483647|Yes, it is less than 4.3 billion|Yes, every square of an int fits}}
+The largest `int` is $2\,147\,483\,647$. Which of these products still fits in an `int`? {{=46340 * 46340|46341 * 46341|65535 * 65535}}
 
-The largest `int` is $2\,147\,483\,647$. About 4.3 billion is how many bit patterns 32 bits have, but half of them are used for negative numbers.
+$46340^2 = 2\,147\,395\,600$ just fits. $46341^2 = 2\,147\,488\,281$ is already too big, and $65535^2$ is about twice the limit.
 :::
 
 :::check id=prac-square-sign-q2
-`0x9502F900` is exactly 8 hex digits, so all 32 bits are kept. Read as a signed 32-bit number, those bits are
+Read as a signed 32-bit number, the bits `0x9502F900` have the value {{=2500000000 - 2^32|2500000000 - 2^31|-2500000000}}.
 
-- [x] negative, because the first hex digit `9` is `1001` in binary, so the leftmost bit is 1
-- [ ] positive, because nothing was thrown away
-- [ ] zero, because the answer overflowed
-
-A leftmost bit of 1 means negative. (The value is $2\,500\,000\,000 - 2^{32} = -1\,794\,967\,296$.) Nothing was cut off here, yet the sign still flipped.
+The leftmost bit is 1, so the number is negative. A signed 32-bit number with those bits is the unsigned value minus $2^{32}$, which here is $-1\,794\,967\,296$.
 :::
 
 :::check id=prac-square-sign-q3
-In C, `int x = 50000; int y = x * x;` is {{=undefined behavior|guaranteed to give -1794967296|guaranteed to give 2500000000}}.
+`x` is an `int` holding 50000. Which line has a result that the C rules guarantee?
 
-The true answer does not fit in an `int`, so this is signed overflow. Use `uint32_t` if you want the guaranteed wrap-around.
+- [x] `uint32_t y = (uint32_t)x * (uint32_t)x;`
+- [ ] `int y = x * x;`
+- [ ] `long long y = x * x;`
+
+The third line is the trap. `x * x` is worked out as two `int`s first, so it overflows before the big `long long` box is reached. Overflow of an `int` is undefined behavior: the compiler may do anything. `uint32_t` has a guaranteed result, and here $2\,500\,000\,000$ even fits in it.
 :::
 :::
 
@@ -250,25 +250,25 @@ The true answer does not fit in an `int`, so this is signed overflow. Use `uint3
 New numbers: $x = 1$, $y = 10^{20}$, and $z = -10^{20}$, as `double` numbers added in the order written. Remember that near $10^{20}$, neighboring `double` values are 16384 apart.
 
 :::check id=prac-float-add-q1
-$(x + y) + z$ equals {{=0.0|1.0|1e20}}.
+Start from `double a = 1e20;`. Then `a = a + 1.0;` runs 1000 times. Now `a - 1e20` is {{=0.0|1000.0|16384.0}}.
 
-$1 + 10^{20}$ rounds back to $10^{20}$, because 1 is much smaller than the gap of 16384. Then $10^{20} + (-10^{20}) = 0$.
+Each single addition rounds back to $10^{20}$, because 1 is far less than half of the gap. Doing it 1000 times changes nothing. The small number is lost 1000 times over.
 :::
 
 :::check id=prac-float-add-q2
-$x + (y + z)$ equals {{=1.0|0.0|-1e20}}.
+`(1e20 + 10000.0) - 1e20` is {{=16384.0|10000.0|0.0}}.
 
-$y + z$ is exactly 0, and $1 + 0 = 1$.
+Half of the gap is 8192, and 10000 is more than that. So $10^{20} + 10000$ rounds to the nearest `double` above $10^{20}$, which is 16384 higher. The answer is neither 0 nor the number you added.
 :::
 
 :::check id=prac-float-add-q3
-To keep a small number from being lost, you should
+You must add one huge number, the same huge number with a minus sign, and many small numbers. Which order gives the most accurate total?
 
-- [x] Add the numbers that cancel each other first, then add the small one
-- [ ] Always add from left to right
-- [ ] Switch from `double` to `int`
+- [x] Add the two huge numbers together first, then add the small ones
+- [ ] Add each small number to the first huge one, then add the second huge one
+- [ ] Any order, because addition gives the same answer in every order
 
-The small number survives when it is added to something of similar size. Adding it to a huge number first rounds it away.
+The huge numbers cancel, and after that the small ones are added to something of similar size. Added to a huge number first, they are rounded away. For `double`, the order of additions does matter.
 :::
 :::
 
@@ -276,40 +276,45 @@ The small number survives when it is added to something of similar size. Adding 
 A different table this time: `double M[1000][1000]`. Each `double` is 8 bytes, and each row has 1000 of them. Both loops do `sum += M[i][j]` for every `i` and `j`.
 
 :::check id=prac-loop-stride-q1
-When `j` is the inner loop, each step moves {{=8 bytes|4 bytes|8000 bytes}} in memory.
+`&M[3][0]` is how many bytes after `&M[2][999]`? {{=8|8000|0}}
 
-Increasing `j` by 1 moves to the next `double` in the same row: 8 bytes.
+C stores the rows one after another. The last element of row 2 and the first element of row 3 are neighbors, one `double` apart.
 :::
 
 :::check id=prac-loop-stride-q2
-When `i` is the inner loop, each step moves {{=8000 bytes|8 bytes|1000 bytes}} in memory.
+`&M[5][7]` is how many bytes after `&M[0][0]`? {{=40056|96|5600}}
 
-Increasing `i` by 1 moves down a full row: $1000 \times 8 = 8000$ bytes.
+Five whole rows are $5 \times 8000 = 40000$ bytes, and 7 more elements are $7 \times 8 = 56$ bytes.
 :::
 
 :::check id=prac-loop-stride-q3
-How many `double`s arrive together in one 64-byte cache line? {{=8|16|64}}
+The hardware fetches 64 bytes at a time. Reading all of `M` row by row, about how many of the 1 000 000 reads need a new fetch? {{=125000|8000|1000000}}
 
-$64 / 8 = 8$. The row-by-row loop uses all 8; the column-by-column loop uses one and then jumps 8000 bytes away.
+64 bytes hold 8 `double`s, so one read in 8 needs a fetch: $1\,000\,000 / 8 = 125\,000$. Column by column, each read lands 8000 bytes away, so almost every read needs one.
 :::
 :::
 
 :::problem id=prac-no-magic title="What C exposes in this course" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-no-magic-q1
-This course uses C because C {{=lets you see sizes, addresses, and memory layout|is the language every GPU runs|replaces the operating system}}.
+Which statement about C is false?
 
-To understand speed, we need to see what the machine does with our data. C shows us number sizes, memory addresses, and how data is arranged.
+- [x] A wrong array index stops the program with a clear error
+- [ ] `sizeof` tells you how many bytes a type or variable takes
+- [ ] You can print the address of a variable
+- [ ] The members of a structure are stored in the order you wrote them
+
+C does not check array indexes. A wrong index reads or writes whatever is there, and the program may carry on. That freedom is why C runs fast, and why you must be careful.
 :::
 
 :::check id=prac-no-magic-q2
-Which statements describe C, compared with Python or Java?
+Which statements are true?
 
-- [x] You decide when memory is reserved and freed
-- [x] You can see addresses and how data is arranged in memory
-- [ ] The language automatically frees every piece of memory for you
-- [ ] How data is arranged in memory is hidden from you
+- [x] Two C programs doing the same additions can differ in speed because of the order they read memory
+- [x] Memory you ask for while the program runs stays yours until you give it back
+- [ ] The compiler reorders your loops so the memory order never affects speed
+- [ ] A C `int` is 32 bits on every machine
 
-In C you control memory and can see its layout. Python and Java manage memory for you and hide the layout.
+Memory order changes speed, and nothing guarantees the compiler will fix it. C leaves memory management to you. The size of `int` depends on the machine; 32 bits is only the usual size.
 :::
 :::
 

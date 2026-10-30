@@ -279,21 +279,21 @@ What matters is whether the starting value is zero, not whether you wrote one. `
 
 :::problem id=prac-pipeline-order title="Order of the four stages" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
 :::check id=prac-pipeline-order-q1
-The step that handles `#include` and `#define` is the {{=preprocessor|compiler|linker}}.
+A file has `#include <stdioo.h>`, with a typing mistake. The step that reports it is the {{=preprocessor|compiler|linker}}.
 
-The preprocessor handles every line starting with `#`. Its output is still C code.
+The preprocessor handles every line starting with `#`, and it cannot find that file. Nothing else gets a chance to run.
 :::
 
 :::check id=prac-pipeline-order-q2
-The step that turns assembly into an object file of machine code is the {{=assembler|preprocessor|loader}}.
+A line is missing its `;`. The step that reports it is the {{=compiler|assembler|linker}}.
 
-The compiler produces assembly, and the assembler turns it into machine code. The loader is used later, when you run the program.
+The compiler is the step that reads C itself. The assembler reads assembly, and the linker reads object files, so neither of them ever sees C.
 :::
 
 :::check id=prac-pipeline-order-q3
-`gcc -S main.c -o main.s` stops after {{=compilation to assembly|preprocessing|linking}}.
+A file calls `area`, which is declared in a header, but its code is in no file you gave `gcc`. The step that reports it is the {{=linker|compiler|preprocessor}}.
 
-`-S` means "give me the assembly". It does not assemble or link.
+The declaration satisfies the compiler, which only needs to know how to call `area`. Connecting that call to real code is the linker's job, and it finds none.
 :::
 :::
 
@@ -313,15 +313,15 @@ int main(void) {
 ```
 
 :::check id=prac-section-quiz-q1
-`rate` usually goes to {{=.data|.bss|.rodata}}.
+`limit` usually goes to {{=.rodata|.data|.bss}}.
 
-`rate` is a global with a non-zero starting value (1.5).
+It is a global, and it is `const`, so it usually goes with the fixed text. The non-zero rule only matters for globals you may change.
 :::
 
 :::check id=prac-section-quiz-q2
-`hits` usually goes to {{=.bss|.data|the stack}}.
+If the second line were `double rate = 0.0;`, then `rate` would usually go to {{=.bss|.data|.rodata}}.
 
-`hits` is a global with no starting value, so it starts at 0.
+What matters is whether the starting value is zero, not whether you wrote one. All-zero globals usually go to `.bss`.
 :::
 
 :::check id=prac-section-quiz-q3
@@ -338,9 +338,13 @@ The zero rule is only for globals; a local is on the stack whatever its value. `
 
 :::problem id=prac-lifecycle title="Creation, execution, termination" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-lifecycle-q1
-During creation, the operating system {{=loads the program into a new address space|asks main for a process ID|runs the preprocessor}}.
+You run the same program twice at the same time, and both copies print the address of a global `x`. They print the same number. What is true?
 
-Creation builds the process's memory and loads the program into it. The preprocessor ran long before, when the program was built.
+- [x] Each copy has its own address space, so that number means a different box in each
+- [ ] Both copies share one `x`, so a change in one shows in the other
+- [ ] This cannot happen, because the operating system gives each copy different addresses
+
+Every process gets its own address space, a private view of memory. The same address number can hold different values in two processes.
 :::
 
 :::check id=prac-lifecycle-q2
@@ -350,37 +354,33 @@ The loader jumps to the entry point, usually `_start`. That startup code then ca
 :::
 
 :::check id=prac-lifecycle-q3
-Termination {{=removes the process and frees its resources|loads .text into memory|runs the linker}}.
+A program calls `malloc` and ends without calling `free`. After it ends, that memory is {{=taken back by the operating system|reserved until the computer restarts|still full when the program runs again}}.
 
-At the end, the operating system takes back everything the process used. Linking happened before the program ever ran.
+When a process ends, the operating system takes back everything it used. Leaks hurt while the program runs, especially one that runs for a long time.
 :::
 :::
 
 :::problem id=prac-who-fetches title="The instruction cycle and the address space" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-who-fetches-q1
-The CPU repeats this cycle: fetch the next instruction from memory, then {{=execute it|link it|preprocess it}}.
+While a program runs, the CPU fetches its next instruction from {{=.text in memory|the .c file on disk|the stack}}.
 
-Fetch and execute happen while the program runs. Linking and preprocessing happen earlier, when it is built.
+The `.c` file is not needed at run time. The machine code was loaded into `.text`, and the stack holds data, not code.
 :::
 
 :::check id=prac-who-fetches-q2
-In the usual picture, which area is at the top (high addresses) and grows downward?
+`main` calls `f`, and both have local variables. In the usual picture, `f`'s locals are at {{=lower addresses than main's|higher addresses than main's|the same addresses as main's}}.
 
-- [x] The stack
-- [ ] `.text`
-- [ ] The heap
-
-The stack is at the top and grows down. The heap grows up toward it. The code (`.text`) is near the bottom.
+The stack starts at the top and grows down, and `f` is called while `main` is still running. So `f`'s locals are placed below `main`'s.
 :::
 
 :::check id=prac-who-fetches-q3
-The heap is
+`int *p = malloc(8);` runs inside `main`. Where do `p` and the 8 bytes live?
 
-- [x] The area for memory requested with malloc and given back with free
-- [ ] The section that holds `int y = 10`
-- [ ] Another name for `.text`
+- [x] `p` is on the stack, and the 8 bytes are on the heap
+- [ ] Both are on the heap
+- [ ] `p` is in `.data`, and the 8 bytes are on the stack
 
-`y` is a global with a starting value, so it is in `.data`. The heap is for memory requested while the program runs.
+`p` is an ordinary local variable that happens to hold an address. Only the block that `malloc` reserved is on the heap.
 :::
 :::
 

@@ -155,15 +155,15 @@ Why this order? The addresses of the name blocks are stored *inside* the block `
 
 :::problem id=prac-strlen-plus-one title="Bytes for a copy of a string" source="Lecture 2 - Memory management.pptx" kind=exercise solution_origin=source
 :::check id=prac-strlen-plus-one-q1
-`strlen("Yehudit")` is {{=7|8|10}}.
+For `char name[20] = "Yehudit";`, a copy made with `malloc(sizeof(name))` gets {{=20 bytes, which works but wastes 12|8 bytes, exactly what it needs|7 bytes, which is one too few}}.
 
-`strlen` counts the letters and stops before the `'\0'`.
+`sizeof` measures the array, not the text. `strlen(name) + 1` is the 8 bytes that the copy really needs.
 :::
 
 :::check id=prac-strlen-plus-one-q2
-To copy "Yehudit" into its own heap block, ask for {{=malloc(strlen(name) + 1)|malloc(strlen(name))|malloc(11)}}.
+After `char *c = malloc(strlen(name)); strcpy(c, name);`, the problem is that {{=the '\0' is written one byte past the end|the copy has no '\0'|strcpy stops one letter early}}.
 
-`strcpy` also copies the `'\0'`, so the block needs one byte more than `strlen`. Asking for 11 every time works, but wastes memory, which the problem forbids.
+`strcpy` always copies the `'\0'`, whether or not there is room for it. The block is one byte too small, and C does not check.
 :::
 :::
 
@@ -191,9 +191,13 @@ Which order is right?
 `int *A = malloc(5 * sizeof(int));` holds 5 values. You need room for 8.
 
 :::check id=prac-realloc-pattern-q1
-The call is {{=realloc(A, 8 * sizeof(int))|realloc(A, 3 * sizeof(int))|realloc(A, 8)}}.
+What is the risk of writing `A = realloc(A, 8 * sizeof(int));`?
 
-`realloc` takes the new **total** size, in bytes: 8 `int`s.
+- [x] If `realloc` fails, `A` becomes `NULL`, and the old block can no longer be reached
+- [ ] If `realloc` succeeds and moves the block, `A` still holds the old address
+- [ ] `realloc` frees the old block first, so the 5 values are lost
+
+On failure `realloc` returns `NULL` and leaves the old block alone. This line then overwrites the only copy of its address, which is a leak. Keep the answer in a second variable, and check it first.
 :::
 
 :::check id=prac-realloc-pattern-q2

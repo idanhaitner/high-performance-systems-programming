@@ -205,29 +205,24 @@ Reading a character right after a number with `scanf("%c", ...)`. It picks up th
 ## Practice
 
 :::problem id=prac-print-negative title="One number, three placeholders" source="ps1 (1).pdf" kind=exercise solution_origin=source
-On a machine with a 32-bit `int`:
-
-```c
-int x = -1;
-printf("%d %u %X\n", x, x, x);
-```
+On a machine with a 32-bit `int`, `int x = -2;`. Its 32 bits are all 1s except the last one.
 
 :::check id=prac-print-negative-q1
-`%d` prints {{=-1|1|4294967295}}.
+`printf("%u", x)` prints {{=4294967294|-2|2}}.
 
-`%d` reads the bits as a signed number, so you see the value you stored.
+`%u` reads the bits as a number with no sign. All 1s is $2^{32} - 1 = 4294967295$, and the last bit being 0 makes it one less.
 :::
 
 :::check id=prac-print-negative-q2
-`%u` prints {{=4294967295|-1|1}}.
+`printf("%X", x)` prints {{=FFFFFFFE|FFFFFFFF|-2}}.
 
-All 32 bits of -1 are 1s. Read as an unsigned number, that is the biggest 32-bit value, $2^{32} - 1 = 4294967295$.
+Each hex digit is 4 bits. The first seven groups are `1111`, which is `F`. The last group is `1110`, which is `E`.
 :::
 
 :::check id=prac-print-negative-q3
-`%X` prints {{=FFFFFFFF|-1|FFFF}}.
+After `unsigned int u = x;`, the line `printf("%d", u)` prints {{=-2|4294967294|2}}.
 
-Each hex digit is 4 bits. Thirty-two 1-bits are eight `F`s.
+Storing `x` in `u` keeps the same bits. `%d` reads whatever bits it receives as a signed number, so the type of the variable no longer matters.
 :::
 :::
 
@@ -237,19 +232,19 @@ float f = 251.733733733;
 ```
 
 :::check id=prac-float-digits-q1
-`printf("%.3f", f)` prints {{=251.734|251.733|251.733733733}}.
+`printf("%.0f", f)` prints {{=252|251|251.7}}.
 
-`%.3f` keeps 3 digits after the point and rounds: the fourth digit is 7, so `.733` rounds up to `.734`.
+`%.0f` keeps no digits after the point and rounds. 251.73 is closer to 252. Only an `int` conversion would chop it to 251.
 :::
 
 :::check id=prac-float-digits-q2
 Why does `printf("%.8f", f)` print `251.73373413` instead of `251.73373373`?
 
 - [x] A `float` keeps only about 7 significant digits, so the stored value is already slightly different
-- [ ] `%.8f` always adds random digits at the end
-- [ ] `printf` rounds every number to 8 digits
+- [ ] `printf` turns the `float` into a `double`, and that step adds the error
+- [ ] `%.8f` keeps the digits you typed and only rounds the last few up
 
-The value was rounded when it was stored in the `float`. Asking for more digits only reveals the rounding.
+The value was rounded when it was stored in the `float`. Moving it to a `double` keeps that value exactly, and asking for more digits only reveals the rounding.
 :::
 :::
 
@@ -261,12 +256,10 @@ scanf("%d", &x);
 scanf("%c", &ch);
 ```
 
-The user types `7` and presses Enter.
-
 :::check id=prac-leftover-newline-q1
-After both lines, `ch` holds {{=a newline character|the digit 7|nothing: the program waits for more input}}.
+The user types `7 x` and presses Enter. After both lines, `ch` holds {{=a space|x|a newline character}}.
 
-`%d` takes the `7` and leaves the newline in the buffer. `%c` takes the first waiting character, which is that newline.
+`%d` takes the `7` and stops. `%c` takes the very next character, whatever it is, and that is the space.
 :::
 
 :::check id=prac-leftover-newline-q2
@@ -284,9 +277,13 @@ A space **before** `%c` skips spaces and newlines before reading. A space after 
 Given `int n; double price; char word[10];`:
 
 :::check id=prac-scanf-placeholders-q1
-To read `price`, the call is {{=scanf("%lf", &price)|scanf("%f", &price)|scanf("%lf", price)}}.
+Which pair reads and then prints `price` correctly?
 
-A `double` needs `%lf` in `scanf`, and an ordinary variable needs `&`.
+- [x] `scanf("%lf", &price); printf("%f", price);`
+- [ ] `scanf("%f", &price); printf("%f", price);`
+- [ ] `scanf("%lf", price); printf("%f", &price);`
+
+`scanf` writes into your variable, so it must know the exact size: `%lf` for a `double`. `printf` receives a copy of the value, and `%f` is right for a `double` there. Only `scanf` gets the `&`.
 :::
 
 :::check id=prac-scanf-placeholders-q2

@@ -135,39 +135,35 @@ The delimiters decide what a piece is. With only `","`, the same string splits i
 
 :::problem id=prac-string-cells title="Cells in a string" source="ps1 (1).pdf" kind=exercise solution_origin=source
 :::check id=prac-string-cells-q1
-`char word[] = "code";` makes an array of {{=5|4|8}} cells.
+After `char w[10] = "code";`, `sizeof(w)` is {{=10|5|4}}.
 
-Four letters plus the `'\0'` the compiler adds at the end.
+`sizeof` measures the whole array, however much of it the text uses. `strlen(w)` would be 4.
 :::
 
 :::check id=prac-string-cells-q2
-`strlen(word)` is {{=4|5|8}}.
+`strlen` of `char w[] = "co\0de";` is {{=2|5|6}}.
 
-`strlen` counts the characters before the `'\0'`.
+`strlen` stops at the first `'\0'`, after `co`. The array still has 6 cells, because the compiler adds one more `'\0'` at the end.
 :::
 :::
 
 :::problem id=prac-strcmp-sign title="Reading strcmp results" source="ps1 (1).pdf" kind=exercise solution_origin=source
 :::check id=prac-strcmp-sign-q1
-`strcmp("aab", "aaa")` is {{=positive|negative|0}}.
+On an ASCII machine, `strcmp("abc", "abD")` is {{=positive|negative|0}}.
 
-The first difference is at position 2: `'b'` against `'a'`. `'b'` is bigger, so the first string comes later.
+The first difference is `'c'` (99) against `'D'` (68). Every capital letter has a smaller code than every small letter, so `"abc"` comes later.
 :::
 
 :::check id=prac-strcmp-sign-q2
-`strcmp("aaa", "aaaaa")` is {{=negative|positive|0}}.
+`strcmp("10", "9")` is {{=negative|positive|0}}.
 
-After three equal letters, the first string ends: `'\0'` (0) against `'a'` (97). The shorter one comes first.
+`strcmp` compares characters, not numbers. `'1'` has a smaller code than `'9'`, so `"10"` comes first, even though 10 is bigger than 9.
 :::
 
 :::check id=prac-strcmp-sign-q3
-Which test checks that `name` holds "Dana"?
+`if (strcmp(name, "Dana")) { puts("hi"); }` prints `hi` when `name` is {{=anything except Dana|exactly Dana|a name that comes after Dana}}.
 
-- [x] `strcmp(name, "Dana") == 0`
-- [ ] `name == "Dana"`
-- [ ] `strcmp(name, "Dana") == 1`
-
-`==` on strings compares addresses. `strcmp` returns 0 for equal strings, and only its sign matters otherwise.
+`if` treats any number other than 0 as true. `strcmp` returns 0 only for equal strings, so this runs when they differ. To test for equal strings, write `== 0`.
 :::
 :::
 
@@ -175,25 +171,25 @@ Which test checks that `name` holds "Dana"?
 `char str[] = "Hello, my website is: www.google.com";`
 
 :::check id=prac-strtok-pieces-q1
-With the delimiters `"."`, `strtok` gives {{=3|2|7}} pieces.
+With the delimiters `" ,:"`, `strtok` gives {{=5|7|6}} pieces.
 
-The two dots split the text into `Hello, my website is: www`, `google`, and `com`.
+The pieces are `Hello`, `my`, `website`, `is`, and `www.google.com`. Delimiters side by side, like `, `, count as one cut, so there are no empty pieces.
 :::
 
 :::check id=prac-strtok-pieces-q2
-With the delimiters `" "` (a space only), the second piece is {{=my|Hello,|my website}}.
+After `strtok(str, " ")` runs once, `printf("%s", str)` prints {{=Hello,|the whole sentence|my website is: www.google.com}}.
 
-Only spaces cut, so the comma stays on `Hello,`, and the next piece is `my`.
+`strtok` writes a `'\0'` over the first space, so the string `str` now ends there. The rest is still in the array, but `%s` stops at the `'\0'`.
 :::
 
 :::check id=prac-strtok-pieces-q3
 Why do the later calls pass `NULL` instead of `str`?
 
 - [x] `NULL` tells `strtok` to continue in the same string from where it stopped
-- [ ] `str` was freed by the first call
-- [ ] `NULL` makes `strtok` start again from the beginning
+- [ ] After the first call, `str` no longer holds any of its characters
+- [ ] `NULL` tells `strtok` that there are no more delimiters to look for
 
-`strtok` remembers its place. Passing the string again would start over and return the first piece again.
+`strtok` remembers its place. Passing `str` again would start over at the same spot and give the first piece again.
 :::
 :::
 

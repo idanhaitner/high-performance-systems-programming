@@ -53,13 +53,13 @@ if (A == NULL) {
 This rarely happens on a laptop, but asking for a huge amount by mistake (for example a negative size that turns into a giant one) makes it happen right away.
 
 :::check id=chk-malloc-size
-You need room for 50 `double`s. Which call asks for the right amount?
+`double *A;` must get room for 50 `double`s. Which call asks for the right amount?
 
-- [x] `malloc(50 * sizeof(double))`
+- [x] `malloc(50 * sizeof(*A))`
+- [ ] `malloc(sizeof(A))`
 - [ ] `malloc(50)`
-- [ ] `malloc(sizeof(double))`
 
-`malloc` counts in **bytes**. 50 `double`s take 50 × `sizeof(double)` bytes (400 on typical machines). `malloc(50)` gives only 50 bytes, and `malloc(sizeof(double))` gives room for a single `double`.
+`*A` is a `double`, so `sizeof(*A)` is the size of one element, and `sizeof` does not follow the pointer. `sizeof(A)` is only the size of the pointer, and `malloc(50)` is 50 bytes, not 50 elements.
 :::
 
 ## Where the memory lives
@@ -161,16 +161,17 @@ Thinking `free(A)` also changes `A`. It does not: `A` keeps the old address, and
 int *A = malloc(4 * sizeof(int));
 int *walk = A;
 walk++;
-free(A);
+walk--;
+free(walk);
 ```
 
 Is the `free` correct?
 
-- [x] Yes: `A` still holds the address `malloc` returned
-- [ ] No: the block moved, so `free` crashes
-- [ ] No: `walk` must be freed too
+- [x] Yes: `walk` holds the address `malloc` returned
+- [ ] No: only the variable that first got the address may be freed
+- [ ] No: `walk` moved, so `free` no longer knows the block
 
-Only `walk` moved. `A` still holds the start of the block, which is exactly what `free` needs. There is one block, so there is one `free`; `walk` is just a second pointer into the same block.
+`free` receives a value, not a variable. After `walk++` and `walk--`, the value is the start of the block again, and that is all `free` needs. `A` must not be freed as well, because there is only one block.
 :::
 
 ## calloc: memory that starts at zero
@@ -190,9 +191,9 @@ Notice that `calloc` takes **two** numbers: how many elements, and how many byte
 You need room for 50 `double`s. A `double` is 8 bytes.
 
 :::check id=prac-malloc-bytes-q1
-The right call is {{=malloc(50 * sizeof(double))|malloc(50)|malloc(sizeof(double))}}.
+After `int *A = malloc(10);`, the line `A[2] = 1;` {{=writes past the end of the block|is fine, because A has room for 10 ints|does not compile}}.
 
-`malloc` counts bytes, not elements. 50 elements × 8 bytes each = 400 bytes, and `sizeof(double)` keeps the code right on any machine.
+`malloc` counts bytes, so there are only 10. `A[2]` uses bytes 8 to 11 of a 4-byte `int`. The compiler cannot see this, and the program may even seem to work.
 :::
 
 :::check id=prac-malloc-bytes-q2
@@ -206,9 +207,9 @@ With `calloc`, the same request is {{=calloc(50, sizeof(double))|calloc(400)|cal
 Each snippet starts with `int *A = malloc(10 * sizeof(int));`.
 
 :::check id=prac-free-errors-q1
-`A++; free(A);` fails because {{=free gets an address that is not the start of the block|the block was already freed|A is NULL}}.
+`int *B = A; free(A); free(B);` fails because {{=the same block is freed twice|B has no block of its own to free|free cannot be called with B}}.
 
-`free` needs the exact address `malloc` returned. After `A++`, `A` points one `int` into the block.
+`B = A` copies an address, not a block. There is one block, so there must be one `free`, no matter how many pointers hold its address.
 :::
 
 :::check id=prac-free-errors-q2

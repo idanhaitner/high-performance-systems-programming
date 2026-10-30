@@ -35,13 +35,13 @@ The star `*` has **two different jobs**, and this confuses almost everyone at fi
 And `&` always means "the address of".
 
 :::check id=chk-star-two-jobs
-In the line `int *px = &x;`, what does the star do?
+After `int *a, b;`, what are the types of `a` and `b`?
 
-- [x] It says that `px` is a pointer to an `int`
-- [ ] It takes the value stored at the address in `px`
-- [ ] It multiplies `px` by `x`
+- [x] `a` is a pointer to an `int`, and `b` is an `int`
+- [ ] Both are pointers to `int`
+- [ ] Both are `int`s, and the star only changes how `a` is read
 
-This line *makes* the variable `px`, so the star is part of its type: "pointer to `int`". In a line like `*px = 9;`, where `px` already exists, the same star would mean "go to the address in `px`".
+The star belongs to the one name next to it, not to the whole line. To make two pointers, write `int *a, *b;`.
 :::
 
 ## A pointer to a pointer
@@ -168,21 +168,21 @@ Mixing up `*pp` and `**pp`. With `int **pp`, `*pp` is a pointer (an address), an
 A new set of boxes: `int n = 42;`, `int *p = &n;`, `int **q = &p;`. In this example `n` lives at 2000, `p` at 2008, and `q` at 2016.
 
 :::check id=prac-double-deref-q1
-`q` holds {{=2008|2000|42}}.
-
-`q` was given `&p`, the address of the box `p`, which is 2008.
-:::
-
-:::check id=prac-double-deref-q2
 `*q` is {{=2000|2008|42}}.
 
 One star goes to the box at 2008, which is `p`. The value in `p` is the address of `n`: 2000.
 :::
 
-:::check id=prac-double-deref-q3
-After `**q = 50;`, the value of `n` is {{=50|42|2000}}.
+:::check id=prac-double-deref-q2
+After `int m = 7; *q = &m; **q = 50;`, the values of `n` and `m` are {{=42 and 50|50 and 7|50 and 50}}.
 
-Two stars go all the way to `n`, so the line stores 50 in `n`.
+`*q = &m` changes `p`, so `p` now points to `m`. Then two stars follow `q` to `p` and `p` to `m`, so the 50 goes into `m`. `n` was left behind.
+:::
+
+:::check id=prac-double-deref-q3
+With the boxes as first set up, `&**q` is {{=2000|2008|42}}.
+
+`**q` is the box `n`, and `&` asks for its address, which is 2000. It is the same as `*q`.
 :::
 :::
 

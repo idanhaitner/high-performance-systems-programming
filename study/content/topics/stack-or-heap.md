@@ -144,48 +144,41 @@ Line by line:
 
 :::problem id=prac-stack-or-heap title="Where should this array live?" source="Lecture 2 - Memory management.pptx" kind=exercise solution_origin=derived
 :::check id=prac-stack-or-heap-q1
-A function needs 10 `int`s to hold a few results while it runs. The best place is {{=the stack|the heap}}.
+A function makes an array of 1000 `int`s and returns it to its caller. The array must live on {{=the heap, because it must outlive the function|the stack, because 1000 ints is small|either one, because the caller receives its address}}.
 
-It is small and only needed during the call, so a local array is faster and frees itself.
+Small size is not enough. A local array is destroyed when the function returns, so the caller would get a dangling pointer.
 :::
 
 :::check id=prac-stack-or-heap-q2
-A program reads a number `n` from the user, which may be in the millions, and needs `n` `double`s. The best place is {{=the heap|the stack}}.
+`main` needs 20 million `int`s for the whole run, and the number never changes. The array should live on {{=the heap, because it is too big for the stack|the stack, because main lasts the whole run|the stack, because its size is fixed}}.
 
-The size is only known while the program runs and may be far too big for an 8 MB stack.
+20 million `int`s are 80 MB, far more than the usual 8 MB stack. Lasting long enough and having a fixed size do not help if it does not fit.
 :::
 :::
 
 :::problem id=prac-dangling-return title="Returning an array" source="Lecture 2 - Memory management.pptx" kind=exercise solution_origin=source
 :::check id=prac-dangling-return-q1
-What is wrong with this function?
+Which version of `make` hands the caller a usable array?
 
-```c
-int *make(int n) {
-    int A[n];
-    return A;
-}
-```
+- [x] `int *A = malloc(n * sizeof(int)); int *B = A; return B;`
+- [ ] `int A[n]; return A;`
+- [ ] `int *A = malloc(n * sizeof(int)); free(A); return A;`
 
-- [x] `A` is destroyed when `make` returns, so the caller gets a dangling pointer
-- [ ] An array cannot have size `n`
-- [ ] A function may never return a pointer
-
-The array lives on the stack and is released when the function ends. Use `int *A = malloc(n * sizeof(int));` instead.
+Returning a copy of the address is fine, because the block is what must survive. The second array is destroyed on return. The third block is given back before the caller gets its address, so both leave a dangling pointer.
 :::
 
 :::check id=prac-dangling-return-q2
-In the `initialize` example, who must call `free`? {{=the code that receives the array|initialize itself|nobody}}
+With a 4-byte `int`, `int *B = initialize(3, 0); B = initialize(3, 1); free(B);` leaks {{=12 bytes|0 bytes|24 bytes}}.
 
-The block must outlive `initialize`, so `initialize` cannot free it. The caller frees it when it is done.
+The second line overwrites the only copy of the first block's address, so those 3 `int`s can never be freed. The `free` handles only the second block.
 :::
 :::
 
 :::problem id=prac-initialize-trace title="Tracing initialize" source="Lecture 2 - Memory management.pptx" kind=exercise solution_origin=derived
 :::check id=prac-initialize-trace-q1
-`initialize(4, -1)` returns an array holding {{=-1 0 1 2|-1 -1 -1 -1|0 1 2 3}}.
+In the array from `initialize(n, x)`, the last element is {{=x + n - 1|x + n|n - 1}}.
 
-The first element is `x`, and each next one is 1 more.
+The first element is `x`, at index 0, and each next one is 1 more. The last index is `n - 1`. For `initialize(4, -1)` that gives -1, 0, 1, 2.
 :::
 :::
 

@@ -43,15 +43,15 @@ Adding a whole number `k` to a pointer moves it `k` elements forward, which is `
 :::
 
 :::check id=chk-pointer-plus-three
-`A` starts at address 1000 and holds `int`s, 4 bytes each, and `p = A`.
+`A` starts at address 1000 and holds `int`s, 4 bytes each, and `p = &A[5]`.
 
-Which address is `p + 3`?
+Which address is `p - 2`?
 
-- [ ] 1003
 - [x] 1012
-- [ ] 1004
+- [ ] 1018
+- [ ] 1003
 
-Adding 3 moves the pointer three **elements**, not three bytes: 3 × 4 = 12 bytes, so 1000 + 12 = 1012. That is the address of `A[3]`.
+`p` is at $1000 + 5 \times 4 = 1020$. Taking away 2 moves back two elements, which is 8 bytes, so the answer is 1012, the address of `A[3]`.
 :::
 
 ## Subtracting two pointers
@@ -87,13 +87,13 @@ int *p1 = &a[1];
 int *p2 = &a[4];
 ```
 
-What is `p2 - p1`?
+What is `*(p1 + (p2 - p1) / 2)`?
 
-- [x] 3
-- [ ] 12
-- [ ] 30
+- [x] 30
+- [ ] 40
+- [ ] 35
 
-`a[4]` is three elements after `a[1]`, so the answer is 3. The distance in bytes would be 12, and `*p2 - *p1` (the values) would be 50 − 20 = 30.
+`p2 - p1` is 3 elements, and `3 / 2` is 1 with two `int`s. So this is `*(p1 + 1)`, which is `a[2]`, holding 30.
 :::
 
 ## sizeof: an array is not a pointer
@@ -120,13 +120,19 @@ printf("%zu\n", sizeof(pc));  /* 8: one address */
 So even though `A` *behaves* like a pointer in most expressions, it is not one. `sizeof` is one of the two places where an array keeps its full size (the other is `&A`). This is also why a function that receives an array cannot use `sizeof` to find its length: the function only gets a pointer, and `sizeof` of a pointer is always 8.
 
 :::check id=chk-sizeof-pointer
-On a 64-bit machine, what is `sizeof(p)` for `double *p;`?
+On a 64-bit machine, with a 4-byte `int`, what does this function print?
 
-- [ ] 4
+```c
+void f(int a[10]) {
+    printf("%zu\n", sizeof(a));
+}
+```
+
 - [x] 8
-- [ ] It depends on how many `double`s `p` points to
+- [ ] 40
+- [ ] 10
 
-Every pointer on a 64-bit machine is an 8-byte address. The type it points to does not change the size of the address itself.
+An array passed to a function arrives as a pointer to its first element, even when it is written as `int a[10]`. So `sizeof(a)` measures a pointer, which is 8 bytes. The function cannot find out the array's size this way.
 :::
 
 ## Mistakes the compiler catches
@@ -216,9 +222,9 @@ printf("%td\n", ptr2 - ptr1);
 ```
 
 :::check id=prac-float-step-q1
-The first number printed is {{=90.5|13.5|0.5}}.
+If the first `printf` used `*ptr1 + 3` instead of `*ptr2`, it would print {{=15.5|90.5|13.5}}.
 
-`ptr1 + 3` moves three `float`s forward, to `A[3]`, which holds 90.5.
+The star comes first: `*ptr1` is 12.5, and adding 3 gives 15.5. To move first, you need `*(ptr1 + 3)`.
 :::
 
 :::check id=prac-float-step-q2
@@ -239,21 +245,21 @@ char *pc = B;
 ```
 
 :::check id=prac-sizeof-array-pointer-q1
-`sizeof(A)` is {{=12|3|8}}.
+`sizeof(A) / sizeof(A[0])` is {{=3|12|1}}.
 
-`A` is a whole array of three `int`s, and each `int` is 4 bytes.
+The whole array is 12 bytes, and one element is 4 bytes. This is the usual way to count the elements of an array.
 :::
 
 :::check id=prac-sizeof-array-pointer-q2
-`sizeof(pc)` is {{=8|1|3}}.
+`sizeof(pi) / sizeof(pi[0])` is {{=2|3|1}}.
 
-`pc` is a pointer. It holds one address, and an address is 8 bytes on a 64-bit machine. That the address points to `char`s does not matter.
+`pi` is a pointer, so `sizeof(pi)` is 8, not the size of the array. $8 / 4 = 2$, which is wrong as a count. The trick works only on a real array.
 :::
 
 :::check id=prac-sizeof-array-pointer-q3
-`sizeof(B)` is {{=3|8|12}}.
+`sizeof(pc) / sizeof(pc[0])` is {{=8|3|1}}.
 
-`B` is an array of three `char`s, and each `char` is 1 byte.
+`sizeof(pc)` is 8, and one `char` is 1 byte. The array `B` still has only 3 elements, but a pointer does not remember that.
 :::
 :::
 
@@ -265,15 +271,15 @@ int *p2 = a + 5;
 ```
 
 :::check id=prac-count-between-q1
-The number of **elements** between `p1` and `p2` is {{=p2 - p1|*p2 - *p1|(char *)p2 - (char *)p1}}.
+`*(p1 + (p2 - p1) / 2)` is {{=30|40|35}}.
 
-Subtracting two `int *` pointers counts `int`s: the answer is 5.
+`p2 - p1` is 5, and `5 / 2` is 2 with two `int`s. So this is `*(p1 + 2)`, which is `a[2]`.
 :::
 
 :::check id=prac-count-between-q2
-The number of **bytes** between `p1` and `p2` is {{=(char *)p2 - (char *)p1|p2 - p1|*p2 - *p1}}.
+`(p1 + p2) / 2` {{=does not compile|gives a pointer to the middle|gives the average of the values}}.
 
-Seen as `char *`, each step is 1 byte, so the difference is 5 × 4 = 20. `*p2 - *p1` subtracts the values 60 and 10, which tells you nothing about positions.
+Adding two addresses has no meaning in C, so it is not allowed. That is why the middle is written as a start plus half a distance.
 :::
 :::
 
@@ -281,21 +287,21 @@ Seen as `char *`, each step is 1 byte, so the difference is 5 × 4 = 20. `*p2 - 
 :::check id=prac-which-crash-q1
 Which code is safe?
 
-- [ ] `int *p; *p = 1;`
-- [ ] `int *p = NULL; *p = 1;`
-- [x] `int n; int *p = &n; *p = 1;`
+- [x] `int a[2]; int *p = a + 2; p--; *p = 1;`
+- [ ] `int a[2]; int *p = a + 2; *p = 1;`
+- [ ] `int *p; int n = 1; *p = n;`
 
-The first writes through a garbage address. The second writes to address 0, which crashes with a segmentation fault. Only the third points `p` at a real box (`n`) before writing.
+`a + 2` is the spot just past the end. Holding that address is fine, but writing there is not. After `p--` it points to `a[1]`, a real box. The third option writes through a pointer that was never set.
 :::
 
 :::check id=prac-which-crash-q2
-Which line does the compiler reject (or at least warn about)?
+Which line usually builds with no complaint from the compiler, and crashes when it runs?
 
-- [x] `int x = 4; int *px = x;`
-- [ ] `int x = 4; int *px = &x;`
-- [ ] `int *px = NULL;`
+- [x] `int *p = NULL; *p = 1;`
+- [ ] `int x = 4; int *p = x;`
+- [ ] `int x = 4; int p = &x;`
 
-`x` is a number, not an address, so it does not fit in an `int *`. The other two give the pointer a real address or `NULL`.
+The compiler checks types, and `NULL` is a fine value for a pointer, so it usually says nothing. The other two mix up a number and an address, and the compiler warns about both.
 :::
 :::
 

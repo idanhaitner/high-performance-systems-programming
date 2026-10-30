@@ -201,53 +201,56 @@ struct trio {
     char c;
 };
 ```
-On this machine, `int` is 4 bytes and must start at a multiple of 4. The whole structure's size is also rounded up to a multiple of 4, so that every element of an array of `trio`s stays aligned.
+
+On this machine, `int` is 4 bytes and must start at a multiple of 4. The whole structure's size is also rounded up to a multiple of 4, so that every element of an array of structures stays aligned. As written, `sizeof(struct trio)` is 12.
 
 :::check id=prac-struct-padding-q1
-`b` starts at offset {{=4|1|2}}.
+Reorder the members to `int b; char a; char c;`. Now `sizeof` is {{=8|6|12}}.
 
-`a` takes byte 0. Bytes 1, 2, and 3 are padding, because `b` must start at a multiple of 4.
+`b` takes bytes 0 to 3, `a` takes byte 4, and `c` takes byte 5. Six bytes are used, and rounding up to a multiple of 4 gives 8. The order of the members changes the size.
 :::
 
 :::check id=prac-struct-padding-q2
-`c` starts at offset {{=8|5|6}}.
+In the order `char a; char c; int b;`, `b` starts at offset {{=4|2|1}}.
 
-`b` takes bytes 4 to 7, so the next free byte is 8. A `char` can start anywhere.
+`a` and `c` take bytes 0 and 1. `b` must start at a multiple of 4, so bytes 2 and 3 are padding.
 :::
 
 :::check id=prac-struct-padding-q3
-`sizeof(struct trio)` is {{=12|6|9}}.
+With the original order and `struct trio t[3];`, `t[1].c` is how many bytes after the start of `t`? {{=20|13|9}}
 
-The members end at byte 8, so 9 bytes are used. Rounding up to a multiple of 4 gives 12. The members themselves add up to only 6.
+`t[1]` starts after one whole structure, at 12. `c` is at offset 8 inside it, and $12 + 8 = 20$.
 :::
 :::
 
 :::problem id=prac-struct-copy title="Copying and comparing structures" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 ```c
-struct point {
-    int x;
-    int y;
+struct box {
+    int v[2];
+    int *p;
 };
 
 int main(void) {
-    struct point p1 = {1, 2};
-    struct point p2 = p1;
-    p2.x = 5;
-    printf("%d %d\n", p1.x, p2.x);
+    int n = 1;
+    struct box b1 = {{1, 2}, &n};
+    struct box b2 = b1;
+    b2.v[0] = 5;
+    *b2.p = 9;
+    printf("%d %d\n", b1.v[0], n);
     return 0;
 }
 ```
 
 :::check id=prac-struct-copy-q1
-The program prints {{=1 5|5 5|1 1}}.
+The program prints {{=1 9|5 9|1 1}}.
 
-`p2 = p1` copies every member into `p2`. Changing `p2.x` afterwards does not touch `p1`.
+`b2 = b1` copies every member. The array is copied too, so `b2.v[0] = 5` leaves `b1.v[0]` at 1. The pointer is also copied, but both copies hold the address of `n`, so `*b2.p = 9` changes `n`.
 :::
 
 :::check id=prac-struct-copy-q2
-Adding the line `if (p1 == p2) { ... }` {{=does not compile|compares every member|compares the addresses}}.
+Adding the line `if (b1 == b2) { ... }` {{=does not compile|compares every member|compares the addresses}}.
 
-`==` does not work on whole structures. Compare the members instead: `p1.x == p2.x && p1.y == p2.y`.
+`==` does not work on whole structures. To compare them, compare the members yourself.
 :::
 :::
 
@@ -287,9 +290,9 @@ The safe, correct call is {{=scanf("%11s %d", a.city, &a.zip)|scanf("%12s %d", &
 :::
 
 :::check id=prac-field-scanf-q2
-`printf("%s", a.city)` prints up to {{=the ending '\0'|exactly 12 characters|the zip member}}.
+The call is `scanf("%11s %d", a.city, &a.zip)`, and the user types a 15-letter word and then `84105`. What happens? {{=scanf returns 1, and zip is not set|the extra letters are dropped, and zip is 84105|city overflows its array}}
 
-`%s` does not know the array's size. It stops when it finds `'\0'`.
+`%11s` stops after 11 letters, and the other 4 stay waiting. `%d` then meets letters, not digits, so it stores nothing. `scanf` stored only one value, so it returns 1.
 :::
 :::
 
@@ -322,21 +325,25 @@ int main(void) {
 ```
 
 :::check id=prac-three-students-q1
-`students[i].name` is passed to `scanf` {{=without an extra ampersand|with an ampersand before the array|as an int conversion}}.
+Using the rule that an `int` starts at a multiple of 4, `sizeof(Student)` is {{=40|39|44}}.
 
-It is an array, so its name already acts as an address. It holds 10 bytes, so `%9s` leaves room for `'\0'`.
+`name` and `faculty` use bytes 0 to 14. Byte 15 is padding, so `id` starts at 16. The five grades are bytes 20 to 39, which makes 40.
 :::
 
 :::check id=prac-three-students-q2
-`students[i].id` and `students[i].grades[j]` are passed {{=with an ampersand|without an ampersand|through %s}}.
+Which expression is the last grade of the last student? {{=students[2].grades[4]|students[3].grades[5]|students.grades[2][4]}}
 
-Each one is a single `int`, so `scanf` needs its address: `&`.
+Both arrays count from 0, so the last indexes are 2 and 4. The student comes first, then the member, then the grade.
 :::
 
 :::check id=prac-three-students-q3
-How many grades does the inner loop read for each student? {{=5|3|10}}
+The input starts with `Dana Medicine 123`. What happens?
 
-`j` goes 0, 1, 2, 3, 4: five times.
+- [x] `faculty` gets `Medi`, `%d` then meets `cine`, so `scanf` returns 2 and `main` returns 1
+- [ ] `faculty` overflows its array, and `id` gets 123
+- [ ] `faculty` gets `Medi`, the rest of the word is dropped, and `id` gets 123
+
+`%4s` protects the array by stopping after 4 letters, but the other letters stay waiting. The check `!= 3` catches the failure.
 :::
 :::
 

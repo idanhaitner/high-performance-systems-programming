@@ -138,13 +138,13 @@ printf("%d\n", c1);    /* prints: 97 */
 A few extra facts, for later: C only promises that the digits `'0'` to `'9'` have codes in a row; the code 97 for `'a'` comes from ASCII. And whether a plain `char` can be negative depends on the machine.
 
 :::check id=chk-char-code
-On a normal ASCII machine, `'a'` is 97 and the letters follow in order. What does `printf("%d\n", 'c')` print?
+On a normal ASCII machine, `'a'` is 97, `'A'` is 65, and the letters follow in order. What does `printf("%c %d\n", 'c' - 32, 'c' - 'a');` print?
 
-- [ ] c
-- [x] 99
-- [ ] 97
+- [x] `C 2`
+- [ ] `c 2`
+- [ ] `67 2`
 
-`%d` prints the number. `'a'` is 97, `'b'` is 98, so `'c'` is 99. `%c` would print the letter `c`.
+`'c' - 32` is $99 - 32 = 67$, and `%c` shows 67 as the letter `C`. `'c' - 'a'` is the distance between the letters, 2, and `%d` shows it as a number.
 :::
 
 ## Numbers with a decimal point: float and double
@@ -317,25 +317,21 @@ printf(" is the biggest\n");
 Answer for this course's machines (64-bit Linux).
 
 :::check id=prac-type-widths-q1
-How many bytes do `int a[10]` and `long b[10]` take together? {{=120|80|20}}
+`sizeof(char) + sizeof(short) + sizeof(int) + sizeof(long)` is {{=15|11|10}}.
 
-Ten `int`s are $10 \times 4 = 40$ bytes, and ten `long`s are $10 \times 8 = 80$ bytes: 120 in total.
+$1 + 2 + 4 + 8 = 15$. On 64-bit Linux, `long` is 8 bytes.
 :::
 
 :::check id=prac-type-widths-q2
-When 42 is stored in a bigger type, the extra bits on the left are {{=zeros|ones|part of the byte order}}.
+After `short s = -1; int i = s;`, the line `printf("%X", i);` prints {{=FFFFFFFF|0000FFFF|FFFF}}.
 
-42 is `101010`. A bigger box adds zeros on the left. (A negative number would get ones.)
+A negative number moved into a bigger type gets ones on the left, so its value stays -1. `int` has 32 bits, which is 8 hex digits, and `%X` shows them all.
 :::
 
 :::check id=prac-type-widths-q3
-A program that must work on any computer should use `sizeof` because
+After `unsigned char c = 255; c = c + 1;`, `c` holds {{=0|256|-1}}.
 
-- [x] Sizes other than `char` can be different on different computers
-- [ ] `sizeof` turns a `short` into a `long` while the program runs
-- [ ] Division only works on the result of `sizeof`
-
-`sizeof` tells you the real size on the machine the program runs on. A fixed-size type such as `int32_t` is the other safe choice.
+An `unsigned char` has 8 bits and no sign. 256 needs a ninth bit, so only the low 8 bits are kept, and they are all 0.
 :::
 :::
 
@@ -343,41 +339,41 @@ A program that must work on any computer should use `sizeof` because
 Assume a normal ASCII machine, where `'A'` is 65 and `'a'` is 97.
 
 :::check id=prac-char-values-q1
-`printf("%c\n", 66)` prints {{=B|66|b}}.
+`printf("%c\n", 'b' - 'a' + 'A')` prints {{=B|b|66}}.
 
-`%c` shows the number as a character. 65 is `'A'`, so 66 is `'B'`.
+`'b' - 'a'` is 1. Adding that to `'A'` gives 66, and `%c` shows it as `B`. This is the way to turn a small letter into its capital.
 :::
 
 :::check id=prac-char-values-q2
-`printf("%d\n", 'a' - 'A')` prints {{=32|0|1}}.
+`c` holds a capital letter. Which expression gives the same letter in lowercase? {{=c + ('a' - 'A')|c - ('a' - 'A')|c + 'A'}}
 
-Characters are numbers, so you can subtract them: $97 - 65 = 32$. Every lowercase letter is 32 more than its uppercase partner.
+`'a' - 'A'` is 32, and every lowercase letter is 32 more than its capital. Writing it as a difference is clearer than writing 32.
 :::
 :::
 
 :::problem id=prac-two-divisions title="Integer 7/2 and floating 7.0/2.0" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-two-divisions-q1
-`7 / 2` with two `int`s gives {{=3|3.5|4}}.
+`7 / 2 * 2` with `int`s gives {{=6|7|8}}.
 
-$7 \div 2 = 3.5$, and the fractional part is thrown away. C does not round up to 4.
+C works from left to right. `7 / 2` is 3, because the fraction is thrown away. Then $3 \times 2 = 6$.
 :::
 
 :::check id=prac-two-divisions-q2
-`-7 / 2` with two `int`s gives {{=-3|-4|-3.5}}.
+`-7 % 2` gives {{=-1|1|0}}.
 
-The true answer is $-3.5$. Throwing away the fraction moves toward zero, so the result is $-3$, not $-4$.
+`-7 / 2` is -3, since the fraction is thrown away toward zero. The remainder must make the numbers add up: $-3 \times 2 + (-1) = -7$.
 :::
 
 :::check id=prac-two-divisions-q3
-`7 % 2` gives {{=1|3|0}}.
+`1 / 2 * 4.0` gives {{=0.0|2.0|0.5}}.
 
-$7 = 3 \times 2 + 1$, so the remainder is 1.
+The left part runs first. `1 / 2` has two `int`s, so it gives 0. The `4.0` arrives too late to help: $0 \times 4.0 = 0.0$.
 :::
 
 :::check id=prac-two-divisions-q4
-`7.0 / 2.0` with two `double`s gives {{=3.5|3|4}}.
+`4.0 * 1 / 2` gives {{=2.0|0.0|4.0}}.
 
-With `double`, the fraction is kept.
+The same numbers, in a different order. `4.0 * 1` is the `double` 4.0, so the division has a `double` on one side and keeps its fraction.
 :::
 :::
 
@@ -385,11 +381,11 @@ With `double`, the fraction is kept.
 :::check id=prac-scanf-ampersand-q1
 Someone writes `scanf("%d", n)`, forgetting the `&`. What goes wrong?
 
-- [x] `scanf` receives the value in `n` instead of where `n` is, so it writes to the wrong place
-- [ ] Nothing: `scanf` adds the `&` itself
-- [ ] `scanf` prints `n` instead of reading it
+- [x] `scanf` treats the value in `n` as an address, and writes the number there
+- [ ] `scanf` stores the number in its own copy of `n`, so `n` just stays the same
+- [ ] `scanf` sees that `n` is not an address and returns 0 without writing
 
-`scanf` treats whatever it receives as an address. Without `&`, it gets a number that is not `n`'s address, which is undefined behavior. Compilers usually warn about it.
+`scanf` cannot tell a number from an address. It writes wherever the value of `n` happens to point, which is undefined behavior, and often a crash. Compilers usually warn about it.
 :::
 
 :::check id=prac-scanf-ampersand-q2
@@ -399,9 +395,9 @@ The Enter after `5` is still waiting, and `%c` reads any character, including th
 :::
 
 :::check id=prac-scanf-ampersand-q3
-If the user types `abc` for `scanf("%d", &n)`, the call returns {{=0|1|-1}}.
+For `scanf("%d %d", &a, &b)`, the user types `5 x`. The call returns {{=1|0|2}}.
 
-`scanf` returns how many values it read. `abc` is not a number, so it read none.
+`scanf` returns how many values it stored. `5` went into `a`. `x` is not a number, so `b` keeps its old value, and the `x` stays waiting in the input.
 :::
 :::
 
@@ -409,15 +405,15 @@ If the user types `abc` for `scanf("%d", &n)`, the call returns {{=0|1|-1}}.
 The lesson showed the bits of `3.61f`. Here are the bits of `-3.61f`: `1 10000000 11001110000101000111101`.
 
 :::check id=prac-float-bits-q1
-The three groups are {{=sign, exponent, fraction|the four bytes of the integer 361|padding followed by a decimal}}.
+The 8 exponent bits, read as a plain number, are {{=128|1|127}}.
 
-1 bit of sign, 8 bits of exponent, and 23 bits of fraction: 32 bits in total.
+`10000000` is 128. The real exponent is $128 - 127 = 1$, because `float` stores the exponent with an offset of 127.
 :::
 
 :::check id=prac-float-bits-q2
-Compared with `3.61f`, the only bit that changed is {{=the sign bit|the last fraction bit|the first exponent bit}}.
+Now take `-7.22f`, which is exactly twice `-3.61f`. Which bits change? {{=only the exponent, which grows by 1|only the fraction|the sign and the exponent}}
 
-$3.61$ and $-3.61$ have the same size, so the exponent and fraction are the same. Only the first bit, the sign, flips from 0 to 1.
+Doubling means multiplying by $2^1$, so $1.805 \times 2^1$ becomes $1.805 \times 2^2$. The sign and the $1.805$ stay the same.
 :::
 :::
 

@@ -133,13 +133,13 @@ If both checks pass, the whole word was a number. For `./a.out Omer 2 3` the pro
 (A fully careful program would also catch numbers too big to fit in a `long`, using a variable called `errno`. You do not need that yet.)
 
 :::check id=chk-argv0
-You start a program by typing `./calc 7`. What is `argc`?
+You start a program by typing `./calc 7 8`. Which expression gives the number 15?
 
-- [ ] 1
-- [x] 2
-- [ ] 7
+- [x] `atoi(argv[1]) + atoi(argv[2])`
+- [ ] `argv[1] + argv[2]`
+- [ ] `atoi(argv[0]) + atoi(argv[1])`
 
-There are two words: `./calc` (in `argv[0]`) and `7` (in `argv[1]`). `argc` counts words, not the number typed.
+`argv[0]` is `./calc`, so the numbers are in `argv[1]` and `argv[2]`. Each is text, so it must be turned into a number first. Adding the two `char *` values directly does not even compile.
 :::
 
 ## Practice
@@ -148,41 +148,41 @@ There are two words: `./calc` (in `argv[0]`) and `7` (in `argv[1]`). `argc` coun
 A new command: `./avg 10 20 30 40`.
 
 :::check id=prac-argc-count-q1
-`argc` is {{=5|4|6}}.
+`for (int i = 1; i < argc; i++)` runs its body {{=4|5|3}} times.
 
-Five words, counting the program name. The `NULL` at the end is not counted.
+`argc` is 5, so `i` goes 1, 2, 3, 4. The loop starts at 1 to skip the program's name.
 :::
 
 :::check id=prac-argc-count-q2
-`argv[4]` points to {{=40|30|nothing, it is NULL}}.
+`argv[argc - 1]` points to {{="40"|"30"|NULL}}.
 
-`argv[0]` is `./avg`, so the numbers are in `argv[1]` to `argv[4]`. The last one, `"40"`, is `argv[4]`.
+`argc - 1` is 4, and `argv[4]` is the last word. `argv[argc]` is the `NULL` that marks the end.
 :::
 
 :::check id=prac-argc-count-q3
-`argv[5]` is {{=a null pointer|40|out of range and must not be read}}.
+`argv[2][1]` is {{=the character '0'|the character '2'|the number 20}}.
 
-`argv[argc]`, here `argv[5]`, is always `NULL`. It marks the end, and it is safe to read.
+`argv[2]` is the text `"20"`. Index 1 of that text is its second character, `'0'`.
 :::
 :::
 
 :::problem id=prac-atoi-role title="From the string 2 to the integer 2" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
 :::check id=prac-atoi-role-q1
-`atoi("12abc")` returns {{=12|0|an error code}}.
+`atoi("abc12")` returns {{=0|12|an error code}}.
 
-`atoi` reads digits until it meets something that is not a digit, and quietly ignores the rest. It never tells you the text was not a clean number. `strtol` would stop at `a`, so the `*end != '\0'` check catches it.
+`atoi` stops at the first thing that is not part of a number. Here that is the very first letter, so it has read nothing and returns 0. It cannot report an error.
 :::
 
 :::check id=prac-atoi-role-q2
-To use `atoi` and `strtol`, include {{=stdlib.h|stdio.h|string.h}}.
+`atoi("-7.9")` returns {{=-7|-8|0}}.
 
-`stdlib.h` ("standard library") has both. `stdio.h` is for `printf` and `scanf`.
+`atoi` reads an optional sign and then digits, and stops at the `.`. It does not round, because it never looks at the 9.
 :::
 
 :::check id=prac-atoi-role-q3
-If `argc` is not 4, the program above {{=returns 1 before printing|prints the greeting and a sum anyway|converts argv[0] as an integer}}.
+After `char *end; long v = strtol("42x", &end, 10);`, the value of `*end` is {{='x'|'\0'|'4'}}.
 
-It checks `argc` first, before printing or converting anything. A bad number also makes it return 1.
+`strtol` sets `end` to the first character it did not use. A clean number would leave `end` on the `'\0'`, which is why the check is `*end != '\0'`.
 :::
 :::
 
@@ -190,15 +190,15 @@ It checks `argc` first, before printing or converting anything. A bad number als
 A new command: `./p hello 42`. As in the lesson's picture, the words are stored one right after another; say `"./p"` starts at address 200.
 
 :::check id=prac-argv-shape-q1
-`"hello"` starts at address {{=204|203|205}}.
+`"42"` starts at address {{=210|209|206}}.
 
-`"./p"` is 3 characters plus `'\0'`: 4 bytes, so the next word starts at $200 + 4 = 204$.
+`"./p"` takes 4 bytes with its `'\0'`, so `"hello"` starts at 204. `"hello"` takes 6 bytes, so the next word starts at 210.
 :::
 
 :::check id=prac-argv-shape-q2
-`"42"` starts at address {{=210|209|206}}.
+`argv[2] - argv[1]` is {{=6|1|5}}.
 
-`"hello"` is 5 characters plus `'\0'`: 6 bytes, so $204 + 6 = 210$.
+These are `char *` values, so the difference counts bytes between the two words: $210 - 204 = 6$. That is the 5 letters of `hello` and its `'\0'`.
 :::
 
 :::check id=prac-argv-shape-q3

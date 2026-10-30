@@ -203,9 +203,9 @@ Without `typedef`, the same `get_printer` is written `void (*get_printer(int mod
 
 :::problem id=prac-read-declaration title="Reading a function pointer type" source="Lecture 2 - Memory management.pptx" kind=exercise solution_origin=derived
 :::check id=prac-read-declaration-q1
-`double (*g)(double);` makes `g` a pointer to a function that receives {{=one double|two doubles|nothing}}.
+`int *(*g)(double);` makes `g` a pointer to a function that receives a `double` and returns {{=a pointer to an int|an int|a pointer to a function}}.
 
-The parentheses on the right list what the function receives: one `double`.
+Read from the name outward. `(*g)` says `g` is a pointer, `(double)` says it points to a function with that input, and what is left, `int *`, is what the function returns.
 :::
 
 :::check id=prac-read-declaration-q2
@@ -220,19 +220,19 @@ The function gets two `int`s and returns an `int`, so the pointer type is `int (
 :::
 
 :::problem id=prac-apply-output title="What apply prints" source="Lecture 2 - Memory management.pptx" kind=exercise solution_origin=derived
-Using `apply`, `sqr`, and `print` from this lesson:
+Using `apply`, `sqr`, and `print` from this lesson, where `print` shows one element and a space:
 
 ```c
 int A[] = {2, 3};
-apply(A, 2, sqr);
+apply(A, 2, print);
 apply(A, 2, sqr);
 apply(A, 2, print);
 ```
 
 :::check id=prac-apply-output-q1
-The program prints {{=16 81|4 9|2 3}}.
+The program prints {{=2 3 4 9|2 3 16 81|4 9 4 9}}.
 
-Each `apply(A, 2, sqr)` squares both elements. After the first, `A` is {4, 9}; after the second, {16, 81}. Then `print` shows them.
+Each call runs when its line is reached. The first `print` shows the values as they start. `sqr` then changes the array once, so the second `print` shows {4, 9}.
 :::
 :::
 
@@ -240,19 +240,19 @@ Each `apply(A, 2, sqr)` squares both elements. After the first, `A` is {4, 9}; a
 In the menu program, `A` holds `{add, sub, mul}`, `a` is 15, and `b` is 10.
 
 :::check id=prac-menu-index-q1
-Typing 2 prints {{=15*10=150|15-10=5|15+10=25}}.
+The line `A[1](b, a);` prints {{=10-15=-5|15-10=5|15*10=150}}.
 
-Index 2 is the third element of `A`, which is `mul`.
+Index 1 is `sub`, the second element. The arguments are given as `b, a`, so inside `sub` the first number is 10 and the second is 15.
 :::
 
 :::check id=prac-menu-index-q2
 Why does the program check `c >= 0 && c <= 2` before calling `A[c](a, b)`?
 
-- [x] `A` has only three elements, so any other index reads a garbage address and "calls" it
-- [ ] `scanf` cannot read numbers bigger than 2
-- [ ] Function pointers only work with small indexes
+- [x] Any other index reads whatever bytes are there, and then jumps to them as if they were a function
+- [ ] The compiler made `A` for indexes 0 to 2, so other indexes give a compile error
+- [ ] Any other index reads a null pointer, which stops the program with a clear message
 
-C does not check array bounds. `A[5]` would read whatever bytes lie after the array and jump there as if it were a function, which is undefined behavior.
+C does not check array bounds, and `c` is known only when the program runs. `A[5]` would read past the array and jump there, which is undefined behavior.
 :::
 :::
 

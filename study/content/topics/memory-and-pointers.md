@@ -31,13 +31,13 @@ Addresses are usually written in **hexadecimal** (base 16), with a `0x` in front
 Two small notes for later: on the 64-bit machines in this course, an address is 8 bytes long. And the addresses your program sees are not the physical positions on the memory chip; the operating system translates them. For now, just think of them as house numbers.
 
 :::check id=chk-byte place=text
-In this course's diagrams, a byte is drawn as its 8 bits in a row. Which bit is drawn on the left?
+A byte holds the bits `10000001`, with the bit worth the most on the left. As a number with no sign, what is its value?
 
-- [ ] The least significant (lowest-value) bit
-- [x] The most significant (highest-value) bit
-- [ ] The sign bit of a C `int`
+- [x] 129
+- [ ] 3
+- [ ] 65
 
-The bit worth the most (bit 7, worth 128) is drawn on the left, just as we write the biggest digit of a decimal number first.
+The left bit is worth 128 and the right bit is worth 1, so the value is 129. Each bit is worth twice the one on its right.
 :::
 
 ## Every variable has a value and an address
@@ -210,61 +210,57 @@ Thinking `p + 1` moves one byte. For an `int *`, it moves one whole `int`: 4 byt
 A new pair: `int n = 7;` and `int *q = &n;`. In this example, `n` lives at `0x3000` and `q` lives at `0x3008`.
 
 :::check id=prac-value-and-address-q1
-`q` holds {{=0x3000|0x3008|7}}.
+`&q` is {{=0x3008|0x3000|7}}.
 
-`q` was given `&n`, the address of `n`. Where `q` itself lives (`0x3008`) is a different thing.
+`q` holds `0x3000`, but `&q` asks where `q` itself lives, which is `0x3008`.
 :::
 
 :::check id=prac-value-and-address-q2
-After `*q = *q + 1;`, the value of `n` is {{=8|7|0x3001}}.
+After `int m = *q; m = 9;`, the value of `n` is {{=7|9|0x3000}}.
 
-`*q` is the box `n`. The line reads 7 from it, adds 1, and stores 8 back into the same box.
+`int m = *q;` copies the value 7 into a new box. Changing `m` does not touch `n`.
 :::
 
 :::check id=prac-value-and-address-q3
-After `q = q + 1;` (no star), which is true?
+After `q = q + 1;` (no star), `q` holds {{=0x3004|0x3001|0x3008}}, and `n` is still 7.
 
-- [x] `n` is still 7; `q` now holds the address just after `n`
-- [ ] `n` becomes 8
-- [ ] `q` now holds the value 8
-
-Without the star you change the pointer, not the box it points to. `n` is untouched.
+Adding 1 to an `int *` moves one `int`, which is 4 bytes. The value in `n` is untouched, because no star was used.
 :::
 :::
 
 :::problem id=prac-pointer-step title="How far d + 1 moves" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=derived
-A different array: `double d[3] = {1.5, 2.5, 3.5};`, with `d[0]` at `0x2000`. Each `double` is 8 bytes.
+A different array: `double d[3] = {1.5, 4.5, 8.5};`, with `d[0]` at `0x2000`. Each `double` is 8 bytes.
 
 :::check id=prac-pointer-step-q1
-`d + 1` is {{=0x2008|0x2001|0x2004}}.
-
-Adding 1 moves one `double`, which is 8 bytes.
-:::
-
-:::check id=prac-pointer-step-q2
-`d + 2` is {{=0x2010|0x2002|0x2016}}.
+`d + 2` is {{=0x2010|0x2016|0x2002}}.
 
 Two `double`s is 16 bytes. 16 in hex is `0x10`, so `0x2000 + 0x10 = 0x2010`.
 :::
 
-:::check id=prac-pointer-step-q3
-`*(d + 2)` is {{=3.5|2.5|0x2010}}.
+:::check id=prac-pointer-step-q2
+`*d + 2` is {{=3.5|8.5|0x2010}}.
 
-`d + 2` is the address of `d[2]`, and the star takes the value stored there.
+The star comes first: `*d` is `d[0]`, which is 1.5. Then 2 is added. To reach `d[2]` you need the parentheses: `*(d + 2)`.
+:::
+
+:::check id=prac-pointer-step-q3
+`*(d + 3)` is {{=a read past the end of the array, so anything can happen|0.0, because the missing element reads as zero|a compile error, because d has only 3 elements}}.
+
+`d + 3` is the spot just after the array. C does not check it, and the compiler usually accepts it. Reading there is undefined behavior.
 :::
 :::
 
 :::problem id=prac-array-formula title="The subscript formula" source="Lecture 1 - Introduction.pdf" kind=exercise solution_origin=source
 :::check id=prac-array-formula-q1
-C defines `a[i]` to mean {{=*(a + i)|*a + i|&(a + i)}}.
+C defines `a[i]` as `*(a + i)`, and `a + 2` is the same as `2 + a`. So `2[a]` is {{=the same element as a[2]|a compile error|the address of a[2]}}.
 
-Move `i` elements from the start (`a + i`), then take the value there (`*`).
+It looks wrong, but it follows from the formula: `2[a]` means `*(2 + a)`, which is `*(a + 2)`. No one should write it, but it shows that `[]` is only short for adding and following.
 :::
 
 :::check id=prac-array-formula-q2
-For `int a[4] = {10, 20, 30, 40}`, what is `*a + 1`? {{=11|20|0x1004}}
+For `int a[4] = {10, 20, 30, 40}`, what is `*(a + 1) + 1`? {{=21|30|11}}
 
-The star comes first: `*a` is `a[0]`, which is 10, and then 1 is added. To get the next element you need the parentheses: `*(a + 1)` is 20.
+Inside the parentheses, `a + 1` moves to `a[1]`, and the star takes its value, 20. The last `+ 1` adds to that value, not to the address.
 :::
 :::
 
@@ -286,19 +282,15 @@ int main(void) {
 ```
 
 :::check id=prac-first-program-roles-q1
-The program prints {{=14|0|8}}.
+If the `printf` line moves to before `add(3);`, the program prints {{=0|garbage|14}}.
 
-`total` is a global, so it starts at 0 and keeps its value between calls: $0 + 6 + 8 = 14$.
+No `add` has run yet, and a global with no starting value starts at 0. Only locals start with garbage.
 :::
 
 :::check id=prac-first-program-roles-q2
-Can `main` use `doubled`?
+As written, how many separate boxes named `doubled` are made during the run? {{=2|1|0}}
 
-- [ ] Yes, every variable can be used anywhere in the file
-- [x] No, `doubled` is written inside `add`, so only code inside `add` can use it
-- [ ] Only after `add` has been called once
-
-`doubled` is a local variable of `add`. It is created each time `add` starts and destroyed when `add` returns.
+`doubled` is local to `add`. A new one is made on each call and destroyed when that call returns, and `add` is called twice.
 :::
 :::
 
