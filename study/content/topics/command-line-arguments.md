@@ -11,7 +11,7 @@ When you run a program from the terminal, you can type extra words after its nam
 ./sum 3 4
 ```
 
-Here `./sum` runs the program, and `3` and `4` are **command-line arguments**: input you hand the program before it starts. This lesson shows how a C program receives those words, and how to turn a word like `"3"` into the number 3. It uses everything from this lecture: pointers, arrays, strings, and the process's memory.
+Here `./sum` runs the program, and `3` and `4` are **command-line arguments**: input you hand the program before it starts. This lesson shows how a C program receives those words, and how to turn a word like `"3"` into the number 3. It uses everything so far: pointers, arrays, strings, and the process's memory.
 
 ## Receiving the arguments: argc and argv
 
@@ -85,7 +85,7 @@ Hi Omer
 
 ### The simple way: atoi
 
-The lecture uses `atoi` ("ASCII to integer") from `<stdlib.h>`:
+The simplest tool is `atoi` ("ASCII to integer") from `<stdlib.h>`:
 
 ```c
 int x = atoi(argv[2]);   /* "2" becomes 2 */

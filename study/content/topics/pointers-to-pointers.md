@@ -144,7 +144,7 @@ int main(void) {
 - Inside the function, `*pp` *is* the caller's `p`. Writing `*pp = b;` makes `p` hold the address of `b`.
 - Back in `main`, `*p` follows that address and prints 3.
 
-You will use exactly this pattern later in the lecture, when a function hands back memory it asked for.
+You will use exactly this pattern later, when a function hands back memory it asked for.
 
 :::check id=chk-change-callers-pointer place=text
 The function is `void point_at_smaller(int **pp, int *a, int *b)`. `main` has its own pointer `p` and calls `point_at_smaller(&p, &a, &b);`.

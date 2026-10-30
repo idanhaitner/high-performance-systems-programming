@@ -164,7 +164,7 @@ export function LectureIndex({ courseId, lectures, later }: { courseId: string; 
             {lecture.sessionId && (
               <>
                 <p className="deck-step">
-                  <span aria-hidden="true">2</span> Then, practice the whole lecture
+                  <span aria-hidden="true">2</span> Then, do the practice
                 </p>
                 <Link className="deck-practice" href={`/sessions/${lecture.sessionId}/`}>
                   <strong>Lecture {lecture.number} practice</strong>

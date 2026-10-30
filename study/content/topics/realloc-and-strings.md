@@ -5,7 +5,7 @@ sources:
   - "Lecture 2 - Memory management.pptx"
 ---
 
-In the last lesson you asked for a block with `malloc` and gave it back with `free`. This lesson does two more things with the heap. First, it **grows** a block that turned out too small, with `realloc`. Second, it solves a classic problem from the lecture: storing several names of different lengths, using exactly as much memory as they need. On the way you meet `fgets`, reuse `strlen` and `strcpy` from [Working with strings](topic:strings), and put pointers to pointers from the first lesson to real use.
+In the last lesson you asked for a block with `malloc` and gave it back with `free`. This lesson does two more things with the heap. First, it **grows** a block that turned out too small, with `realloc`. Second, it solves a classic problem: storing several names of different lengths, using exactly as much memory as they need. On the way you meet `fgets`, reuse `strlen` and `strcpy` from [Working with strings](topic:strings), and put pointers to pointers from the first lesson to real use.
 
 ## Growing a block with realloc
 
@@ -53,7 +53,7 @@ Keeping the old pointer after `realloc` and using it. If the block moved, the ol
 
 ## The names problem
 
-Here is the problem from the lecture. We want to read **3 names**. Names have different lengths, and the longest possible name is 10 characters. The program must use **exactly** as much memory as the names need.
+Here is the problem. We want to read **3 names**. Names have different lengths, and the longest possible name is 10 characters. The program must use **exactly** as much memory as the names need.
 
 The first idea is a 2D array, a table of 3 rows with room for 10 letters plus the end marker in each:
 
@@ -61,7 +61,7 @@ The first idea is a 2D array, a table of 3 rows with room for 10 letters plus th
 char A[3][11];
 ```
 
-But "Mili" uses only 5 of its 11 bytes (4 letters and the `'\0'` that ends every string). Every short name wastes the rest of its row. The lecture calls this unacceptable.
+But "Mili" uses only 5 of its 11 bytes (4 letters and the `'\0'` that ends every string). Every short name wastes the rest of its row. That waste is what we want to avoid.
 
 The better idea: keep an array of **pointers**, one per name, and give each name its own heap block of exactly the right size.
 
@@ -111,13 +111,13 @@ int main(void) {
 Line by line:
 
 - `char *A[3];` is an array of 3 pointers to `char`. Each will hold the address of one name.
-- `name` is a temporary reading space. The longest name is 10 letters, plus the `'\n'` that `fgets` keeps, plus the `'\0'`, so it needs 12 bytes. (The slides use 11. With 11, a 10-letter name leaves its newline unread, and the next `fgets` reads just that newline as an empty name.)
+- `name` is a temporary reading space. The longest name is 10 letters, plus the `'\n'` that `fgets` keeps, plus the `'\0'`, so it needs 12 bytes. (Why not 11? With 11, a 10-letter name leaves its newline unread, and the next `fgets` reads just that newline as an empty name.)
 - `strcspn(name, "\n")` gives the position of the first `'\n'` in `name` (or the end, if there is none). Storing `'\0'` there cuts the newline off, so it is not stored as part of the name.
 - `malloc(strlen(name) + 1)` reserves exactly the letters plus the end marker. For "Mili" that is 5 bytes. We do not multiply by `sizeof(char)`, because a `char` is always exactly 1 byte.
 - `strcpy(A[i], name)` copies the name into its new block. We need a copy, because `name` is reused for the next name.
 - At the end, each block gets its own `free`.
 
-The slides reserve the reading space with `malloc(11)` and free it at the end. A plain local array works just as well here, because its size is known when you write the code.
+You could also reserve the reading space with `malloc(12)` and free it at the end. A plain local array is simpler here, because its size is known when you write the code.
 
 ## Step 2: any number of names
 
@@ -207,4 +207,4 @@ If `realloc` had to move the block, it already freed the old one. Use only the r
 :::
 :::
 
-**Next:** [Stack or heap?](topic:stack-or-heap) puts the whole lecture together: when to reserve memory on the heap, when a plain local array is the better choice, and how a function can hand back an array it made.
+**Next:** [Stack or heap?](topic:stack-or-heap) puts all of this together: when to reserve memory on the heap, when a plain local array is the better choice, and how a function can hand back an array it made.

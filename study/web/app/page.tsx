@@ -40,7 +40,7 @@ const STEPS = [
   },
   {
     tone: "coral",
-    title: "Then do the lecture's practice",
+    title: "Then do the practice",
     body: "When you finish a lecture's lessons, its practice makes you use them, one step at a time: a new question, then C code you write and run right in the page. It ends with a lab you open in VS Code, a free code editor.",
   },
   {
@@ -52,7 +52,7 @@ const STEPS = [
 
 const BENEFITS = [
   { title: "Made for a first read", body: "You do not need to know C, bits, or memory yet. The lessons start from zero and build up in order." },
-  { title: "Follows your lectures", body: "Lessons follow the course lecture by lecture, with the same words and the same examples, so nothing is a surprise in class." },
+  { title: "Follows the course", body: "Lessons cover the course in order, with the same terms and the same examples, so each new idea builds on the last." },
   { title: "Code without setup", body: "The editor sends your code to Compiler Explorer, a free website that turns C into a program and runs it. You can run C from any browser without installing anything." },
   { title: "Your place is saved", body: "Solved checks and your last lesson stay in this browser. There is no account to make and nothing to sign in to." },
 ];

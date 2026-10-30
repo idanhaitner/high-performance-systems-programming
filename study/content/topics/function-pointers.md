@@ -50,7 +50,7 @@ Then:
 - `pf(4, 5)` calls the function that `pf` points to, with 4 and 5. It prints 9.
 - `(*pf)(4, 5)` does the same. You may follow the pointer with a star first, but C allows the shorter form, and most code uses it.
 
-The lecture's slides write `void main()`. Standard C wants `int main(void)` and a `return 0;` at the end, so the code on this site uses that form.
+You may see `void main()` in older code. Standard C wants `int main(void)` and a `return 0;` at the end, so the code on this site uses that form.
 
 :::trap
 Dropping the parentheses around `*pf`. `int *pf(int, int);` declares a **function** named `pf` that returns an `int *`, not a pointer to a function. The parentheses in `int (*pf)(int, int);` are what make `pf` a pointer.
@@ -256,4 +256,4 @@ C does not check array bounds. `A[5]` would read whatever bytes lie after the ar
 :::
 :::
 
-**Next:** [Memory on request: malloc and free](topic:malloc-and-free) leaves function pointers behind and turns to the main topic of the lecture: asking for memory while the program runs, and giving it back.
+**Next:** [Memory on request: malloc and free](topic:malloc-and-free) leaves function pointers behind and turns to the main topic of Lecture 2: asking for memory while the program runs, and giving it back.

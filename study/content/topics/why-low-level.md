@@ -17,7 +17,7 @@ All three have the same cause: a computer is a physical machine with limits. Num
 
 ![The course proceeds from C to memory, cache and the CPU, multicore execution, and the GPU.](../assets/figures/course-path.svg)
 
-The picture above is the road map of the whole course. We start with C and memory (this lecture), then move on to the cache, the processor (CPU), machines with many processors (multicore), and graphics cards (GPU).
+The picture above is the road map of the whole course. We start with C and memory, then move on to the cache, the processor (CPU), machines with many processors (multicore), and graphics cards (GPU).
 
 ## Nothing is free: every convenience is real work
 
@@ -76,7 +76,7 @@ Computers use a scheme called **two's complement** for negative numbers. You onl
 
 Take a smaller example first, with 8-bit numbers (range $-128$ to $127$). Compute $100 + 100 = 200$. The number 200 does not fit. In binary, 200 is `11001000`, and its leftmost bit is 1, so if we read those 8 bits as a signed number we get $-56$. The real answer "overflowed" its box.
 
-The lecture's example is the same thing with bigger numbers. Take $x = 1\,410\,065\,407$, which fits in an `int`. The true square is:
+Here is the same thing with bigger numbers. Take $x = 1\,410\,065\,407$, which fits in an `int`. The true square is:
 
 $$1410065407 \times 1410065407 = 1\,988\,284\,452\,018\,075\,649$$
 
@@ -208,13 +208,13 @@ Comparing the loops by counting the copies. All three do exactly the same number
 
 The three surprises each point at a layer of the machine that affects speed. The course goes through five such layers, one after another:
 
-1. **How data is stored** (sizes of numbers, layout of arrays and records) — this lecture
+1. **How data is stored** (sizes of numbers, layout of arrays and records) — where we start
 2. **Memory and the cache** — why nearby data is faster
 3. **How the processor runs instructions**
 4. **Many processors working together** (multicore)
 5. **Graphics cards** (GPUs), which run thousands of small tasks at once
 
-This lecture covers the first layer, plus a picture of how a running program's memory is organized, which we need for the second layer.
+We begin with the first layer, plus a picture of how a running program's memory is organized, which we need for the second layer.
 
 **Tools you will use:** Linux (the operating system), GCC (the C compiler), GDB (a debugger that lets you pause a program and look inside), and any text editor. **Reference book:** *Computer Systems: A Programmer's Perspective*, Bryant and O'Hallaron, 3rd edition (2016).
 

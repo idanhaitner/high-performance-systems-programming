@@ -90,7 +90,7 @@ The heap is not always better. The stack has real advantages:
 - **It is automatic.** Local memory is released by itself when the function ends. You cannot forget.
 - **No leaks.** Because nothing needs a `free`, nothing can leak.
 
-So the rule of thumb from the lecture:
+So the rule of thumb is:
 
 | Use the stack (a local array) when | Use the heap (`malloc`) when |
 | --- | --- |
@@ -104,7 +104,7 @@ Returning the address of a local array, or of any local variable. The memory is 
 
 ## Putting it together: initialize
 
-The lecture ends with this task. Write `int *initialize(int n, int x)`: it receives `n` and `x`, and returns a new array of `n` `int`s filled with `x`, `x + 1`, `x + 2`, and so on.
+Here is one last task. Write `int *initialize(int n, int x)`: it receives `n` and `x`, and returns a new array of `n` `int`s filled with `x`, `x + 1`, `x + 2`, and so on.
 
 ```c
 #include <stdio.h>

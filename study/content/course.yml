@@ -5,7 +5,7 @@ dir: ltr
 summary: >
   Why some programs run fast and others run slow, explained from the ground up.
   We start with how a computer stores numbers and text in memory, learn just
-  enough C to see that directly, and then build up, lecture by lecture, to
+  enough C to see that directly, and then build up, step by step, to
   caches, the processor, many-core machines, and graphics cards. No prior C or
   systems knowledge is assumed. Each lesson has short explanations and practice
   questions.
