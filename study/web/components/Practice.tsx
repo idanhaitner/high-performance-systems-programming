@@ -22,7 +22,9 @@ export function PracticeCard({ id, courseId, kind, summary, statement, hints, so
   const [open, setOpen] = useState(worked);
   // True once the student opens the card, so worked examples shown at load do not animate.
   const [fresh, setFresh] = useState(false);
+  // How many hints are revealed, and whether they are on screen. Closing keeps the count, so reopening does not start over.
   const [openHints, setOpenHints] = useState(0);
+  const [hintsOpen, setHintsOpen] = useState(false);
   const [showSolution, setShowSolution] = useState(worked);
   const [solved, setSolved] = useState(false);
   const [results, setResults] = useState<Record<string, boolean>>({});
@@ -71,12 +73,13 @@ export function PracticeCard({ id, courseId, kind, summary, statement, hints, so
     writeProgress(courseId, { ...progress, solved: next });
   }
 
-  const hintLabel =
-    openHints === 0
-      ? `Show hint (1 of ${hints.length})`
-      : openHints < hints.length
-        ? `Next hint (${openHints + 1} of ${hints.length})`
-        : "Hints are open";
+  const hintNoun = hints.length > 1 ? "hints" : "hint";
+  const hintToggle = hintsOpen ? `Hide ${hintNoun}` : openHints > 0 ? `Show ${hintNoun}` : "Show hint";
+
+  function toggleHints() {
+    setOpenHints((count) => Math.max(count, 1));
+    setHintsOpen((isOpen) => !isOpen);
+  }
 
   if (!worked && !open) {
     return (
@@ -112,7 +115,21 @@ export function PracticeCard({ id, courseId, kind, summary, statement, hints, so
       </header>
       <h3 className="practice-title"><Mixed text={summary} /></h3>
       <div className="statement">{statement}</div>
-      {hints.slice(0, openHints).map((hint, index) => (
+      {!quiz && (hints.length > 0 || solution) && !worked && (
+        <div className="actions">
+          {hints.length > 0 && (
+            <button type="button" className="btn-help" onClick={toggleHints} aria-expanded={hintsOpen}>
+              {hintToggle}
+            </button>
+          )}
+          {solution && (
+            <button type="button" className="btn-quiet" onClick={() => setShowSolution((open) => !open)} aria-expanded={showSolution}>
+              {showSolution ? "Hide solution" : "Show solution"}
+            </button>
+          )}
+        </div>
+      )}
+      {hintsOpen && hints.slice(0, openHints).map((hint, index) => (
         <div className="reveal" key={index}>
           <div className="hint">
             <p className="kicker">Hint {index + 1} of {hints.length}</p>
@@ -120,18 +137,11 @@ export function PracticeCard({ id, courseId, kind, summary, statement, hints, so
           </div>
         </div>
       ))}
-      {!quiz && (hints.length > 0 || solution) && !worked && (
-        <div className="actions">
-          {hints.length > 0 && (
-            <button type="button" onClick={() => setOpenHints((count) => Math.min(hints.length, count + 1))} disabled={openHints >= hints.length}>
-              {hintLabel}
-            </button>
-          )}
-          {solution && (
-            <button type="button" onClick={() => setShowSolution((open) => !open)} aria-expanded={showSolution}>
-              {showSolution ? "Hide solution" : "Show solution"}
-            </button>
-          )}
+      {hintsOpen && openHints < hints.length && (
+        <div className="reveal">
+          <button type="button" className="btn-help" onClick={() => setOpenHints((count) => count + 1)}>
+            Next hint ({openHints + 1} of {hints.length})
+          </button>
         </div>
       )}
       {!quiz && solution && showSolution && (
