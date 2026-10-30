@@ -22,7 +22,7 @@ body:has(.landing) .reading-progress { display: none; }
   display: flex;
   align-items: center;
   gap: 24px;
-  padding: 8px 8px 8px 16px;
+  padding: 6px 6px 6px 16px;
   border-radius: 9999px;
   background: color-mix(in oklch, var(--card-solid) 80%, transparent);
   -webkit-backdrop-filter: blur(16px);
@@ -65,7 +65,7 @@ body:has(.landing) .reading-progress { display: none; }
 .landing-cta {
   display: inline-flex;
   align-items: center;
-  padding: 8px 12px;
+  padding: 12px 22px;
   border-radius: 9999px;
   border: 2px solid var(--edge);
   background: var(--accent);
@@ -74,12 +74,16 @@ body:has(.landing) .reading-progress { display: none; }
   line-height: 1.5rem;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease);
+  box-shadow: var(--lift-sm);
+  transition: transform 0.16s var(--ease), box-shadow 0.16s var(--ease), background-color 0.16s var(--ease);
 }
-.landing-cta:active { transform: scale(0.97); box-shadow: none; transition-duration: 0.1s; }
+/* A key on the card: pressing pushes it down onto its own shadow. */
+.landing-cta:active { transform: translate(2px, 2px); box-shadow: none; transition-duration: 0.1s; }
 .deck-grid a:active { transform: scale(0.98); box-shadow: none; transition-duration: 0.1s; }
-.landing-cta-small { font-size: 0.875rem; line-height: 1.25rem; }
-.cta-arrow { display: inline-block; margin-inline-start: 8px; transition: transform 0.3s var(--ease-spring); }
+/* Inside the outlined nav bar: no outline or shadow of its own, so the two pills do not double up. */
+.landing-cta-small { padding: 10px 18px; border: 0; box-shadow: none; font-size: 0.875rem; line-height: 1.25rem; }
+.landing-cta-small:active { transform: scale(0.97); }
+.cta-arrow { display: inline-block; margin-inline-start: 10px; transition: transform 0.3s var(--ease-spring); }
 [dir="rtl"] .cta-arrow { rotate: 180deg; }
 
 .landing-toggle { display: none; width: 44px; min-height: 44px; height: 44px; padding: 0; border-radius: 9999px; place-items: center; }
@@ -170,7 +174,8 @@ body:has(.landing) .reading-progress { display: none; }
 .fan a:focus-visible { transform: translateY(-24px) scale(1.04); outline: none; box-shadow: 0 0 0 4px var(--accent); }
 @media (hover: hover) and (pointer: fine) {
   .fan a:hover { transform: translateY(-24px) scale(1.04); box-shadow: 6px 6px 0 var(--edge); }
-  .landing-cta:hover:not(:active) { transform: translate(-2px, -2px); box-shadow: 2px 2px 0 var(--edge); }
+  .landing-cta:hover:not(:active, .landing-cta-small) { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--edge); }
+  .landing-cta-small:hover { background: color-mix(in oklch, var(--accent) 86%, var(--ink)); }
   .landing-cta:hover .cta-arrow { transform: translateX(4px); }
   [dir="rtl"] .landing-cta:hover .cta-arrow { transform: translateX(-4px); }
   .how-card:hover { translate: 0 -8px; }

@@ -444,12 +444,51 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 
 /* ---------- Lesson parts ---------- */
 
-.toc { margin: 32px 0 8px; padding: 20px 24px; border-radius: var(--r-card); background: var(--accent-soft); }
-.toc .kicker { margin-bottom: 8px; }
-.page ol.toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 2px 16px; margin: 0; padding: 0; list-style: none; }
-.toc-list a { display: flex; align-items: baseline; gap: 10px; padding: 6px 8px; margin-inline: -8px; border-radius: 10px; color: var(--ink); font-size: 0.9375rem; line-height: 1.35; text-decoration: none; }
-.toc-list a:hover { background: var(--card-solid); }
-.toc-num { flex: none; font-size: 0.8125rem; font-weight: 700; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+/* An index card: one column, so the parts read top to bottom in order. Inner radius = card radius - border - padding. */
+.toc { margin: 32px 0 8px; padding: 8px; border: 2px solid var(--edge); border-radius: var(--r-card); background: var(--card-solid); }
+.toc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 10px 12px 8px; }
+.toc .kicker { margin: 0; }
+.toc-count { font-size: 0.8125rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.page ol.toc-list { display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0; list-style: none; }
+.toc-list a {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  text-decoration: none;
+  transition: background-color 0.12s var(--ease), transform 0.12s var(--ease);
+}
+.toc-list a:active { transform: scale(0.985); }
+.toc-list a:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.toc-num {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--edge);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.12s var(--ease), color 0.12s var(--ease);
+}
+.toc-title { text-wrap: pretty; }
+.toc-go { color: var(--accent-ink); font-weight: 700; opacity: 0; transform: translateY(-4px); transition: opacity 0.16s var(--ease), transform 0.16s var(--ease); }
+.toc-list a:focus-visible .toc-go { opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .toc-list a:hover { background: var(--accent-soft); }
+  .toc-list a:hover .toc-num { background: var(--accent); color: var(--on-accent); }
+  .toc-list a:hover .toc-go { opacity: 1; transform: none; }
+}
+/* No hover on touch screens, so give the arrow's space back to the title. */
+@media (hover: none) { .toc-go { display: none; } }
 .lesson-section, .practice, .formal, .check, .glossary-card { scroll-margin-top: calc(var(--bar-h) + 24px); }
 
 .card, .formal, .callout {
@@ -843,7 +882,7 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
   html { scroll-behavior: auto; }
   /* Keep colour and fade changes, drop movement. */
   *, *::before, *::after { animation: none !important; transition-property: color, background-color, border-color, opacity !important; }
-  .formal, .choices label.is-picked, .rail-deck span, .rail-deck strong { transform: none; }
+  .formal, .choices label.is-picked, .rail-deck span, .rail-deck strong, .toc-list a:active, .toc-go, .toc-list a:hover .toc-go { transform: none; }
   button:hover:not(:disabled), .chapter-hop:hover, button:active:not(:disabled), .chapter-hop:active { transform: none; }
 }
 
@@ -907,7 +946,6 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
   .choices label.is-picked { transform: translate(-2px, -2px); box-shadow: var(--lift-sm); }
   .fold-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 2px; padding: 12px 16px; }
   .fold-row .kicker { grid-column: 1 / -1; }
-  .toc { padding: 16px; }
   .session-nav { border-radius: var(--r-card); }
   .session-nav button { flex: 1 1 auto; }
   .session-nav .session-skip { margin-inline-start: 0; }

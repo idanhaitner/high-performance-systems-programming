@@ -45,13 +45,17 @@ export function Chapter({
       <Blocks blocks={intro} courseId={courseId} />
       {slices.length > 1 && (
         <nav className="toc" aria-label="On this page">
-          <p className="kicker">On this page</p>
+          <div className="toc-head">
+            <p className="kicker">On this page</p>
+            <span className="toc-count">{slices.length} parts</span>
+          </div>
           <ol className="toc-list">
             {slices.map((slice, index) => (
               <li key={slice.id}>
                 <a href={`#${slice.id}`}>
-                  <span className="toc-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="toc-num" aria-hidden="true">{index + 1}</span>
                   <span className="toc-title"><Inline text={slice.title} /></span>
+                  <span className="toc-go" aria-hidden="true">↓</span>
                 </a>
               </li>
             ))}
