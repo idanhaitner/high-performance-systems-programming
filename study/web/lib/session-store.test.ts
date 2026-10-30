@@ -4,9 +4,11 @@ import {
   clearCode,
   readCode,
   readSession,
+  readSplit,
   resumeStep,
   writeCode,
   writeSession,
+  writeSplit,
 } from "./session-store";
 
 beforeEach(() => localStorage.clear());
@@ -71,6 +73,15 @@ describe("code", () => {
   });
 });
 
+describe("split position", () => {
+  it("round-trips under study:<course>:split:<name>", () => {
+    expect(readSplit("c", "question")).toBeNull();
+    writeSplit("c", "question", 0.42);
+    expect(readSplit("c", "question")).toBe("0.42");
+    expect(localStorage.getItem("study:c:split:question")).toBe("0.42");
+  });
+});
+
 describe("when localStorage throws", () => {
   beforeEach(() => {
     const boom = () => {
@@ -84,11 +95,13 @@ describe("when localStorage throws", () => {
   it("reads return defaults", () => {
     expect(readSession("c", "s")).toEqual({ step: 0, done: [], skipped: [] });
     expect(readCode("c", "e")).toBeNull();
+    expect(readSplit("c", "n")).toBeNull();
   });
 
   it("writes do not throw", () => {
     expect(() => writeSession("c", "s", { step: 1, done: [], skipped: [] })).not.toThrow();
     expect(() => writeCode("c", "e", "x")).not.toThrow();
+    expect(() => writeSplit("c", "n", 0.5)).not.toThrow();
     expect(() => clearCode("c", "e")).not.toThrow();
   });
 });

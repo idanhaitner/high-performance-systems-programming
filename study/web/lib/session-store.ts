@@ -56,6 +56,14 @@ export function writeCode(courseId: string, exerciseId: string, code: string) {
   set(`${storageKey(courseId)}:code:${exerciseId}`, code);
 }
 
+export function readSplit(courseId: string, name: string): string | null {
+  return get(`${storageKey(courseId)}:split:${name}`);
+}
+
+export function writeSplit(courseId: string, name: string, fraction: number) {
+  set(`${storageKey(courseId)}:split:${name}`, String(fraction));
+}
+
 export function clearCode(courseId: string, exerciseId: string) {
   try {
     localStorage.removeItem(`${storageKey(courseId)}:code:${exerciseId}`);
