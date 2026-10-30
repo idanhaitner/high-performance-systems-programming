@@ -109,10 +109,6 @@ export function Rail({
     (sum, lesson) => sum + lesson.practiceIds.filter((id) => solved.includes(id)).length,
     0,
   );
-  const lectureFinished = (lecture: LectureNav) => {
-    const ids = lecture.lessons.flatMap((lesson) => lesson.practiceIds);
-    return ids.length > 0 && ids.every((id) => solved.includes(id));
-  };
 
   return (
     <aside className={`rail${open ? " is-open" : ""}`}>
@@ -144,7 +140,7 @@ export function Rail({
         </nav>
         <p className="rail-label">Lectures</p>
         {inLecture && currentLesson && (
-          <div className={`rail-deck${lectureFinished(inLecture) ? " is-done" : ""}`} aria-hidden="true">
+          <div className="rail-deck" aria-hidden="true">
             <span />
             <span />
             <strong>
@@ -162,9 +158,9 @@ export function Rail({
             const isOpen = expanded.includes(lecture.id);
             const ids = lecture.lessons.flatMap((lesson) => lesson.practiceIds);
             const solvedHere = ids.filter((id) => solved.includes(id)).length;
-            const finished = lectureFinished(lecture);
+            const finished = ids.length > 0 && solvedHere === ids.length;
             return (
-              <div className={`lecture-group${isOpen ? " is-open" : ""}${finished ? " is-done" : ""}`} key={lecture.id}>
+              <div className={`lecture-group${isOpen ? " is-open" : ""}`} key={lecture.id}>
                 <button
                   type="button"
                   className="lecture-label"
@@ -172,17 +168,17 @@ export function Rail({
                   aria-controls={`rail-${lecture.id}`}
                   onClick={() => toggleLecture(lecture.id)}
                 >
-                  <span className="lecture-label-kicker">Lecture {String(lecture.number).padStart(2, "0")}{finished && " · Finished"}</span>
+                  <span className="lecture-label-kicker">Lecture {String(lecture.number).padStart(2, "0")}</span>
                   <span><Mixed text={lecture.title} /></span>
                   <span className="lecture-label-meta">
-                    {finished && (
-                      <span className="lecture-done-mark" aria-hidden="true">
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M3 8.5 6.5 12 13 4.5" />
+                    {finished ? (
+                      <span className="lecture-done-mark">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M3.5 8.5 6.5 11.5 12.5 4.5" />
                         </svg>
+                        <span className="sr-only">Finished</span>
                       </span>
-                    )}
-                    {ids.length ? <><span className="sr-only">Checks solved: </span>{solvedHere}/{ids.length}</> : lecture.lessons.length}
+                    ) : ids.length ? <><span className="sr-only">Checks solved: </span>{solvedHere}/{ids.length}</> : lecture.lessons.length}
                   </span>
                 </button>
                 <div className="lecture-lessons" id={`rail-${lecture.id}`}>
