@@ -13,7 +13,7 @@ Write `sum_squares(n)`. It must return the sum of the squares from 1 up to `n`, 
 
 The function returns a `long long`. That is a whole-number type that takes 8 bytes (64 bits) on the computers you will use; C only promises at least 64 bits. So it can hold numbers with up to 19 digits. On this course's machines it is the same size as `long`.
 
-The starter code already has a loop. A **loop** repeats the lines inside it. Here, `for (int i = 1; i <= n; i++)` runs once with `i` equal to 1, then 2, and so on up to `n`. (`i++` means "add 1 to `i`".) Press Test first and see which case fails.
+The starter code already has a loop. A **loop** repeats the lines inside it. Here, `for (int i = 1; i <= n; i++)` runs once with `i` equal to 1, then 2, and so on up to `n`. (`i++` means "add 1 to `i`".) Press Test my code first and see which case fails.
 
 You are done when Test shows all three cases passing.
 

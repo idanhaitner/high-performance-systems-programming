@@ -20,7 +20,7 @@ Two details:
 - `n` is passed by address (`&n`), so `append` can change the caller's count, just like `swap` changed the caller's numbers.
 - The array may start empty, with `a` equal to `NULL`. That is fine: `realloc(NULL, size)` acts exactly like `malloc(size)`.
 
-The starter does not grow anything yet; it returns `a` unchanged. Press Test first and see which cases fail.
+The starter does not grow anything yet; it returns `a` unchanged. Press Test my code first and see which cases fail.
 
 You are done when Test shows all three cases passing.
 

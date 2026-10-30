@@ -22,7 +22,7 @@ Remember that `argv[0]` is the program's name, so the numbers are in `argv[1]` u
 
 To turn a word such as `"3"` into the number 3, use `atoi` from `<stdlib.h>`, as in the lesson. The tests only give clean whole numbers, so `atoi` is enough here.
 
-The starter prints only the first number. Press Test first and see which cases fail.
+The starter prints only the first number. Press Test my code first and see which cases fail.
 
 You are done when Test shows all three cases passing.
 

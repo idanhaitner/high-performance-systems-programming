@@ -12,7 +12,7 @@ The starter keeps the count in a plain local variable. A local variable is creat
 
 C has a word for a local variable that remembers: `static`. Writing `static` in front of a local variable changes where it lives. It moves off the stack and into the program's global data: `.bss` if it starts at 0, `.data` otherwise. It is set to its starting value only once, before the program starts running, and it keeps its value between calls. Only code inside the function can use its name, just like a normal local.
 
-The tests call `next_ticket()` many times in a row, in one run: once, once more, then ten more times. Press Test first and see which cases fail.
+The tests call `next_ticket()` many times in a row, in one run: once, once more, then ten more times. Press Test my code first and see which cases fail.
 
 You are done when Test shows all three cases passing.
 

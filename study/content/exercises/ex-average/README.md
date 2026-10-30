@@ -12,7 +12,7 @@ Write the **function** `average(total, count)`. (A function is a named piece of 
 
 `count` is never 0 in the tests, so you do not need to handle dividing by zero here.
 
-The starter returns `total / count`. Press Test first and see which cases fail.
+The starter returns `total / count`. Press Test my code first and see which cases fail.
 
 You are done when Test shows all three cases passing.
 

@@ -22,7 +22,7 @@ function StepView({ step, courseId, done, onComplete, harness, rendered }: StepP
     case "lab":
       return <LabStep step={step} content={rendered.content} done={done} onComplete={onComplete} />;
     case "exercise":
-      return <ExerciseStep step={step} courseId={courseId} onComplete={onComplete} harness={harness} rendered={rendered} />;
+      return <ExerciseStep step={step} courseId={courseId} done={done} onComplete={onComplete} harness={harness} rendered={rendered} />;
   }
 }
 
@@ -147,11 +147,11 @@ export function Stepper({
       )}
 
       <div className="session-nav">
-        <button type="button" onClick={() => go(state.step - 1)} disabled={state.step === 0}>Back</button>
+        <button type="button" className="btn-quiet" onClick={() => go(state.step - 1)} disabled={state.step === 0}>Back</button>
         {current && (
           <>
-            <button type="button" className="session-skip" onClick={skip} disabled={state.done.includes(current.id)}>Skip for now</button>
-            <button type="button" className="is-on" onClick={() => go(state.step + 1)} disabled={!state.done.includes(current.id)}>
+            <button type="button" className="session-skip btn-quiet" onClick={skip} disabled={state.done.includes(current.id)}>Skip for now</button>
+            <button type="button" className="btn-primary" onClick={() => go(state.step + 1)} disabled={!state.done.includes(current.id)}>
               {state.step === total - 1 ? "Finish" : "Next"}
             </button>
           </>

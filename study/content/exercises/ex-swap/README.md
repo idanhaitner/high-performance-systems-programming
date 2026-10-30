@@ -17,7 +17,7 @@ swap(&x, &y);
 
 The function returns nothing, which C writes as `void`. Its only job is to change the two boxes.
 
-The starter code swaps two local copies, so the caller sees no change. Press Test first and see which cases fail.
+The starter code swaps two local copies, so the caller sees no change. Press Test my code first and see which cases fail.
 
 You are done when Test shows all three cases passing.
 
@@ -30,7 +30,7 @@ Inside `swap`, `x` and `y` are new boxes that only hold copies. Changing them do
 :::
 
 :::hint
-As soon as you store into `*a`, its old value is gone. Save it first in a local `int`, then copy `*b` into `*a`, then put the saved value into `*b`.
+As soon as you store into `*a`, its old value is gone. The starter already saved both values for you: `y` holds the second value and `old_x` holds the first. Store `y` into `*a`, then store `old_x` into `*b`.
 :::
 
 :::case name="two positives"

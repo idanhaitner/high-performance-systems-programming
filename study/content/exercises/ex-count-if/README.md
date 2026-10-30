@@ -15,7 +15,7 @@ int a[] = {1, 2, 3, 4};
 
 `count_if` must not know or care which question it is asking. The tests pass it different functions: "is it even?", "is it negative?", and "is it bigger than 100?".
 
-The starter always returns 0. Press Test first and see which cases fail.
+The starter always returns 0. Press Test my code first and see which cases fail.
 
 You are done when Test shows all four cases passing.
 

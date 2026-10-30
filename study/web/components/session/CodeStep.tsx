@@ -26,11 +26,11 @@ type Result =
 
 type Action = "run" | "test" | "asm";
 type Asm = { lines: AsmLine[]; failed: Diagnostic[] | null; code: string; optimize: boolean };
-type Props = { step: Extract<SessionStep, { kind: "exercise" }>; courseId: string; onComplete: () => void; harness: string; rendered: RenderedStep };
+type Props = { step: Extract<SessionStep, { kind: "exercise" }>; courseId: string; done: boolean; onComplete: () => void; harness: string; rendered: RenderedStep };
 
 const NO_LINE_LIMIT = Number.MAX_SAFE_INTEGER;
 
-export function CodeStep({ step, courseId, onComplete, harness, rendered }: Props) {
+export function CodeStep({ step, courseId, done, onComplete, harness, rendered }: Props) {
   const ex = step.exercise;
   const [code, setCode] = useState(() => readCode(courseId, ex.id) ?? ex.starter);
   const [result, setResultState] = useState<Result | null>(null);
@@ -210,6 +210,9 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
 
   const pickOptimize = (opt: boolean) => act("asm", opt);
 
+  // Matches openAsm: an open panel with nothing current fetches again instead of closing.
+  const asmLabel = !asmOpen ? "Show assembly" : !asm || asm.code !== code ? "Update assembly" : "Hide assembly";
+
   const linked = useMemo(() => (hoverAsm === null ? [] : [hoverAsm]), [hoverAsm]);
   const hintNodes = rendered.hints ?? [];
   const locked = busy || cooling || wait > 0;
@@ -235,22 +238,23 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
           />
         )}
       </div>
-      <p className="code-privacy">Runs on godbolt.org — your code is sent there to compile.</p>
 
       <div className="code-actions">
+        {/* Once the step is solved, Next in the bar below is the one primary action. */}
+        <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test my code"}</button>
         <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
-        <button type="button" className="is-on" onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test"}</button>
-        <button type="button" aria-pressed={asmOpen} onClick={openAsm} disabled={locked}>{busy && lastAction === "asm" ? "Compiling…" : "Assembly"}</button>
+        <button type="button" className="btn-quiet" aria-expanded={asmOpen} onClick={openAsm} disabled={locked}>{busy && lastAction === "asm" ? "Compiling…" : asmLabel}</button>
         {confirmReset ? (
           <span className="code-confirm" role="alert">
             Replace your code with the starter code?
-            <button type="button" onClick={reset}>Yes, reset</button>
-            <button type="button" onClick={() => setConfirmReset(false)}>Cancel</button>
+            <button type="button" className="btn-danger" onClick={reset}>Yes, reset</button>
+            <button type="button" className="btn-quiet" onClick={() => setConfirmReset(false)}>Cancel</button>
           </span>
         ) : (
-          <button type="button" className="session-skip" onClick={() => setConfirmReset(true)}>Reset to starter</button>
+          <button type="button" className="session-skip btn-quiet" onClick={() => setConfirmReset(true)}>Reset to starter</button>
         )}
       </div>
+      <p className="code-privacy">Test checks your answer. Run only shows what your code prints. Both send your code to godbolt.org, a website that compiles C.</p>
 
       <div aria-live="polite">
         <div key={runId} className="code-run">
@@ -282,7 +286,7 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
             </div>
           ))}
           {hintsShown < hintNodes.length && (
-            <button type="button" onClick={() => setHintsShown((n) => n + 1)}>Show a hint</button>
+            <button type="button" className="btn-help" onClick={() => setHintsShown((n) => n + 1)}>Show hint {hintsShown + 1} of {hintNodes.length}</button>
           )}
         </div>
       )}
@@ -295,7 +299,7 @@ export function CodeStep({ step, courseId, onComplete, harness, rendered }: Prop
               <Editor value={ex.solution} onChange={() => {}} diagnostics={[]} readOnly />
             </>
           ) : (
-            <button type="button" onClick={() => setSolutionOpen(true)}>Show solution</button>
+            <button type="button" className="btn-quiet" onClick={() => setSolutionOpen(true)}>Show solution</button>
           )}
         </div>
       )}

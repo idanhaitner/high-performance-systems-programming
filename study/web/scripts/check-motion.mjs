@@ -151,7 +151,7 @@ const groups = {
     const wrapper = () => page.$eval(".session-count + *, .session-head + *", (el) => [getComputedStyle(el).animationName, el.style.getPropertyValue("--dir")]);
     const initial = await wrapper();
     expect("step-change", initial[0] === "none", `the first step animates on page load (${initial[0]})`);
-    await page.click(".session-nav button.is-on");
+    await page.click(".session-nav button.btn-primary");
     await page.waitForTimeout(50);
     const next = await wrapper();
     expect("step-change", next[0] === "step-in" && next[1] === "1", `after Next: animation ${next[0]}, --dir "${next[1]}"`);
@@ -159,13 +159,13 @@ const groups = {
     await page.waitForTimeout(50);
     const back = await wrapper();
     expect("step-change", back[0] === "step-in" && back[1] === "-1", `after Back: animation ${back[0]}, --dir "${back[1]}"`);
-    for (let i = 0; i < 3; i++) await page.click(".session-nav button.is-on").catch(() => {});
+    for (let i = 0; i < 3; i++) await page.click(".session-nav button.btn-primary").catch(() => {});
     await page.waitForTimeout(400);
     const steps = await page.$$eval(".session-head ~ div:not(.session-nav)", (els) => els.map((el) => getComputedStyle(el).opacity));
     expect("step-change", steps.length === 1 && steps[0] === "1", `after quick Nexts: ${steps.length} steps, opacity ${steps}`);
     await context.close();
     ({ context, page } = await openSession(browser, { reducedMotion: "reduce" }));
-    await page.click(".session-nav button.is-on");
+    await page.click(".session-nav button.btn-primary");
     await page.waitForTimeout(50);
     const reduced = await page.$eval(".session-head + *", (el) => getComputedStyle(el).transform);
     expect("step-change", reduced === "none", `reduced motion still slides the step (${reduced})`);
@@ -189,7 +189,7 @@ const groups = {
     for (let i = 0; i < 40 && !(await page.locator(".step-kind[data-kind=exercise]").count()); i++) {
       const skip = page.locator(".session-nav .session-skip");
       // A reading step can finish while we click, which disables Skip, so retry on the next loop.
-      await ((await skip.isEnabled()) ? skip : page.locator(".session-nav button.is-on")).click({ timeout: 3000 }).catch(() => {});
+      await ((await skip.isEnabled()) ? skip : page.locator(".session-nav button.btn-primary")).click({ timeout: 3000 }).catch(() => {});
     }
     const run = page.locator(".code-actions button", { hasText: /^Run$/ }).first();
     const runOnce = async () => {

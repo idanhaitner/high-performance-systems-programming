@@ -19,7 +19,7 @@ Enter a number: Enter a character: x = 5, ch = 'a'
 
 (The two questions appear on one line because the typed answers are not printed: in a real terminal, your typing would show up between them.)
 
-The starter reads the character with `scanf("%c", &ch)`. Press Test first and look at what it prints for `ch`.
+The starter reads the character with `scanf("%c", &ch)`. Press Test my code first and look at what it prints for `ch`.
 
 You are done when Test shows all three cases passing.
 

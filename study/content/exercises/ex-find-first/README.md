@@ -16,7 +16,7 @@ int *miss = find_first(a, 4, 5);
 
 Use a pointer that walks through the array, instead of an index. It starts at `a` and stops before `a + n`, the spot just past the last element.
 
-The starter always returns `a`, the start of the array, so it finds the wrong element and never says "not found". Press Test first and see which cases fail.
+The starter always returns `a`, the start of the array, so it finds the wrong element and never says "not found". Press Test my code first and see which cases fail.
 
 You are done when Test shows all four cases passing.
 
