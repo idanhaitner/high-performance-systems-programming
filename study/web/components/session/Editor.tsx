@@ -4,7 +4,7 @@ import { cpp } from "@codemirror/lang-cpp";
 import { setDiagnostics, type Diagnostic as CmDiagnostic } from "@codemirror/lint";
 import { EditorState, StateEffect, StateField, type Extension } from "@codemirror/state";
 import { Decoration, EditorView, drawSelection, highlightActiveLine, keymap, lineNumbers } from "@codemirror/view";
-import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
+import { defaultKeymap, history, historyKeymap, indentWithTab, isolateHistory } from "@codemirror/commands";
 import { HighlightStyle, bracketMatching, indentOnInput, syntaxHighlighting } from "@codemirror/language";
 import { tags as t } from "@lezer/highlight";
 import { useEffect, useRef } from "react";
@@ -15,9 +15,19 @@ type Props = {
   onChange(v: string): void;
   diagnostics: Diagnostic[];
   onHoverLine?(line: number | null): void;
+  onFormat?(): void;
   highlightLines?: number[];
   readOnly?: boolean;
 };
+
+// Formatting only moves whitespace, so counting the other characters finds the same spot in the new text.
+function sameSpot(before: string, after: string, at: number): number {
+  let left = 0;
+  for (let i = 0; i < at; i++) if (!/\s/.test(before[i])) left++;
+  let i = 0;
+  while (left > 0 && i < after.length) if (!/\s/.test(after[i++])) left--;
+  return i;
+}
 
 const setHighlight = StateEffect.define<number[]>();
 
@@ -83,14 +93,18 @@ function toCm(doc: EditorState["doc"], list: Diagnostic[]): CmDiagnostic[] {
   });
 }
 
-export function Editor({ value, onChange, diagnostics, onHoverLine, highlightLines, readOnly = false }: Props) {
+export function Editor({ value, onChange, diagnostics, onHoverLine, onFormat, highlightLines, readOnly = false }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
-  const cb = useRef({ onChange, onHoverLine });
-  cb.current = { onChange, onHoverLine };
+  const cb = useRef({ onChange, onHoverLine, onFormat });
+  cb.current = { onChange, onHoverLine, onFormat };
 
   useEffect(() => {
     if (!host.current) return;
+    const format = () => {
+      cb.current.onFormat?.();
+      return cb.current.onFormat !== undefined;
+    };
     const extensions: Extension[] = [
       lineNumbers(),
       history(),
@@ -99,7 +113,7 @@ export function Editor({ value, onChange, diagnostics, onHoverLine, highlightLin
       bracketMatching(),
       highlightActiveLine(),
       EditorView.lineWrapping,
-      keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
+      keymap.of([{ key: "Shift-Alt-f", run: format }, { key: "Mod-s", run: format }, ...defaultKeymap, ...historyKeymap, indentWithTab]),
       cpp(),
       syntaxHighlighting(highlight),
       theme,
@@ -132,7 +146,15 @@ export function Editor({ value, onChange, diagnostics, onHoverLine, highlightLin
 
   useEffect(() => {
     const v = view.current;
-    if (v && v.state.doc.toString() !== value) v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: value } });
+    if (!v) return;
+    const before = v.state.doc.toString();
+    if (before === value) return;
+    v.dispatch({
+      changes: { from: 0, to: before.length, insert: value },
+      selection: { anchor: sameSpot(before, value, v.state.selection.main.head) },
+      // One undo takes back the format alone, not the typing just before it.
+      annotations: isolateHistory.of("full"),
+    });
   }, [value]);
 
   useEffect(() => {

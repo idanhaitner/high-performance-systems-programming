@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Mixed } from "@/lib/bidi";
+import { formatC } from "@/lib/format";
 import { COOLDOWN_MS, GodboltError, compileAsm, runProgram } from "@/lib/godbolt";
 import { splitDiagnostics, type AsmLine, type Diagnostic, type RunOutcome } from "@/lib/run-result";
 import { clearCode, readCode, writeCode } from "@/lib/session-store";
@@ -85,6 +86,13 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     }, 500);
   }, [courseId, ex.id]);
 
+  const tidy = useCallback(async () => {
+    const before = codeRef.current;
+    const formatted = await formatC(before);
+    // The first format downloads the formatter, so the student may have typed something newer by now.
+    if (formatted !== before && codeRef.current === before) edit(formatted);
+  }, [edit]);
+
   useEffect(() => {
     if (wait <= 0) return;
     const t = setTimeout(() => setWait((w) => w - 1), 1000);
@@ -108,7 +116,9 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     setConfirmReset(false);
   };
 
+  // These run after tidy, so they read the ref: the `code` in this render is from before the format.
   const doRun = async () => {
+    const code = codeRef.current;
     const source = ex.mode === "function" ? buildTestSource(code, harness, ex.test ?? "") : { source: code, studentLines: NO_LINE_LIMIT };
     const first = ex.cases[0];
     const outcome = await runProgram(source.source, ex.mode === "program" && first ? { args: first.args, stdin: first.stdin } : {});
@@ -117,6 +127,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
   };
 
   const doTest = async () => {
+    const code = codeRef.current;
     let verdict: TestVerdict;
     let studentLines = NO_LINE_LIMIT;
     if (ex.mode === "function") {
@@ -151,6 +162,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
   };
 
   const doAsm = async (opt: boolean) => {
+    const code = codeRef.current;
     const { lines, diagnostics: found } = await compileAsm(code, { optimize: opt });
     const errors = found.filter((d) => d.severity === "error");
     setDiagnostics(splitDiagnostics(found, NO_LINE_LIMIT).inEditor);
@@ -167,6 +179,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     setBusy(true);
     setConfirmReset(false);
     try {
+      await tidy();
       await (action === "run" ? doRun() : action === "test" ? doTest() : doAsm(opt));
     } catch (error) {
       const e = error instanceof GodboltError ? error : new GodboltError("unreachable");
@@ -236,7 +249,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
       {rendered.content}
 
       <div className={asmOpen ? "code-split has-asm" : "code-split"}>
-        <Editor value={code} onChange={edit} diagnostics={diagnostics} onHoverLine={setHoverC} highlightLines={linked} />
+        <Editor value={code} onChange={edit} diagnostics={diagnostics} onHoverLine={setHoverC} onFormat={tidy} highlightLines={linked} />
         {asmOpen && (
           <AsmPanel
             lines={asm?.lines ?? []}
@@ -265,6 +278,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
             {/* Once the step is solved, Next in the bar below is the one primary action. */}
             <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test my code"}</button>
             <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
+            <button type="button" className="btn-quiet" title="Shift+Alt+F, or Cmd/Ctrl+S" onClick={tidy}>Format</button>
             <button type="button" className="code-reset btn-quiet" ref={resetRef} onClick={() => setConfirmReset(true)}>Reset to starter</button>
           </>
         )}
