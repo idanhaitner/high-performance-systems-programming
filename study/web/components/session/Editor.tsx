@@ -120,7 +120,10 @@ export function Editor({ value, onChange, diagnostics, onHoverLine, onFormat, hi
       highlightField,
       EditorState.readOnly.of(readOnly),
       EditorView.editable.of(!readOnly),
-      EditorView.contentAttributes.of({ "aria-label": "C code editor", spellcheck: "false" }),
+      // A read-only editor is not focusable on its own, so a keyboard user could not scroll a long solution.
+      EditorView.contentAttributes.of(
+        readOnly ? { "aria-label": "Solution code, read only", tabindex: "0", spellcheck: "false" } : { "aria-label": "C code editor", spellcheck: "false" },
+      ),
       EditorView.updateListener.of((u) => {
         if (u.docChanged) cb.current.onChange(u.state.doc.toString());
       }),

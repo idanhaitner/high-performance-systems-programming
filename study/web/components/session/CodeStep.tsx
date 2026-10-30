@@ -9,6 +9,7 @@ import { clearCode, readCode, writeCode } from "@/lib/session-store";
 import { buildTestSource } from "@/lib/test-output";
 import { functionVerdict, programVerdict, type ProgramRun, type TestVerdict } from "@/lib/test-verdict";
 import type { SessionStep } from "@/lib/types";
+import { workspaceShortcut } from "@/lib/workspace";
 import { exerciseZip } from "@/lib/zip";
 import { AsmPanel } from "./AsmView";
 import { CaseList, OutcomeView, type CaseView } from "./OutcomeView";
@@ -215,6 +216,21 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asmWanted, locked]);
 
+  // Capture phase, so this runs before CodeMirror's own Mod-Enter, which would add a blank line.
+  // The listener is re-attached each render so it always calls the current act.
+  useEffect(() => {
+    if (confirmReset) return;
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      const shortcut = workspaceShortcut(e);
+      if (!shortcut) return;
+      e.preventDefault();
+      e.stopPropagation();
+      act(shortcut === "run" ? "run" : "test");
+    };
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
+  });
+
   const download = () => {
     const bytes = exerciseZip(ex, code, harness);
     const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: "application/zip" }));
@@ -374,9 +390,9 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
               ) : (
                 <>
                   <button type="button" className="code-reset btn-quiet" ref={resetRef} onClick={() => setConfirmReset(true)}>Reset</button>
-                  <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
+                  <button type="button" onClick={() => act("run")} disabled={locked} title="Run (Ctrl+Enter or Cmd+Enter)" aria-keyshortcuts="Control+Enter Meta+Enter">{busy && lastAction === "run" ? "Running…" : "Run"}</button>
                   {/* Once the step is solved, Next in the top bar is the one primary action. */}
-                  <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Submitting…" : "Submit"}</button>
+                  <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked} title="Submit (Ctrl+Shift+Enter or Cmd+Shift+Enter)" aria-keyshortcuts="Control+Shift+Enter Meta+Shift+Enter">{busy && lastAction === "test" ? "Submitting…" : "Submit"}</button>
                 </>
               )}
             </div>

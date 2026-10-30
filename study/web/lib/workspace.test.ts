@@ -3,7 +3,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WorkspaceBar } from "@/components/session/WorkspaceBar";
-import { useWorkspaceMode } from "./workspace";
+import { useWorkspaceMode, workspaceShortcut } from "./workspace";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -118,5 +118,21 @@ describe("WorkspaceBar", () => {
     act(() => button("Skip for now").click());
     act(() => button("Next").click());
     expect([onBack, onSkip, onNext].map((f) => f.mock.calls.length)).toEqual([1, 1, 1]);
+  });
+});
+
+describe("workspaceShortcut", () => {
+  const key = (o: object) => ({ key: "Enter", ctrlKey: false, metaKey: false, shiftKey: false, altKey: false, ...o });
+  it("runs on Ctrl or Cmd + Enter", () => {
+    expect(workspaceShortcut(key({ ctrlKey: true }))).toBe("run");
+    expect(workspaceShortcut(key({ metaKey: true }))).toBe("run");
+  });
+  it("submits with Shift added", () => {
+    expect(workspaceShortcut(key({ ctrlKey: true, shiftKey: true }))).toBe("submit");
+  });
+  it("ignores plain Enter, Alt, and other keys", () => {
+    expect(workspaceShortcut(key({}))).toBeNull();
+    expect(workspaceShortcut(key({ ctrlKey: true, altKey: true }))).toBeNull();
+    expect(workspaceShortcut(key({ key: "a", ctrlKey: true }))).toBeNull();
   });
 });
