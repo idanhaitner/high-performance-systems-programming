@@ -8,7 +8,7 @@ Write `point_to_max(pp, arr, n)`. `arr` is an array of `n` `int`s (at least one)
 
 The pointer must point **into** the array, not to a copy. So after the call, `*p = 0;` changes that element of the array itself.
 
-You are done when Test shows all four cases passing.
+You are done when Submit shows all four cases passing.
 
 :::example
 **Input:** `int a[] = {4, 9, 2}; int *p = NULL; point_to_max(&p, a, 3);`

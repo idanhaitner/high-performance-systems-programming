@@ -23,7 +23,7 @@ Two details about the inputs:
 
 If several students share the highest grade, return the **first** of them, the one with the smallest index. `n` is always at least 1.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `best_index(s, 3)`, where the three students have grades 70, 85, 92

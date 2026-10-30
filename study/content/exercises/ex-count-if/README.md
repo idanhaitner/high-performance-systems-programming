@@ -8,7 +8,7 @@ Write `count_if(a, n, keep)`. It looks at each of the `n` `int`s in `a`, calls `
 
 `count_if` must not know or care which question it is asking. The tests pass it different functions: "is it even?", "is it negative?", and "is it bigger than 100?".
 
-You are done when Test shows all four cases passing.
+You are done when Submit shows all four cases passing.
 
 :::example
 **Input:** `count_if(a, 4, is_even)`, where `a` is {1, 2, 3, 4} and `is_even` says yes to even numbers

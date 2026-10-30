@@ -5,15 +5,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Mixed } from "@/lib/bidi";
 import { readSession, resumeStep, writeSession, type SessionState } from "@/lib/session-store";
 import type { Session, SessionStep } from "@/lib/types";
+import { useWorkspaceMode } from "@/lib/workspace";
 import { CheckStep } from "./CheckStep";
 import { ExerciseStep } from "./ExerciseStep";
 import { LabStep } from "./LabStep";
 import { LearnStep } from "./LearnStep";
 import type { RenderedStep } from "./rendered";
+import { WorkspaceBar } from "./WorkspaceBar";
 
-type StepProps = { step: SessionStep; courseId: string; done: boolean; onComplete: () => void; harness: string; rendered: RenderedStep };
+type StepProps = { step: SessionStep; courseId: string; done: boolean; onComplete: () => void; harness: string; rendered: RenderedStep; moved: boolean };
 
-function StepView({ step, courseId, done, onComplete, harness, rendered }: StepProps) {
+function StepView({ step, courseId, done, onComplete, harness, rendered, moved }: StepProps) {
   switch (step.kind) {
     case "learn":
       return <LearnStep step={step} content={rendered.content} onComplete={onComplete} />;
@@ -22,7 +24,7 @@ function StepView({ step, courseId, done, onComplete, harness, rendered }: StepP
     case "lab":
       return <LabStep step={step} content={rendered.content} done={done} onComplete={onComplete} />;
     case "exercise":
-      return <ExerciseStep step={step} courseId={courseId} done={done} onComplete={onComplete} harness={harness} rendered={rendered} />;
+      return <ExerciseStep step={step} courseId={courseId} done={done} onComplete={onComplete} harness={harness} rendered={rendered} moved={moved} />;
   }
 }
 
@@ -81,6 +83,8 @@ export function Stepper({
   const current = finished ? null : session.steps[state.step];
   const currentId = current?.id;
   const lesson = currentId ? rendered[currentId]?.lesson : undefined;
+  const coding = ready && current?.kind === "exercise";
+  useWorkspaceMode(coding);
 
   const complete = useCallback(() => {
     if (!currentId) return;
@@ -103,9 +107,25 @@ export function Stepper({
 
   const doneCount = session.steps.filter((step) => state.done.includes(step.id)).length;
   const skippedCount = session.steps.filter((step) => state.skipped.includes(step.id) && !state.done.includes(step.id)).length;
+  const nextLabel = state.step === total - 1 ? "Finish" : "Next";
 
   return (
     <div className="session" ref={top}>
+      {coding && current && (
+        <WorkspaceBar
+          lectureNumber={lectureNumber}
+          step={state.step + 1}
+          total={total}
+          lesson={lesson}
+          canGoBack={state.step > 0}
+          onBack={() => go(state.step - 1)}
+          onSkip={skip}
+          canSkip={!state.done.includes(current.id)}
+          onNext={() => go(state.step + 1)}
+          canNext={state.done.includes(current.id)}
+          nextLabel={nextLabel}
+        />
+      )}
       <ol className="session-bar" aria-label="Session progress">
         {session.steps.map((step, index) => {
           const status = state.done.includes(step.id) ? "done" : state.skipped.includes(step.id) ? "skipped" : index === state.step ? "current" : "upcoming";
@@ -123,19 +143,21 @@ export function Stepper({
           );
         })}
       </ol>
-      <div className="session-head">
-        {current && <span className="step-kind" data-kind={current.kind}>{kindLabel(current)}</span>}
-        <p className="session-count">{finished ? "All steps seen" : `Step ${state.step + 1} of ${total}`}</p>
-        {lesson && (
-          <Link className="session-lesson" href={`/topics/${lesson.id}`}>
-            Reread: <Mixed text={lesson.title} />
-          </Link>
-        )}
-      </div>
+      {!coding && (
+        <div className="session-head">
+          {current && <span className="step-kind" data-kind={current.kind}>{kindLabel(current)}</span>}
+          <p className="session-count">{finished ? "All steps seen" : `Step ${state.step + 1} of ${total}`}</p>
+          {lesson && (
+            <Link className="session-lesson" href={`/topics/${lesson.id}`}>
+              Reread: <Mixed text={lesson.title} />
+            </Link>
+          )}
+        </div>
+      )}
 
       {!ready ? null : current ? (
-        <div key={current.id} className={dir ? "step-in" : undefined} style={dir ? ({ "--dir": dir } as React.CSSProperties) : undefined}>
-          <StepView step={current} courseId={courseId} done={state.done.includes(current.id)} onComplete={complete} harness={harness} rendered={rendered[current.id] ?? {}} />
+        <div key={current.id} className={dir ? "session-current step-in" : "session-current"} style={dir ? ({ "--dir": dir } as React.CSSProperties) : undefined}>
+          <StepView step={current} courseId={courseId} done={state.done.includes(current.id)} onComplete={complete} harness={harness} rendered={rendered[current.id] ?? {}} moved={dir !== 0} />
         </div>
       ) : (
         <div className="session-step session-finished">
@@ -146,17 +168,19 @@ export function Stepper({
         </div>
       )}
 
-      <div className="session-nav">
-        <button type="button" className="btn-quiet" onClick={() => go(state.step - 1)} disabled={state.step === 0}>Back</button>
-        {current && (
-          <>
-            <button type="button" className="session-skip btn-quiet" onClick={skip} disabled={state.done.includes(current.id)}>Skip for now</button>
-            <button type="button" className="btn-primary" onClick={() => go(state.step + 1)} disabled={!state.done.includes(current.id)}>
-              {state.step === total - 1 ? "Finish" : "Next"}
-            </button>
-          </>
-        )}
-      </div>
+      {!coding && (
+        <div className="session-nav">
+          <button type="button" className="btn-quiet" onClick={() => go(state.step - 1)} disabled={state.step === 0}>Back</button>
+          {current && (
+            <>
+              <button type="button" className="session-skip btn-quiet" onClick={skip} disabled={state.done.includes(current.id)}>Skip for now</button>
+              <button type="button" className="btn-primary" onClick={() => go(state.step + 1)} disabled={!state.done.includes(current.id)}>
+                {nextLabel}
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

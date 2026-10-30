@@ -8,7 +8,7 @@ Write `find_first(a, n, target)`. It looks through the `n` `int`s of `a` and ret
 
 Use a pointer that walks through the array, instead of an index.
 
-You are done when Test shows all four cases passing.
+You are done when Submit shows all four cases passing.
 
 :::example
 **Input:** `find_first(a, 4, 3)`, where `a` is {7, 3, 9, 3}

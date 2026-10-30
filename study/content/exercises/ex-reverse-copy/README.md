@@ -6,7 +6,7 @@ A local array disappears when its function ends, but a heap block from `malloc` 
 
 Write `reverse_copy(a, n)`. It returns a **new** heap array of `n` `int`s that holds the elements of `a` in reverse order. The original array `a` must not change.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `int a[] = {1, 2, 3}; int *r = reverse_copy(a, 3);`

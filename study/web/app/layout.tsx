@@ -12,6 +12,7 @@ import "@fontsource-variable/jetbrains-mono/wght.css";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import "./landing.css";
+import "./workspace.css";
 
 export const viewport: Viewport = {
   width: "device-width",

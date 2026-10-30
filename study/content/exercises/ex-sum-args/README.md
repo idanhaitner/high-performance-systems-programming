@@ -12,7 +12,7 @@ Remember that `argv[0]` is the program's name, so the numbers are in `argv[1]` u
 
 To turn a word such as `"3"` into the number 3, use `atoi` from `<stdlib.h>`. The tests only give clean whole numbers, so `atoi` is enough here.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `./sum 3 4`

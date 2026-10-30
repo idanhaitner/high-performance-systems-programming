@@ -6,7 +6,7 @@ A local variable is destroyed when its function returns, and a heap block stays 
 
 Write `make_box(value)`. It returns the address of an `int` holding `value`, and that `int` must still be there after `make_box` returns. The caller frees it. If there is no memory, return `NULL`.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `make_box(5)`

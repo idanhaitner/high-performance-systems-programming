@@ -6,7 +6,7 @@ A **global** variable, written outside every function, lives for the whole run. 
 
 Here `total_calls` is a global. Other code reads it, so it must be the one that counts. Fix `count_call()` so that each call adds 1 to the global `total_calls`.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `count_call();` called once, when `total_calls` is 0

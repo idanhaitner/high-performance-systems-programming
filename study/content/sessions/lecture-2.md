@@ -9,7 +9,7 @@ You have read the lessons, so now you use them. Each lesson gets one new questio
 
 Press **Next** when a step is done. If you are stuck, press **Skip for now**, or use the **Reread** link at the top of the step to open that step's lesson.
 
-A coding exercise gives you the function's first line, and the task above the editor says what it must do. You write the rest. **Format** tidies your code, and it also runs by itself when you press Run or Test. **Run** shows what your code prints. **Test my code** checks it against small test cases, and all of them must pass. **Show assembly** shows the machine instructions the compiler made; it is there if you are curious. If you get stuck, **Show hint** opens one hint at a time, and **Show solution** shows a finished answer. Try the exercise first, because you learn more that way.
+A coding exercise gives you the function's first line, and the panel on the left says what it must do. You write the rest on the right. **Run** shows what your code prints. **Submit** checks it against small test cases, and all of them must pass. Your code is tidied by itself each time you press either one, or when you press Ctrl+S (Cmd+S on a Mac). The **Assembly** tab shows the machine instructions the compiler made; it is there if you are curious. If you get stuck, **Hints** opens one hint at a time, and **Solution** shows a finished answer. Try the exercise first, because you learn more that way. To move out of the editor with the keyboard, press Esc and then Tab.
 
 Your code is built by godbolt.org, a free website that runs the C compiler, so your code is sent there when you press one of these buttons.
 :::

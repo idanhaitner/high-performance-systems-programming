@@ -6,7 +6,7 @@ Placeholders such as `%d` and `%.2f` say where each value goes and how it looks.
 
 Write a program that reads a whole number and a decimal number, and prints them in one fixed sentence, with 2 digits after the point. Every letter and space counts.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** typing `3 2.5`, then Enter

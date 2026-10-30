@@ -1,8 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Mixed } from "@/lib/bidi";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { formatC } from "@/lib/format";
 import { COOLDOWN_MS, GodboltError, compileAsm, runProgram } from "@/lib/godbolt";
 import { splitDiagnostics, type AsmLine, type Diagnostic, type RunOutcome } from "@/lib/run-result";
@@ -13,7 +12,10 @@ import type { SessionStep } from "@/lib/types";
 import { exerciseZip } from "@/lib/zip";
 import { AsmPanel } from "./AsmView";
 import { CaseList, OutcomeView, type CaseView } from "./OutcomeView";
+import { QuestionPanel } from "./QuestionPanel";
 import type { RenderedStep } from "./rendered";
+import { ResultsPanel } from "./ResultsPanel";
+import { Split } from "./Split";
 
 const Editor = dynamic(() => import("./Editor").then((m) => m.Editor), {
   ssr: false,
@@ -27,11 +29,17 @@ type Result =
 
 type Action = "run" | "test" | "asm";
 type Asm = { lines: AsmLine[]; failed: Diagnostic[] | null; code: string; optimize: boolean };
-type Props = { step: Extract<SessionStep, { kind: "exercise" }>; courseId: string; done: boolean; onComplete: () => void; harness: string; rendered: RenderedStep };
+type Tab = "output" | "assembly";
+type View = "question" | "code";
+type Props = { step: Extract<SessionStep, { kind: "exercise" }>; courseId: string; done: boolean; onComplete: () => void; harness: string; rendered: RenderedStep; moved: boolean };
 
 const NO_LINE_LIMIT = Number.MAX_SAFE_INTEGER;
+const VIEWS: { id: View; label: string }[] = [
+  { id: "question", label: "Question" },
+  { id: "code", label: "Code" },
+];
 
-export function CodeStep({ step, courseId, done, onComplete, harness, rendered }: Props) {
+export function CodeStep({ step, courseId, done, onComplete, harness, rendered, moved }: Props) {
   const ex = step.exercise;
   const [code, setCode] = useState(() => readCode(courseId, ex.id) ?? ex.starter);
   const [result, setResultState] = useState<Result | null>(null);
@@ -45,18 +53,18 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
   const [busy, setBusy] = useState(false);
   const [cooling, setCooling] = useState(false);
   const [wait, setWait] = useState(0);
-  // How many hints are revealed, and whether they are on screen. Closing keeps the count, so reopening does not start over.
-  const [hintsShown, setHintsShown] = useState(0);
-  const [hintsOpen, setHintsOpen] = useState(false);
-  const [solutionOpen, setSolutionOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [lastAction, setLastAction] = useState<Action>("test");
   const [asm, setAsm] = useState<Asm | null>(null);
-  const [asmOpen, setAsmOpen] = useState(false);
+  const [asmWanted, setAsmWanted] = useState(false);
+  const [tab, setTab] = useState<Tab>("output");
+  // Which side shows in the tab layout. It only changes an attribute, so the editor is never unmounted and keeps its cursor and undo.
+  const [view, setView] = useState<View>("question");
   const [hoverC, setHoverC] = useState<number | null>(null);
   const [hoverAsm, setHoverAsm] = useState<number | null>(null);
 
   const codeRef = useRef(code);
+  const viewTabs = useRef<Record<View, HTMLButtonElement | null>>({ question: null, code: null });
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const coolTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const keepRef = useRef<HTMLButtonElement>(null);
@@ -167,23 +175,30 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     const errors = found.filter((d) => d.severity === "error");
     setDiagnostics(splitDiagnostics(found, NO_LINE_LIMIT).inEditor);
     setAsm({ lines, failed: errors.length > 0 ? found : null, code, optimize: opt });
+    // A retry worked, so its failure message no longer applies.
+    setResultState((r) => (r?.kind === "error" ? null : r));
   };
 
   // The level shown on the toggle is the level of the assembly on screen, so a
   // failed fetch leaves both on the old level.
   const shownOptimize = asm?.optimize ?? false;
 
+  const locked = busy || cooling || wait > 0;
+
   const act = async (action: Action, opt = shownOptimize) => {
-    if (busy || cooling || wait > 0) return;
+    if (locked) return;
     setLastAction(action);
     setBusy(true);
     setConfirmReset(false);
+    if (action !== "asm") setTab("output");
     try {
       await tidy();
       await (action === "run" ? doRun() : action === "test" ? doTest() : doAsm(opt));
     } catch (error) {
       const e = error instanceof GodboltError ? error : new GodboltError("unreachable");
       setResult({ kind: "error", error: e });
+      setTab("output");
+      setAsmWanted(false);
       if (e.kind === "rate-limited") setWait(e.retryAfter || 30);
     } finally {
       setBusy(false);
@@ -191,6 +206,14 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
       coolTimer.current = setTimeout(() => setCooling(false), COOLDOWN_MS);
     }
   };
+
+  // The Assembly tab can open during a run or the cooldown, when act would do nothing, so the compile waits for them to end.
+  useEffect(() => {
+    if (!asmWanted || locked) return;
+    setAsmWanted(false);
+    if (!asm || asm.code !== code) act("asm");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [asmWanted, locked]);
 
   const download = () => {
     const bytes = exerciseZip(ex, code, harness);
@@ -216,132 +239,150 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
     closeConfirm();
   };
 
-  const toggleHints = () => {
-    setHintsShown((n) => Math.max(n, 1));
-    setHintsOpen((open) => !open);
+  const pickTab = (next: Tab) => {
+    setTab(next);
+    setAsmWanted(next === "assembly");
   };
 
-  const openAsm = () => {
-    if (!asmOpen || !asm || asm.code !== code) {
-      setAsmOpen(true);
-      act("asm");
-    } else {
-      setAsmOpen(false);
-      setHoverAsm(null);
-    }
+  // Retrying assembly goes back to where the assembly will appear.
+  const retry = () => {
+    if (lastAction === "asm") setTab("assembly");
+    act(lastAction);
+  };
+
+  const pickView = (next: View) => {
+    setView(next);
+    viewTabs.current[next]?.focus();
+  };
+
+  const moveView = (e: KeyboardEvent, from: View) => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    e.preventDefault();
+    pickView(from === "question" ? "code" : "question");
   };
 
   const pickOptimize = (opt: boolean) => act("asm", opt);
 
-  // Matches openAsm: an open panel with nothing current fetches again instead of closing.
-  const asmLabel = !asmOpen ? "Show assembly" : !asm || asm.code !== code ? "Update assembly" : "Hide assembly";
-
-  const linked = useMemo(() => (hoverAsm === null ? [] : [hoverAsm]), [hoverAsm]);
-  const hintNodes = rendered.hints ?? [];
-  const hintNoun = hintNodes.length > 1 ? "hints" : "hint";
-  const hintToggle = hintsOpen ? `Hide ${hintNoun}` : hintsShown > 0 ? `Show ${hintNoun}` : "Show hint";
-  const locked = busy || cooling || wait > 0;
+  const linked = useMemo(() => (tab !== "assembly" || hoverAsm === null ? [] : [hoverAsm]), [tab, hoverAsm]);
   const error = result?.kind === "error" ? result.error : null;
 
   return (
-    <div className="session-step code-step">
-      <h2><Mixed text={ex.title} /></h2>
-      {rendered.content}
-      {rendered.examples}
-
-      <div className={asmOpen ? "code-split has-asm" : "code-split"}>
-        <Editor value={code} onChange={edit} diagnostics={diagnostics} onHoverLine={setHoverC} onFormat={tidy} highlightLines={linked} />
-        {asmOpen && (
-          <AsmPanel
-            lines={asm?.lines ?? []}
-            activeSourceLine={hoverC ?? hoverAsm}
-            onHoverAsm={setHoverAsm}
-            optimize={shownOptimize}
-            onOptimize={pickOptimize}
-            onUpdate={() => act("asm")}
-            locked={locked}
-            stale={asm !== null && asm.code !== code}
-            diagnostics={asm?.failed ?? null}
-          />
-        )}
-      </div>
-
-      <div className="code-actions">
-        {confirmReset ? (
-          <div className="code-confirm" role="alert" onKeyDown={(e) => { if (e.key === "Escape") closeConfirm(); }}>
-            <p>Replace your code with the starter code?</p>
-            <div className="code-confirm-actions">
-              <button type="button" className="btn-quiet" ref={keepRef} onClick={closeConfirm}>Keep my code</button>
-              <button type="button" className="btn-danger" onClick={reset}>Yes, reset</button>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Once the step is solved, Next in the bar below is the one primary action. */}
-            <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test my code"}</button>
-            <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
-            <button type="button" className="btn-quiet" title="Shift+Alt+F, or Cmd/Ctrl+S" onClick={tidy}>Format</button>
-            <button type="button" className="code-reset btn-quiet" ref={resetRef} onClick={() => setConfirmReset(true)}>Reset to starter</button>
-          </>
-        )}
-      </div>
-      <div className="code-foot">
-        <p className="code-privacy">Test checks your answer. Run only shows what your code prints. Both send your code to godbolt.org, a website that compiles C.</p>
-        <button type="button" className="btn-subtle" aria-expanded={asmOpen} onClick={openAsm} disabled={locked}>{busy && lastAction === "asm" ? "Compiling…" : asmLabel}</button>
-      </div>
-
-      <div aria-live="polite">
-        <div key={runId} className="code-run">
-          {error && (
-            <div className="code-result" data-state="bad">
-              <p className="code-headline">{error.message}</p>
-              <div className="code-actions">
-                <button type="button" onClick={() => act(lastAction)} disabled={locked}>{wait > 0 ? `Retry in ${wait}s` : "Retry"}</button>
-                <button type="button" className="session-download" onClick={download}>Download to run in VS Code</button>
-              </div>
-            </div>
-          )}
-          {result?.kind === "outcome" && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
-          {result?.kind === "cases" && (
-            <>
-              {result.outcome && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
-              <CaseList cases={result.cases} />
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="code-help">
-        {/* The toggles stay put when a panel opens, so the same spot closes it again. */}
-        <div className="code-help-bar">
-          <p className="code-help-label">Stuck?</p>
-          {hintNodes.length > 0 && (
-            <button type="button" className="btn-help" aria-expanded={hintsOpen} onClick={toggleHints}>{hintToggle}</button>
-          )}
-          <button type="button" className="btn-quiet" aria-expanded={solutionOpen} onClick={() => setSolutionOpen((open) => !open)}>
-            {solutionOpen ? "Hide solution" : "Show solution"}
+    <div className="session-step code-step" data-view={view}>
+      <div className="workspace-views" role="tablist" aria-label="Exercise">
+        {VIEWS.map((v) => (
+          <button
+            key={v.id}
+            ref={(el) => { viewTabs.current[v.id] = el; }}
+            type="button"
+            role="tab"
+            className="results-tab"
+            aria-selected={view === v.id}
+            aria-controls={`workspace-${v.id}`}
+            tabIndex={view === v.id ? 0 : -1}
+            onClick={() => setView(v.id)}
+            onKeyDown={(e) => moveView(e, v.id)}
+          >
+            {v.label}
           </button>
-        </div>
-        {hintsOpen && (
-          <div className="code-hints">
-            {hintNodes.slice(0, hintsShown).map((hint, i) => (
-              <div key={i} className="code-hint">
-                <p className="code-label">Hint {i + 1} of {hintNodes.length}</p>
-                {hint}
-              </div>
-            ))}
-            {hintsShown < hintNodes.length && (
-              <button type="button" className="btn-help" onClick={() => setHintsShown((n) => n + 1)}>Next hint ({hintsShown + 1} of {hintNodes.length})</button>
-            )}
-          </div>
-        )}
-        {solutionOpen && (
-          <div className="code-solution">
-            <p className="code-label">Solution (read only)</p>
-            <Editor value={ex.solution} onChange={() => {}} diagnostics={[]} readOnly />
-          </div>
-        )}
+        ))}
       </div>
+      <Split
+        courseId={courseId}
+        name="question"
+        orientation="vertical"
+        start={0.4}
+        minFirst={320}
+        minSecond={320}
+        label="Resize the question and code panels"
+        first={
+          <div id="workspace-question" className="workspace-fill">
+            <QuestionPanel
+              title={ex.title}
+              content={rendered.content}
+              examples={rendered.examples ?? []}
+              hints={rendered.hints ?? []}
+              renderSolution={() => <Editor value={ex.solution} onChange={() => {}} diagnostics={[]} readOnly />}
+              focusTitle={moved}
+            />
+          </div>
+        }
+        second={
+          <div id="workspace-code" className="workspace-code">
+            <Split
+              courseId={courseId}
+              name="results"
+              orientation="horizontal"
+              start={0.65}
+              minFirst={160}
+              minSecond={120}
+              label="Resize the editor and results panels"
+              first={<Editor value={code} onChange={edit} diagnostics={diagnostics} onHoverLine={setHoverC} onFormat={tidy} highlightLines={linked} />}
+              second={
+                <ResultsPanel
+                  tab={tab}
+                  onTab={pickTab}
+                  output={
+                    <div key={runId} className="code-run">
+                      {result === null && <p className="results-empty">Run shows what your code prints. Submit checks it against the tests. Both send your code to godbolt.org, a website that compiles C.</p>}
+                      {error && (
+                        <div className="code-result" data-state="bad">
+                          <p className="code-headline">{error.message}</p>
+                          <div className="code-actions">
+                            <button type="button" onClick={retry} disabled={locked}>{wait > 0 ? `Retry in ${wait}s` : "Retry"}</button>
+                            <button type="button" className="session-download" onClick={download}>Download to run in VS Code</button>
+                          </div>
+                        </div>
+                      )}
+                      {result?.kind === "outcome" && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
+                      {result?.kind === "cases" && (
+                        <>
+                          {result.outcome && <OutcomeView outcome={result.outcome} studentLines={result.studentLines} />}
+                          <CaseList cases={result.cases} />
+                        </>
+                      )}
+                    </div>
+                  }
+                  assembly={
+                    asm ? (
+                      <AsmPanel
+                        lines={asm.lines}
+                        activeSourceLine={hoverC ?? hoverAsm}
+                        onHoverAsm={setHoverAsm}
+                        optimize={shownOptimize}
+                        onOptimize={pickOptimize}
+                        onUpdate={() => act("asm")}
+                        locked={locked}
+                        stale={asm.code !== code}
+                        diagnostics={asm.failed}
+                      />
+                    ) : (
+                      <p className="results-empty">Compiling…</p>
+                    )
+                  }
+                />
+              }
+            />
+            <div className="code-actions workspace-actions">
+              {confirmReset ? (
+                <div className="code-confirm" role="alert" onKeyDown={(e) => { if (e.key === "Escape") closeConfirm(); }}>
+                  <p>Replace your code with the starter code?</p>
+                  <div className="code-confirm-actions">
+                    <button type="button" className="btn-quiet" ref={keepRef} onClick={closeConfirm}>Keep my code</button>
+                    <button type="button" className="btn-danger" onClick={reset}>Yes, reset</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <button type="button" className="code-reset btn-quiet" ref={resetRef} onClick={() => setConfirmReset(true)}>Reset</button>
+                  <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
+                  {/* Once the step is solved, Next in the top bar is the one primary action. */}
+                  <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Submitting…" : "Submit"}</button>
+                </>
+              )}
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 }

@@ -6,7 +6,7 @@ If `p` holds the address of `x`, then writing to `*p` changes `x` itself.
 
 Write `set_to_zero(p)`. After the call, the variable that `p` points to must hold 0.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `int x = 42; set_to_zero(&x);`

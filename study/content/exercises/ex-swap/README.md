@@ -10,7 +10,7 @@ Write `swap(a, b)`. Here `a` and `b` are pointers to `int`: `a` holds the addres
 
 The function returns nothing, which C writes as `void`. Its only job is to change the two boxes.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `int x = 3; int y = 8; swap(&x, &y);`

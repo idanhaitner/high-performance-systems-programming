@@ -6,7 +6,7 @@ A **grid** (a 2D array) is a table of numbers, and `grid[i][j]` is the number in
 
 Write `sum_row(grid, row)`. The grid has 3 rows and 4 columns. The function returns the sum of the 4 numbers in the row you are asked for.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `sum_row(grid, 1)`, where `grid` is {{1, 2, 3, 4}, {10, 20, 30, 40}, {-1, -2, 3, 5}}

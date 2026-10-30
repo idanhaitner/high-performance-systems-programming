@@ -8,7 +8,7 @@ Write `digit_value(c)`. It receives a digit character, from `'0'` to `'9'`, and 
 
 C promises that the digit characters have codes in a row: `'0'`, then `'1'`, then `'2'`, and so on.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `digit_value('7')`

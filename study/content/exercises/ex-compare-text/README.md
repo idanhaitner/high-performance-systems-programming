@@ -12,7 +12,7 @@ Write `compare_text(a, b)` without using `<string.h>`. Like `strcmp`, it returns
 
 Only the sign matters; any negative or positive number is fine.
 
-You are done when Test shows all four cases passing.
+You are done when Submit shows all four cases passing.
 
 :::example
 **Input:** `compare_text("cat", "cat")`

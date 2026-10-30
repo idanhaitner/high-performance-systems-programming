@@ -196,7 +196,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   button.btn-primary:hover:not(:disabled) { box-shadow: var(--lift); }
 }
 button.btn-primary:active:not(:disabled) { box-shadow: none; }
-/* Next cannot be pressed until the step is solved, so it gives way to Test. */
+/* Next cannot be pressed until the step is done, so it gives way to the step's own action. */
 .session-nav button.btn-primary:disabled { background: var(--card-solid); color: var(--ink); box-shadow: none; }
 
 /* Quiet: optional actions. Text only until hovered, with no outline or lift. */
@@ -206,27 +206,6 @@ button.btn-primary:active:not(:disabled) { box-shadow: none; }
 }
 button.btn-quiet:active:not(:disabled) { transform: scale(0.97); }
 button.btn-quiet[aria-expanded="true"] { background: var(--accent-soft); }
-
-/* Subtle: an extra for the curious. Small, grey underlined text, lighter than quiet.
-   Keeps a full-size tap target on touch screens. */
-.btn-subtle {
-  min-height: 44px;
-  padding: 4px 8px;
-  border-color: transparent;
-  background: transparent;
-  color: var(--muted);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-color: var(--line);
-  text-underline-offset: 3px;
-  transition: transform 0.16s var(--ease), color 0.16s ease, text-decoration-color 0.16s ease;
-}
-@media (hover: hover) and (pointer: fine) {
-  .btn-subtle { min-height: 32px; }
-  button.btn-subtle:hover:not(:disabled) { transform: none; box-shadow: none; color: var(--ink); text-decoration-color: currentColor; }
-}
-button.btn-subtle:active:not(:disabled) { transform: scale(0.97); }
 
 /* Help: the same yellow as the hint it opens. */
 .btn-help { border-color: transparent; background: var(--sun-soft); color: var(--ink); }
@@ -884,18 +863,10 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .practice.is-fresh { animation: fade-in 0.2s var(--ease) backwards; }
 
 /* Code step */
-.code-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; margin-top: 20px; }
-@media (min-width: 1100px) { .code-split.has-asm { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 .code-editor { min-width: 0; overflow: hidden; border: 2px solid var(--edge); border-radius: var(--r-sm); background: var(--code); }
 .code-editor:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
 .code-editor-loading { min-height: 12rem; padding: 16px; color: var(--code-muted); font-family: var(--mono); font-size: 0.875rem; }
-.code-foot { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 16px; }
-.code-foot .btn-subtle { margin-inline: -10px; }
-.code-privacy { flex: 1 1 24rem; margin: 0; color: var(--muted); font-size: 0.875rem; }
 .code-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
-.code-split + .code-actions { margin: 16px 0 8px; }
-/* The text, not its hover pill, lines up with the editor's right edge, like Show assembly below it. */
-.code-actions .code-reset { margin-inline: auto -20px; }
 /* Takes over the whole row, so the question and its answers read as one thing. The negative margin holds the row's height. */
 .code-confirm { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-block: -6px; padding: 6px 6px 6px 20px; border-radius: 28px; background: var(--coral-soft); animation: fade-in 0.2s var(--ease) backwards; }
 .code-confirm p { flex: 1 1 16rem; margin: 0; font-weight: 600; }
@@ -916,9 +887,6 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .code-casehint, .code-hint { margin-top: 8px; padding: 10px 14px; border-radius: 10px; background: var(--sun-soft); }
 .code-casehint > :last-child, .code-hint > :last-child { margin-bottom: 0; }
 .code-hint .code-label, .code-casehint .code-label { margin-top: 0; }
-.code-help { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; padding-top: 16px; border-top: 2px solid var(--line); }
-.code-help-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.code-help-label { margin: 0 8px 0 0; font-weight: 700; }
 .code-hints, .code-solution { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; animation: fade-in 0.2s var(--ease) backwards; }
 .code-hints > .code-hint, .code-solution > .code-editor { align-self: stretch; margin-top: 0; }
 .code-solution .code-label { margin: 0; }
@@ -1033,7 +1001,6 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
   .session-nav button { flex: 1 1 auto; }
   .session-nav .session-skip { margin-inline-start: 0; }
   .code-actions button { flex: 1 1 auto; }
-  .code-actions .code-reset { margin-inline: 0; }
   .code-confirm { margin-block: 0; padding: 12px; border-radius: var(--r-sm); }
   .code-confirm p { flex-basis: 100%; }
   .code-confirm-actions { flex: 1 1 100%; }

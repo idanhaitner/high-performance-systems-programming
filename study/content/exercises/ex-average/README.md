@@ -8,7 +8,7 @@ Write the **function** `average(total, count)`. (A function is a named piece of 
 
 `count` is never 0 in the tests, so you do not need to handle dividing by zero here.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `average(10, 2)`

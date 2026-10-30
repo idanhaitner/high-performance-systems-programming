@@ -6,7 +6,7 @@ A function can receive another function, and call it through a pointer.
 
 Write `apply(f, x)`. It calls the function `f` on the number `x` and returns the answer.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `apply(twice, 5)`, where `twice` doubles a number

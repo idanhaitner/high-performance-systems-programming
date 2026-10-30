@@ -8,7 +8,7 @@ Write a whole program, with its own `main`. It asks for a number and then a char
 
 Notice that both questions appear on one line in the output below, because the typed answers are not printed: in a real terminal, your typing would show up between them.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** typing `5`, Enter, `a`, Enter

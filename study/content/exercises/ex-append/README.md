@@ -11,7 +11,7 @@ Two details:
 - `n` is passed by address (`&n`), so `append` can change the caller's count, just like `swap` changed the caller's numbers.
 - The array may start empty, with `a` equal to `NULL`. That is fine: `realloc(NULL, size)` acts exactly like `malloc(size)`.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `a` is `NULL` and `n` is 0, then `a = append(a, &n, 10);` and `a = append(a, &n, 20);`

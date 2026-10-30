@@ -6,7 +6,7 @@ title: Count the words after the program's name
 
 Write a program that prints how many words were typed **after** the program's name, then a newline.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `./count`

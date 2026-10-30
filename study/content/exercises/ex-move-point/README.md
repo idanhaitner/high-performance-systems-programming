@@ -6,7 +6,7 @@ When you have a pointer to a structure, `p->x` is the member `x` of the structur
 
 Write `move_right(p, dx)`. It adds `dx` to the `x` of the point that `p` points to, and leaves `y` as it is.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `struct point a = {1, 2}; move_right(&a, 5);`

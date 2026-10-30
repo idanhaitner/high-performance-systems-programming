@@ -14,7 +14,7 @@ C has a word for a local variable that remembers: `static`. Writing `static` in 
 
 The tests call `next_ticket()` many times in a row, in one run: once, once more, then ten more times.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `next_ticket()` called three times in a row

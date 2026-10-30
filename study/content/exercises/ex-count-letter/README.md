@@ -6,7 +6,7 @@ A string has no stored length, so you walk along it until you reach `'\0'`.
 
 Write `count_letter(text, letter)`. It returns how many times `letter` appears in `text`. A capital letter is a different character from the same letter in small form.
 
-You are done when Test shows all four cases passing.
+You are done when Submit shows all four cases passing.
 
 :::example
 **Input:** `count_letter("banana", 'a')`

@@ -6,7 +6,7 @@ title: Return a pointer to the last element
 
 Write `last_element(a, n)`. The array `a` has `n` elements, at least one. The function returns a pointer to the last element.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `last_element(A, 4)`, where `A` is {10, 20, 30, 40}

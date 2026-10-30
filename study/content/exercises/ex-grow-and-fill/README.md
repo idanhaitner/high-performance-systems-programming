@@ -8,7 +8,7 @@ Write `grow_and_fill(a, old_n, new_n, fill)`. The heap block `a` holds `old_n` `
 
 If `realloc` fails, return `NULL`, and leave the old block usable for the caller. The tests cannot make `realloc` fail, so nothing checks this for you. It is worth doing right anyway.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `a` is a heap block holding {1, 2}, then `a = grow_and_fill(a, 2, 4, 7);`

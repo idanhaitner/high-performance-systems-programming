@@ -1,0 +1,215 @@
+/* The coding workspace (Stepper sets data-workspace on <html> for coding steps).
+   A calm work tool: neutral surfaces, one indigo accent, and the dark code slab as the
+   only heavy thing on screen. Everything is scoped, so no other page changes. */
+
+html[data-workspace] {
+  --bar-h: 0px;
+  /* Control edges and the step bar: neutral, and at least 3:1 against the sheet. */
+  --ws-edge: color-mix(in oklch, var(--muted) 72%, var(--sheet));
+  --ws-wash: color-mix(in oklch, var(--ink) 7%, transparent);
+  /* The dark theme's accent, the indigo that stays visible on the code panel in both themes. */
+  --ws-ring-on-code: #8f86ff;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ---------- Full window ---------- */
+
+html[data-workspace] body { height: 100dvh; overflow: hidden; background: var(--sheet); font-size: 1rem; line-height: 1.6; }
+html[data-workspace] :is(.rail, .session-masthead, .reading-progress) { display: none; }
+html[data-workspace] .shell { display: block; height: 100%; min-height: 0; padding-top: 0; }
+html[data-workspace] main,
+html[data-workspace] main > div { height: 100%; min-height: 0; }
+html[data-workspace] .page.chapter { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0; border-radius: 0; }
+html[data-workspace] .session,
+html[data-workspace] .session-current,
+html[data-workspace] .code-step { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0; }
+html[data-workspace] .code-step > .split { flex: 1; }
+
+/* ---------- Controls ---------- */
+
+html[data-workspace] button {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid var(--ws-edge);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  transition: background-color 0.15s var(--ease);
+}
+html[data-workspace] button:is(:hover, :active):not(:disabled) { transform: none; box-shadow: none; }
+@media (hover: hover) and (pointer: fine) {
+  html[data-workspace] button:hover:not(:disabled) { background: var(--ws-wash); }
+  html[data-workspace] button.btn-primary:hover:not(:disabled) { background: color-mix(in oklch, var(--accent) 88%, var(--ink)); }
+}
+/* A finger needs more room than a mouse. */
+@media (pointer: coarse) {
+  html[data-workspace] button { min-height: 44px; }
+}
+html[data-workspace] button.btn-primary { border-color: var(--accent); background: var(--accent); color: var(--on-accent); box-shadow: none; }
+html[data-workspace] button.btn-quiet { border-color: transparent; background: transparent; color: var(--ink); }
+html[data-workspace] button.is-on,
+html[data-workspace] button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+html[data-workspace] :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Top bar and step bar ---------- */
+
+html[data-workspace] .workspace-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; padding: 6px 16px; flex: none; }
+html[data-workspace] .workspace-where { display: flex; flex: 1 1 16rem; align-items: baseline; gap: 16px; min-width: 0; font-size: 0.9375rem; }
+html[data-workspace] .workspace-lecture { flex: none; font-weight: 600; }
+html[data-workspace] .workspace-count { flex: none; margin: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+html[data-workspace] .workspace-lesson { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+html[data-workspace] .workspace-lesson:hover { color: var(--accent-ink); }
+html[data-workspace] .workspace-nav { display: flex; flex: none; align-items: center; gap: 4px; margin-inline-start: auto; }
+
+html[data-workspace] .page ol.session-bar { flex: none; gap: 2px; margin: 0; padding: 0 16px; border-bottom: 1px solid var(--line); }
+html[data-workspace] .session-seg { min-height: 18px; padding: 6px 0; border: 0; border-radius: 0; background: transparent; }
+html[data-workspace] .session-seg:hover:not(:disabled) { background: transparent; }
+html[data-workspace] .session-seg::before { height: 4px; background: var(--ws-edge); }
+html[data-workspace] .session-seg[data-status="done"]::before { background: var(--ink); box-shadow: none; }
+html[data-workspace] .session-seg[data-status="skipped"]::before { background: repeating-linear-gradient(-45deg, var(--ink) 0 3px, transparent 3px 6px); box-shadow: none; }
+html[data-workspace] .session-seg[data-status="current"]::before { background: var(--accent); transform: scaleY(2); }
+
+/* The Question and Code tabs exist only in the tab layout. */
+html[data-workspace] .workspace-views { display: none; flex: none; padding-inline: 16px; border-bottom: 1px solid var(--line); }
+
+/* ---------- Dividers ---------- */
+
+html[data-workspace] .split { display: grid; min-width: 0; min-height: 0; height: 100%; }
+html[data-workspace] .split[data-orientation="vertical"] { grid-template-columns: var(--split) 0 minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+html[data-workspace] .split[data-orientation="horizontal"] { grid-template-rows: var(--split) 0 minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
+html[data-workspace] .split-pane { min-width: 0; min-height: 0; overflow: hidden; }
+
+/* The track takes no room, so the panes keep their full minimum, and the 8px hit target lies over their edges. */
+html[data-workspace] .split-divider { position: relative; z-index: 2; touch-action: none; }
+html[data-workspace] .split-divider::before,
+html[data-workspace] .split-divider::after { content: ""; position: absolute; background: var(--line); transition: background-color 0.15s var(--ease); }
+/* The line runs the full length, and the grip marks where to take hold. */
+html[data-workspace] .split-divider::after { background: var(--ws-edge); border-radius: 2px; }
+html[data-workspace] [data-orientation="vertical"] > .split-divider { margin-inline: -4px; cursor: col-resize; }
+html[data-workspace] [data-orientation="vertical"] > .split-divider::before { inset-block: 0; inset-inline-start: calc(50% - 0.5px); width: 1px; }
+html[data-workspace] [data-orientation="vertical"] > .split-divider::after { top: calc(50% - 16px); inset-inline-start: calc(50% - 1.5px); width: 3px; height: 32px; }
+html[data-workspace] [data-orientation="horizontal"] > .split-divider { margin-block: -4px; cursor: row-resize; }
+html[data-workspace] [data-orientation="horizontal"] > .split-divider::before { inset-inline: 0; top: calc(50% - 0.5px); height: 1px; }
+html[data-workspace] [data-orientation="horizontal"] > .split-divider::after { left: calc(50% - 16px); top: calc(50% - 1.5px); width: 32px; height: 3px; }
+html[data-workspace] .split-divider:is(:hover, :active, :focus-visible)::before,
+html[data-workspace] .split-divider:is(:hover, :active, :focus-visible)::after { background: var(--accent); }
+html[data-workspace] .split-divider:focus-visible { outline-offset: -1px; border-radius: 2px; }
+
+/* ---------- Question panel ---------- */
+
+html[data-workspace] .workspace-fill { height: 100%; }
+html[data-workspace] .question-panel { height: 100%; overflow: auto; padding: 20px 24px 32px; }
+html[data-workspace] .question-panel > * { max-width: 70ch; }
+html[data-workspace] .question-panel :is(h2, h3, h4) { font-family: var(--serif); font-weight: 600; letter-spacing: -0.01em; }
+html[data-workspace] .question-title { margin: 0 0 16px; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; }
+html[data-workspace] .question-section { margin-bottom: 24px; }
+html[data-workspace] .question-heading { margin: 0 0 4px; font-size: 1.0625rem; line-height: 1.4; }
+html[data-workspace] .question-example { margin-top: 12px; }
+html[data-workspace] .question-example .code-label { margin: 0 0 2px; font-family: var(--sans); letter-spacing: 0; line-height: 1.5; }
+html[data-workspace] .question-example > :last-child,
+html[data-workspace] .question-section > :last-child { margin-bottom: 0; }
+html[data-workspace] .question-example p { margin: 2px 0; }
+/* Words in code stay readable without turning into coloured chips. */
+html[data-workspace] .question-panel :not(pre) > code { background: var(--ws-wash); color: var(--ink); }
+html[data-workspace] .question-panel .code-panel { margin: 12px 0; border: 0; border-radius: 8px; }
+
+html[data-workspace] .question-help { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+/* Hints and Solution are plain rows with a triangle that shows whether they are open. */
+html[data-workspace] .question-help > button { display: inline-flex; align-items: center; gap: 8px; margin-inline-start: -10px; padding-inline: 10px; border-color: transparent; background: transparent; color: var(--ink); font-size: 1rem; font-weight: 600; }
+html[data-workspace] .question-help > button::before { content: ""; width: 0; height: 0; border-block: 5px solid transparent; border-inline-start: 7px solid var(--muted); transition: transform 0.15s var(--ease); }
+html[data-workspace] .question-help > button[aria-expanded="true"]::before { transform: rotate(90deg); }
+html[data-workspace] .code-hints,
+html[data-workspace] .code-solution { align-self: stretch; }
+html[data-workspace] .code-hint { padding: 0 0 0 12px; border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
+html[data-workspace] .code-hint p { margin: 4px 0; }
+html[data-workspace] .code-hints > .btn-help { border-color: var(--ws-edge); background: transparent; color: var(--ink); }
+
+/* ---------- Editor ---------- */
+
+html[data-workspace] .code-editor { border: 0; border-radius: 0; }
+html[data-workspace] .code-solution .code-editor { border-radius: 8px; }
+html[data-workspace] .code-editor:focus-within { outline: 2px solid var(--ws-ring-on-code); outline-offset: -2px; }
+html[data-workspace] .workspace-code .code-editor { height: 100%; }
+html[data-workspace] .workspace-code .cm-editor { height: 100%; }
+html[data-workspace] .workspace-code .cm-scroller { min-height: 0; max-height: none; overflow: auto; }
+html[data-workspace] .workspace-code .code-editor-loading { min-height: 0; }
+/* The site-wide line number colour is too faint to read at 4.5:1. */
+html[data-workspace] .code-editor .cm-gutters { color: var(--code-muted); }
+
+/* ---------- Results ---------- */
+
+html[data-workspace] .workspace-code { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+html[data-workspace] .workspace-code > .split { flex: 1; }
+html[data-workspace] .results-panel { display: flex; flex-direction: column; height: 100%; }
+html[data-workspace] .results-tabs { display: flex; flex: none; gap: 4px; padding-inline: 12px; border-bottom: 1px solid var(--line); }
+html[data-workspace] button.results-tab { min-height: 36px; margin-bottom: -1px; padding: 6px 10px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--muted); font-size: 0.875rem; }
+@media (pointer: coarse) {
+  html[data-workspace] button.results-tab { min-height: 44px; }
+}
+html[data-workspace] button.results-tab:hover:not(:disabled) { background: transparent; color: var(--ink); }
+html[data-workspace] button.results-tab[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--ink); }
+html[data-workspace] button.results-tab:focus-visible { outline-offset: -2px; }
+html[data-workspace] .results-body { flex: 1; min-height: 0; overflow: auto; padding: 12px 16px; }
+/* The panel that is not selected stays mounted, and hidden has to win over any display set here. */
+html[data-workspace] .results-body[hidden] { display: none; }
+html[data-workspace] .results-empty { max-width: 70ch; margin: 0; color: var(--muted); }
+
+html[data-workspace] .code-result { margin: 0 0 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; }
+html[data-workspace] .code-result:last-child { margin-bottom: 0; }
+/* What a program printed is neither a pass nor a fail, so it gets no green and no box. A pass has a headline that says so. */
+html[data-workspace] .code-result[data-state="ok"]:not(:has(.code-headline)) { padding: 0; border: 0; background: transparent; }
+html[data-workspace] .code-result[data-state="ok"]:not(:has(.code-headline)) > :first-child { margin-top: 0; }
+html[data-workspace] .code-output { border-radius: 6px; }
+html[data-workspace] .code-casehint { border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
+html[data-workspace] .code-result .code-actions { margin: 12px 0 0; }
+html[data-workspace] .code-result .code-actions button { flex: none; }
+html[data-workspace] .code-result .session-download { min-height: 36px; padding: 6px 14px; border: 1px solid var(--ws-edge); border-radius: 8px; background: transparent; color: var(--ink); font-size: 0.9375rem; }
+
+html[data-workspace] .asm-panel { display: flex; flex-direction: column; height: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; }
+html[data-workspace] .asm-stale { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 0; border-radius: 0; background: transparent; color: var(--muted); }
+html[data-workspace] .asm-stale button { min-height: 32px; padding: 2px 10px; color: var(--ink); }
+html[data-workspace] .asm-toggle button { font-size: 0.875rem; }
+/* Assembly scrolls here, both ways, so its sideways scrollbar is always in view. */
+html[data-workspace] .asm-lines { flex: 1 0 6rem; max-height: none; border-radius: 6px; font-size: 0.875rem; }
+
+/* ---------- Action row ---------- */
+
+html[data-workspace] .workspace-actions { flex: none; flex-wrap: nowrap; justify-content: flex-end; min-height: 53px; margin: 0; padding: 8px 12px; border-top: 1px solid var(--line); background: var(--sheet); }
+html[data-workspace] .workspace-actions > button { flex: none; }
+html[data-workspace] .workspace-actions > .code-reset { margin-inline-end: auto; }
+html[data-workspace] .workspace-actions .code-confirm { flex: 1; margin: 0; padding: 0; border-radius: 0; background: transparent; }
+html[data-workspace] .workspace-actions .code-confirm p { flex: 1 1 auto; font-size: 0.9375rem; }
+html[data-workspace] .workspace-actions .code-confirm-actions { flex: none; }
+/* Red means pass and fail here, so this is plain and relies on its words. */
+html[data-workspace] button.btn-danger { border-color: var(--ws-edge); background: transparent; color: var(--ink); }
+
+/* ---------- Small windows: two tabs instead of dividers ---------- */
+
+@media (max-width: 767px), (max-height: 499px) {
+  html[data-workspace] .workspace-views { display: flex; gap: 4px; }
+  html[data-workspace] .split-divider { display: none; }
+  html[data-workspace] .split[data-orientation] { display: block; height: auto; }
+  html[data-workspace] .code-step > .split { flex: 1; min-height: 0; }
+  html[data-workspace] .code-step > .split > .split-pane { height: 100%; overflow: hidden; }
+  html[data-workspace] .code-step[data-view="question"] > .split > .split-pane:last-child,
+  html[data-workspace] .code-step[data-view="code"] > .split > .split-pane:first-child { display: none; }
+
+  /* The editor and results scroll together, and the action row stays in reach under them. */
+  html[data-workspace] .workspace-code > .split { min-height: 0; overflow: auto; }
+  html[data-workspace] .workspace-code > .split > .split-pane { overflow: visible; }
+  html[data-workspace] .workspace-code .code-editor,
+  html[data-workspace] .workspace-code .cm-editor { height: auto; }
+  html[data-workspace] .workspace-code .cm-scroller { min-height: 12rem; overflow-y: visible; }
+  html[data-workspace] .workspace-code .results-panel { height: auto; }
+  html[data-workspace] .workspace-code .results-body { overflow: visible; }
+  html[data-workspace] .asm-panel { height: auto; }
+  html[data-workspace] .asm-lines { flex: none; }
+
+  html[data-workspace] .question-panel { padding: 16px 16px 24px; }
+  html[data-workspace] .workspace-where { flex-basis: 100%; }
+  html[data-workspace] .workspace-actions .code-confirm { flex-wrap: wrap; }
+}
+/* In a short, wide window the top bar has room for one row. */
+@media (max-height: 499px) and (min-width: 768px) {
+  html[data-workspace] .workspace-where { flex-basis: 16rem; }
+}

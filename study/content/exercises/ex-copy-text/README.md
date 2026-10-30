@@ -8,7 +8,7 @@ Write `copy_text(text)`. It returns a **new** heap block that holds a copy of th
 
 The copy must be separate: changing the original string afterwards must not change the copy. The code that calls `copy_text` frees the copy when it is done.
 
-You are done when Test shows all four cases passing.
+You are done when Submit shows all four cases passing.
 
 :::example
 **Input:** `copy_text("Mili")`

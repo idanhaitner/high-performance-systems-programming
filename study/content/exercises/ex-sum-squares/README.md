@@ -4,7 +4,7 @@ title: Add up the squares
 
 A number lives in a box of fixed size, and a total that grows too big no longer fits.
 
-You will write a **function**. A function is a named piece of code that receives some input values and gives back one answer. Giving back the answer is called **returning** it, and C does it with the word `return`. `main` is the function where a whole program starts; here the tests bring their own, so you do not write `main`. The Test button calls your function for you with a few inputs and checks the answers.
+You will write a **function**. A function is a named piece of code that receives some input values and gives back one answer. Giving back the answer is called **returning** it, and C does it with the word `return`. `main` is the function where a whole program starts; here the tests bring their own, so you do not write `main`. The Submit button calls your function for you with a few inputs and checks the answers.
 
 Write `sum_squares(n)`. It must return the sum of the squares from 1 up to `n`, that is, 1×1 + 2×2 + … + n×n.
 
@@ -12,7 +12,7 @@ The function returns a `long long`. That is a whole-number type that takes 8 byt
 
 You will need a **loop**, which repeats the lines inside it. `for (int i = 1; i <= n; i++)` runs once with `i` equal to 1, then 2, and so on up to `n`. (`i++` means "add 1 to `i`".)
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `sum_squares(3)`

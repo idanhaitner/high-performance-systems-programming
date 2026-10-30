@@ -6,7 +6,7 @@ To change the caller's pointer, a function needs the address of that pointer.
 
 Write `clear_pointer(pp)`. Here `pp` holds the address of the caller's pointer. After the call, the caller's pointer must be `NULL`, the value that means "points at nothing". The number it used to point to must not change.
 
-You are done when Test shows all three cases passing.
+You are done when Submit shows all three cases passing.
 
 :::example
 **Input:** `int a = 1; int *p = &a; clear_pointer(&p);`
