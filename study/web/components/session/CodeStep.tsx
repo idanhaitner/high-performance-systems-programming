@@ -243,7 +243,6 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
         {/* Once the step is solved, Next in the bar below is the one primary action. */}
         <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked}>{busy && lastAction === "test" ? "Testing…" : "Test my code"}</button>
         <button type="button" onClick={() => act("run")} disabled={locked}>{busy && lastAction === "run" ? "Running…" : "Run"}</button>
-        <button type="button" className="btn-quiet" aria-expanded={asmOpen} onClick={openAsm} disabled={locked}>{busy && lastAction === "asm" ? "Compiling…" : asmLabel}</button>
         {confirmReset ? (
           <span className="code-confirm" role="alert">
             Replace your code with the starter code?
@@ -254,7 +253,10 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
           <button type="button" className="session-skip btn-quiet" onClick={() => setConfirmReset(true)}>Reset to starter</button>
         )}
       </div>
-      <p className="code-privacy">Test checks your answer. Run only shows what your code prints. Both send your code to godbolt.org, a website that compiles C.</p>
+      <div className="code-foot">
+        <p className="code-privacy">Test checks your answer. Run only shows what your code prints. Both send your code to godbolt.org, a website that compiles C.</p>
+        <button type="button" className="btn-subtle" aria-expanded={asmOpen} onClick={openAsm} disabled={locked}>{busy && lastAction === "asm" ? "Compiling…" : asmLabel}</button>
+      </div>
 
       <div aria-live="polite">
         <div key={runId} className="code-run">
@@ -293,13 +295,15 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
 
       {fails >= 2 && (
         <div className="code-solution">
-          {solutionOpen ? (
+          {/* The button stays put when the panel opens, so the same spot closes it again. */}
+          <button type="button" className="btn-quiet" aria-expanded={solutionOpen} onClick={() => setSolutionOpen((open) => !open)}>
+            {solutionOpen ? "Hide solution" : "Show solution"}
+          </button>
+          {solutionOpen && (
             <>
               <p className="code-label">Solution (read only)</p>
               <Editor value={ex.solution} onChange={() => {}} diagnostics={[]} readOnly />
             </>
-          ) : (
-            <button type="button" className="btn-quiet" onClick={() => setSolutionOpen(true)}>Show solution</button>
           )}
         </div>
       )}
