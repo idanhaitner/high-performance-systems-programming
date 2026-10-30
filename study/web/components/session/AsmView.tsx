@@ -27,12 +27,13 @@ export function AsmView({ lines, activeSourceLine, onHoverAsm }: ViewProps) {
 type PanelProps = ViewProps & {
   optimize: boolean;
   onOptimize(optimize: boolean): void;
+  onUpdate(): void;
   locked: boolean;
   stale: boolean;
   diagnostics: Diagnostic[] | null;
 };
 
-export function AsmPanel({ optimize, onOptimize, locked, stale, diagnostics, ...view }: PanelProps) {
+export function AsmPanel({ optimize, onOptimize, onUpdate, locked, stale, diagnostics, ...view }: PanelProps) {
   return (
     <aside className="asm-panel" aria-label="Assembly">
       <p className="asm-intro">This is the machine code your C turns into. Hover a line of C to see its instructions.</p>
@@ -41,7 +42,11 @@ export function AsmPanel({ optimize, onOptimize, locked, stale, diagnostics, ...
         <button type="button" aria-pressed={optimize} disabled={locked} onClick={() => onOptimize(true)}>-O2</button>
         <span className="asm-hint">{optimize ? "-O2 asks the compiler to make the code faster." : "-O0 keeps the code close to what you wrote."}</span>
       </div>
-      {stale && <p className="asm-stale" role="status">Your code changed. Press Assembly again to update.</p>}
+      {stale && (
+        <p className="asm-stale" role="status">
+          Your code changed. <button type="button" disabled={locked} onClick={onUpdate}>Update</button>
+        </p>
+      )}
       {diagnostics ? (
         <div className="asm-failed">
           <p className="code-headline">Your code did not compile, so there is no assembly to show.</p>

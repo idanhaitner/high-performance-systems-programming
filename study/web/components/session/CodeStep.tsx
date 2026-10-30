@@ -258,6 +258,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered }
             onHoverAsm={setHoverAsm}
             optimize={shownOptimize}
             onOptimize={pickOptimize}
+            onUpdate={() => act("asm")}
             locked={locked}
             stale={asm !== null && asm.code !== code}
             diagnostics={asm?.failed ?? null}
