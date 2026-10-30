@@ -17,3 +17,10 @@ CLAUDE.md
 
 # Debug folders that gcc makes on macOS
 *.dSYM/
+
+# Working files from planning and design sessions; local only, never pushed
+docs/
+.superpowers/
+.planning/
+.impeccable/
+PRODUCT.md
