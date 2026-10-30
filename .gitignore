@@ -14,3 +14,6 @@ study/web/tsconfig.tsbuildinfo
 .claude/
 .cursor/
 CLAUDE.md
+
+# Debug folders that gcc makes on macOS
+*.dSYM/

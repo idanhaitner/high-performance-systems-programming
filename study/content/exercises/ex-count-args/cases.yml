@@ -1,0 +1,16 @@
+cases:
+  - name: no words
+    args: []
+    stdin: ""
+    expected: "0\n"
+    hint: "With nothing after the program's name, argc is 1 and the answer is 0."
+  - name: one word
+    args: ["hello"]
+    stdin: ""
+    expected: "1\n"
+    hint: "argc is 2 here: the program's name and hello. Leave out the program's name."
+  - name: three words
+    args: ["a", "b", "c"]
+    stdin: ""
+    expected: "3\n"
+    hint: "argc is 4 here. Print argc - 1."

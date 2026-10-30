@@ -1,0 +1,31 @@
+---
+title: Call the function you are given
+---
+
+A small one, from "Passing a function to a function" in the lesson "Pointers to functions": a function can receive another function, and call it through a pointer.
+
+Write `apply(f, x)`. It calls the function `f` on the number `x` and returns the answer. For example, if `twice` doubles a number, `apply(twice, 5)` is 10.
+
+The starter returns `x` and never calls `f`. Press Test my code first and see which cases fail.
+
+You are done when Test shows all three cases passing.
+
+:::hint
+A function pointer is called just like a normal function, by writing its name and the value in parentheses.
+:::
+
+:::hint
+Write `return f(x);`, and remove the line `(void)f;`.
+:::
+
+:::case name="calls twice"
+If you got 5, `f` was never called. Return `f(x)`.
+:::
+
+:::case name="calls negate"
+If you got 4, `f` was never called. Return `f(x)`.
+:::
+
+:::case name="calls add_ten"
+Call whichever function you were given. Do not write the name of a particular one.
+:::

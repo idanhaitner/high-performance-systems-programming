@@ -5,7 +5,7 @@ title: "Lecture 2 practice: memory management"
 ---
 
 :::learn title="How this practice works"
-You have read the lessons, so now you use them. Each lesson gets one new question, and most get a small coding exercise. One lab, done on your own computer in VS Code (a free code editor), comes last.
+You have read the lessons, so now you use them. Each lesson gets one new question and a very small code question where you write just a few lines, and most also get a bigger coding exercise. One lab, done on your own computer in VS Code (a free code editor), comes last. It ends with a final exercise that uses everything from this lecture.
 
 Press **Next** when a step is done. If you are stuck, press **Skip for now**, or use the **Reread** link at the top of the step to open that step's lesson.
 
@@ -38,6 +38,9 @@ int main(void) {
 `q` is only a copy of `p`, so changing `q` leaves `p` pointing at `a`. Then `*p = 7` changes `a`. To change `p` itself, `aim` would need a pointer to `p`, an `int **`.
 :::
 
+:::exercise ref=ex-clear-pointer lesson=pointers-to-pointers
+:::
+
 :::exercise ref=ex-point-to-max lesson=pointers-to-pointers
 :::
 
@@ -56,6 +59,9 @@ printf("%d %d\n", *q, p[1]);
 - [x] `40 30`
 
 `p` points at `A[1]`, so `q` points two elements later, at `A[3]`, which holds 40. `p[1]` means "one element after `p`", which is `A[2]`, and it holds 30.
+:::
+
+:::exercise ref=ex-last-element lesson=pointer-arithmetic
 :::
 
 :::exercise ref=ex-find-first lesson=pointer-arithmetic
@@ -83,6 +89,9 @@ int main(void) {
 The first call goes to `twice`, so `r` is 6. Then `f` is pointed at `plus_one`, so `f(r)` is 6 + 1, which is 7.
 :::
 
+:::exercise ref=ex-apply lesson=function-pointers
+:::
+
 :::exercise ref=ex-count-if lesson=function-pointers
 :::
 
@@ -100,6 +109,9 @@ free(A);
 - [ ] Nothing is wrong: `free(A)` frees both blocks
 
 The second line replaces the only copy of the first block's address. Now nobody can free that block, so it is a memory leak. `free(A)` frees only the block `A` points to now.
+:::
+
+:::exercise ref=ex-make-zeros lesson=malloc-and-free
 :::
 
 :::exercise ref=ex-reverse-copy lesson=malloc-and-free
@@ -122,6 +134,9 @@ int *B = realloc(A, 4 * sizeof(int));
 `realloc` keeps the values that were already in the block, even if it has to move them. The new room is not cleared, so it holds whatever was there before, just as with `malloc`.
 :::
 
+:::exercise ref=ex-grow-and-fill lesson=realloc-and-strings
+:::
+
 :::exercise ref=ex-copy-text lesson=realloc-and-strings
 :::
 
@@ -136,6 +151,9 @@ Which of these really needs the heap?
 - [x] A list of names that keeps growing as the user types, and other functions still read it after the function that made it has returned
 
 The list needs the heap for two reasons: its size changes while the program runs, and it must outlive the function that made it. The other two are small, fixed in size, and short-lived, so the stack suits them better.
+:::
+
+:::exercise ref=ex-heap-box lesson=stack-or-heap
 :::
 
 :::lab ref=lab-stack-limit lesson=stack-or-heap

@@ -6,10 +6,13 @@ In the lesson "Stack or heap?" you read that the stack is small, usually about 8
 
 ## What is in the folder
 
+This lab has two parts. Part 1 is the stack limit. Part 2 is a final exercise that uses everything from Lecture 2.
+
 - `bigarray.c`: a program that adds up `N` numbers twice. `sum_on_stack` keeps them in a local array, on the stack. `sum_on_heap` should keep them in a heap block from `malloc`, but it is left for you: it has a `TODO` comment and returns 0 for now. Before it starts, the program prints your stack limit and the size of the array.
 - `Makefile`: a small recipe file for `make`, a tool that runs the long `gcc` commands for you, as in the Lecture 1 lab.
+- `final/` and `tests/`: the code for Part 2.
 
-## What to do in VS Code
+## Part 1: what to do in VS Code
 
 1. Download the zip below and unzip it. In VS Code, choose **File → Open Folder…** and open the unzipped folder.
 2. Open a terminal inside VS Code: **Terminal → New Terminal**. You need `gcc` and `make`, installed as in the Lecture 1 lab (`xcode-select --install` on macOS, `sudo apt install build-essential` on Linux or WSL).
@@ -43,4 +46,46 @@ Then write **one sentence** that explains the difference, using the lesson's ide
 
 **Going further (optional).** Find the largest `N` that still works on the stack. Try `make run N=...` with smaller values, halving the gap each time, until you are close. Compare `N × 4` bytes with your stack limit. It will be a little smaller than the limit, because the stack also holds the other functions' local variables.
 
-You are done when `make test` prints `heap:  OK`, and you have the two numbers and your sentence.
+Part 1 is done when `make test` prints `heap:  OK`, and you have the two numbers and your sentence.
+
+## Part 2: the final exercise, a growing list of words
+
+Now you build one small program that uses every lesson of Lecture 2. It reads words, one on each line, until the input ends. You do not know how many words will come, so the list has to grow as it reads. At the end it prints how many words it read, and which of them are long:
+
+```text
+$ printf 'apple\nfig\nbanana\n' | ./words
+Read 3 words
+Long words: 2
+apple
+banana
+```
+
+(`printf '...' | ./words` feeds those lines to the program as if you had typed them. `\n` is a line break, and `|` connects the output of one command to the input of the next.)
+
+The code is in the `final/` folder. Each `TODO` comment says what is missing.
+
+| You write | What it practices | Lesson |
+| --- | --- | --- |
+| `add_word`, which changes the caller's list through a `char ***` | Changing the caller's pointer | Pointers to pointers |
+| `print_matching`, which walks through the list with a pointer | Moving a pointer through an array | Pointer arithmetic and pointer mistakes |
+| `count_matching` and `print_matching`, which receive the rule `is_long` as a function | Passing a function to a function | Pointers to functions |
+| `copy_word`, using exactly the bytes it needs | `malloc` and `strlen` + 1 | Memory on request: malloc and free |
+| The growing list, the lines from `fgets`, and `free_words` | `realloc`, arrays of strings, and freeing in the right order | Resizing memory and arrays of strings |
+| One sentence, in the list below | Choosing where memory lives | Stack or heap? |
+
+A `char ***` looks scary, but you have seen each piece. The list is a `char **`, because it points to the first of many `char *` words. To change the caller's list, `add_word` needs the address of that list, and that adds one more star. So `*list` *is* the caller's list.
+
+### What to do
+
+1. Type `make final`. It builds your code and prints one line for each check: `OK` or `WRONG`, and the reason. Most say `WRONG` for now, and make ends with an error line. That is expected.
+2. Open `final/wordlist.c` and write each `TODO`, one function at a time, in order. `add_word` uses `copy_word`, so start at the top. Run `make final` after each function, and watch the `WRONG` lines disappear.
+3. Open `final/main.c` and write its two `TODO`s.
+4. Try it yourself. Type `make words`, and then `./words`. Type a few words, pressing Enter after each one. To say the input has ended, press **Ctrl+D** on a new line.
+
+`make final` also counts your memory. It builds your code with a small counter in the middle of every `malloc`, `realloc`, and `free`, and fails if any block is left unfreed when the program ends. So a memory leak, which is normally silent, shows up here as `WRONG`.
+
+### What to write down
+
+Write **one sentence** that explains why this list has to live on the heap, not in a local array. It could start: "A local array would not work here because…" The lesson gives you two reasons that fit.
+
+You are done with the whole lab when `make final` prints `OK: every final check passes.`, and you have your sentence.

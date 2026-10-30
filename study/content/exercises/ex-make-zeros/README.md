@@ -1,0 +1,31 @@
+---
+title: Make a heap array of zeros
+---
+
+A small one, from "calloc: memory that starts at zero" in the lesson "Memory on request: malloc and free": `calloc(n, size)` reserves room for `n` items of `size` bytes each, and fills all of it with zeros.
+
+Write `make_zeros(n)`. It returns a new heap block holding `n` `int`s, all 0. The caller will free it. If there is no memory, `calloc` returns `NULL`, and you just pass that on. Using `malloc` with a loop that stores the zeros is also fine.
+
+The starter returns `NULL` every time. Press Test my code first and see which cases fail.
+
+You are done when Test shows all three cases passing.
+
+:::hint
+With `calloc`, the size of one item is `sizeof(int)`, and you ask for `n` of them.
+:::
+
+:::hint
+Write `return calloc(n, sizeof(int));`, and remove the two starter lines.
+:::
+
+:::case name="five zeros"
+If you returned `NULL`, nothing was reserved yet. Use `calloc(n, sizeof(int))`.
+:::
+
+:::case name="one zero"
+It should also work when `n` is 1.
+:::
+
+:::case name="separate blocks"
+Each call should ask for a new block. Do not keep one block and hand it out twice.
+:::

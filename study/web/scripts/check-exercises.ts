@@ -142,6 +142,19 @@ try {
       const tail = `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split("\n").slice(-1)[0] ?? "";
       problems.push(`${lab.id}: make test SRC_DIR=solution exited ${r.status}: ${tail}`);
     }
+
+    // The final exercise: the reference code passes, and the starter does not.
+    const finalSolved = path.join(tmp, "labs-final", lab.id, "solution");
+    const finalStarter = path.join(tmp, "labs-final", lab.id, "starter");
+    fs.cpSync(dir, finalSolved, { recursive: true });
+    fs.cpSync(dir, finalStarter, { recursive: true });
+    const solved = spawnSync("make", ["-C", finalSolved, "final", "SRC_DIR=solution"], { encoding: "utf8", timeout: 120000 });
+    if (solved.status !== 0) {
+      const tail = `${solved.stdout ?? ""}${solved.stderr ?? ""}`.trim().split("\n").slice(-1)[0] ?? "";
+      problems.push(`${lab.id}: make final SRC_DIR=solution exited ${solved.status}: ${tail}`);
+    }
+    const starter = spawnSync("make", ["-C", finalStarter, "final"], { encoding: "utf8", timeout: 120000 });
+    if (starter.status === 0) problems.push(`${lab.id}: make final already passes on the starter`);
   }
 } catch (error) {
   problems.push(`check-exercises crashed: ${error instanceof Error ? error.message : String(error)}`);

@@ -1,0 +1,16 @@
+cases:
+  - name: three items
+    args: []
+    stdin: "3 2.5\n"
+    expected: "3 items cost 2.50 each\n"
+    hint: "Check the words and the spaces, and use %.2f to get exactly 2 digits after the point."
+  - name: ten items
+    args: []
+    stdin: "10 0.75\n"
+    expected: "10 items cost 0.75 each\n"
+    hint: "The numbers come from the input. Do not write 3 or 2.50 in the format string: use %d and %.2f."
+  - name: the price is rounded
+    args: []
+    stdin: "2 19.999\n"
+    expected: "2 items cost 20.00 each\n"
+    hint: "%.2f rounds 19.999 to 20.00 by itself. You do not need any extra code for it."

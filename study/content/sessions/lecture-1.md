@@ -5,7 +5,7 @@ title: "Lecture 1 practice: data, memory, and running programs"
 ---
 
 :::learn title="How this practice works"
-You have read the lessons, so now you use them. Each lesson gets one new question, then a small coding exercise. One lab, done on your own computer in VS Code (a free code editor), comes last.
+You have read the lessons, so now you use them. Each lesson gets one new question, then a very small code question where you write just a few lines, then a bigger coding exercise. One lab, done on your own computer in VS Code (a free code editor), comes last. It ends with a final exercise that uses everything from this lecture.
 
 Press **Next** when a step is done. If you are stuck, press **Skip for now**, or use the **Reread** link at the top of the step to open that step's lesson.
 
@@ -31,6 +31,9 @@ printf("%.1f\n", total);
 The 1.0 is far too small for a number as big as 1e20 to remember, so the first addition changes nothing. Subtracting 1e20 then leaves exactly 0.
 :::
 
+:::exercise ref=ex-sum-row lesson=why-low-level
+:::
+
 :::exercise ref=ex-sum-squares lesson=why-low-level
 :::
 
@@ -49,6 +52,9 @@ printf("%.1f %.1f\n", b, c);
 - [ ] `2.0 2.0`
 
 In `a / 4` both sides are whole numbers, so the division throws away the fraction and gives 2. Storing that in a `double` is too late to bring the fraction back. In `a / 4.0` one side is a `double`, so the fraction is kept.
+:::
+
+:::exercise ref=ex-digit-value lesson=c-data-types
 :::
 
 :::exercise ref=ex-average lesson=c-data-types
@@ -72,6 +78,9 @@ printf("%d %d\n", a[0], *p);
 `p` starts at `a[0]`, so `*p = 9` changes `a[0]`. Then `p + 2` moves the pointer two `int`s along, to `a[2]`, which holds 7. Moving the pointer does not change the array.
 :::
 
+:::exercise ref=ex-set-to-zero lesson=memory-and-pointers
+:::
+
 :::exercise ref=ex-swap lesson=memory-and-pointers
 :::
 
@@ -90,6 +99,9 @@ printf("%d %c %X\n", n, n, n);
 All three placeholders get the same number and show it in different ways. `%d` shows it as a decimal number, `%c` as the letter with that number, and `%X` in hexadecimal (base 16), where 65 is 41.
 :::
 
+:::exercise ref=ex-print-price lesson=printf-and-scanf
+:::
+
 :::exercise ref=ex-number-then-letter lesson=printf-and-scanf
 :::
 
@@ -106,6 +118,9 @@ word[2] = '\0';
 - [x] It prints `he`, and `strlen(word)` is 2
 
 A string ends at its first `'\0'`, wherever that is. Both `printf` and `strlen` stop there. The letters after it are still in the array, but string tools never reach them.
+:::
+
+:::exercise ref=ex-count-letter lesson=strings
 :::
 
 :::exercise ref=ex-compare-text lesson=strings
@@ -131,6 +146,9 @@ printf("%d\n", pts[1].y);
 `p = pts[0]` makes a separate copy, so `p.x = 9` leaves `pts[0].x` at 1. The sum is 9 + 1, which is 10.
 :::
 
+:::exercise ref=ex-move-point lesson=structures
+:::
+
 :::exercise ref=ex-best-student lesson=structures
 :::
 
@@ -144,6 +162,9 @@ Your `main.c` calls `area`, and the code of `area` is in `shapes.c`. You build w
 The linker's job is to connect each call to the code it calls. Nobody gave it `shapes.c`, so the call to `area` had nothing to connect to.
 :::
 
+:::exercise ref=ex-global-counter lesson=source-to-process
+:::
+
 :::exercise ref=ex-next-ticket lesson=source-to-process
 :::
 
@@ -155,6 +176,9 @@ This program prints `atoi(argv[1]) + atoi(argv[2])`. You run it as `./add 5 abc`
 - [ ] `0`
 
 `atoi` cannot report bad input. `atoi("abc")` just returns 0, so the sum is 5 + 0. The program gives a wrong-looking answer and no warning.
+:::
+
+:::exercise ref=ex-count-args lesson=command-line-arguments
 :::
 
 :::exercise ref=ex-sum-args lesson=command-line-arguments

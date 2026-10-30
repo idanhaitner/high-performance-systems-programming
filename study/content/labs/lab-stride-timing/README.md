@@ -17,10 +17,13 @@ The processor never fetches just one number. It fetches a 64-byte block, a **cac
 
 ## What is in the folder
 
+This lab has two parts. Part 1 is the timing. Part 2 is a final exercise that uses everything from Lecture 1.
+
 - `stride.c`: a program that fills a 4096 × 4096 grid of `int`s (64 MB), adds up every number twice, times both, and prints the results. The two adding functions, `sum_rows` and `sum_cols`, are left for you. Each has a `TODO` comment and returns 0 for now.
 - `Makefile`: a small recipe file for `make`. **make** is a tool that reads the recipe and runs the long `gcc` commands for you, so you only type a short command.
+- `final/` and `tests/`: the code for Part 2.
 
-## What to do in VS Code
+## Part 1: what to do in VS Code
 
 1. Download the zip below and unzip it. In VS Code, choose **File → Open Folder…** and open the unzipped folder.
 2. Open a terminal inside VS Code: **Terminal → New Terminal**. This lab needs `gcc` and `make`. On macOS, install them by typing `xcode-select --install`. There, `gcc` is really Apple's compiler `clang` under another name, which is fine for this lab. On Linux, type `sudo apt install build-essential`. On Windows, use WSL (the Linux system built into Windows) and the same Linux command.
@@ -51,4 +54,56 @@ Run it three times, because times jump around a little. Write down:
 
 Then write **one sentence** that explains the difference, using the lesson's idea of reading memory in order. For example, it could start: "Row by row is faster because each read is the neighbor of the previous one, so…"
 
-You are done when `make test` prints `OK`, and you have the three numbers and your sentence.
+Part 1 is done when `make test` prints `OK`, and you have the three numbers and your sentence.
+
+## Part 2: the final exercise, a score report
+
+Now you build one small program that uses every lesson of Lecture 1. You give it players and their points on the command line:
+
+```text
+./report Dana 90 Noam 75 Lior 82
+```
+
+And it prints this report:
+
+```text
+Dana 90
+Noam 75
+Lior 82
+Total: 247
+Average: 82.33
+Best: Dana (90)
+```
+
+The code is split into three files in the `final/` folder. Each `TODO` comment says what is missing.
+
+| You write | What it practices | Lesson |
+| --- | --- | --- |
+| `total_points`, which must work for scores so big that their total does not fit in an `int` | Numbers have a limited size | Why the machine matters |
+| `average_points`, which must keep the fraction | Dividing whole numbers | Values and types |
+| `best_player`, which walks through the array with a pointer and returns a pointer | Pointers and arrays | Memory and pointers |
+| `print_report`, in an exact format | `printf` placeholders | Printing and reading values |
+| Copying the name in `read_players`, even when it is too long to fit | `strncpy` and `'\0'` | Working with strings |
+| Filling an array of `struct player` | Structures and `->` | Structures |
+| The missing declaration in `players.h` | Headers and several `.c` files | Programs and processes |
+| Reading the pairs of words in `main` and `read_players` | `argc`, `argv`, and `atoi` | Command-line arguments |
+
+A `long long` is a whole number type of 8 bytes on typical machines, big enough for these totals. `printf` shows it with `%lld`.
+
+### What to do
+
+1. Type `make final`. It stops with an error like ``call to undeclared function 'best_player'`` (the exact words depend on your compiler). The compiler is reading another file that calls `best_player`, but `players.h` never told it about that function. This error is expected, and fixing it is your first task.
+2. Open `final/players.h` and add the declaration of `best_player`, as its `TODO` says. Type `make final` again. Now it builds, and it prints one line for each check: `OK` or `WRONG`, and the reason. Most say `WRONG` for now.
+3. Open `final/players.c` and `final/main.c`, and write each `TODO`, one function at a time. Run `make final` after each function, and watch the `WRONG` lines disappear.
+4. Try your own players: `./report Ana 10 Ben 20`. Also try a mistake, `./report Ana`, and it should print how to use the program.
+5. Finally, build the program by hand, one step at a time, to see the steps from the lesson. Type these inside the `final` folder (first type `cd final`):
+
+```text
+gcc -c players.c
+gcc -c main.c
+gcc main.o players.o -o report
+```
+
+The first two lines each make an object file, and the third links them. Now leave a file out, with `gcc main.o -o report`, and read the "undefined" error: the linker could not find the code of the functions in `players.c`. Then go back with `cd ..`, and remove the extra files with `rm final/*.o final/report`.
+
+You are done with the whole lab when `make final` prints `OK: every final check passes.`
