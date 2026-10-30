@@ -4,11 +4,7 @@ title: Add up the command-line numbers
 
 `argc` and `argv` hold the words typed after the program's name, and each word is text that you must turn into a number before you can add it.
 
-This time you write a whole program, with its own `main`. The tests run it as if you had typed, for example:
-
-```text
-./sum 3 4
-```
+This time you write a whole program, with its own `main`. The tests run it as if you had typed the program's name followed by some numbers.
 
 Your program must print the sum of all the numbers after the program's name, then a newline (`\n`).
 

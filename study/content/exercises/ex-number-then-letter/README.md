@@ -6,7 +6,7 @@ Pressing Enter leaves a newline in the input buffer, and `%c` reads it as if it 
 
 Write a whole program, with its own `main`. It asks for a number and then a character, and prints both. The tests type the answers for you, each followed by Enter.
 
-The two questions appear on one line in the output because the typed answers are not printed: in a real terminal, your typing would show up between them.
+Notice that both questions appear on one line in the output below, because the typed answers are not printed: in a real terminal, your typing would show up between them.
 
 You are done when Test shows all three cases passing.
 
