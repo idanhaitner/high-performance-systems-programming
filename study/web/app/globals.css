@@ -323,7 +323,7 @@ main { min-width: 0; }
   color: var(--ink);
 }
 .chapters-nav a.is-current .dot { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.dot.is-done { background: var(--mint); color: var(--on-card); }
+.dot.is-done { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .dot-icon { width: 14px; height: 14px; }
 
 .rail-session {
