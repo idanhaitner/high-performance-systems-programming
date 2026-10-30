@@ -2,7 +2,7 @@
 title: Turn a digit character into its number
 ---
 
-A small one, from "Characters are small numbers" in the lesson "Values and types": a `char` holds a character's code, and `'0'` has the code 48, not 0.
+A `char` holds a character's code, and `'0'` has the code 48, not 0.
 
 Write `digit_value(c)`. It receives a digit character, from `'0'` to `'9'`, and returns the number that digit stands for. So `digit_value('7')` is 7.
 

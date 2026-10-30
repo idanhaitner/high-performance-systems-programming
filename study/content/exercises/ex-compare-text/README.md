@@ -2,7 +2,7 @@
 title: Compare two strings yourself
 ---
 
-This exercise practices "Comparing strings with strcmp" from the lesson "Working with strings": two strings are compared letter by letter, and the first difference decides which comes first.
+Two strings are compared letter by letter, and the first difference decides which comes first.
 
 Write `compare_text(a, b)` without using `<string.h>`. Like `strcmp`, it returns:
 

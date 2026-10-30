@@ -2,7 +2,7 @@
 title: Point to the largest element
 ---
 
-This exercise practices "Changing the middle pointer" from the lesson "Pointers to pointers": to change the caller's **pointer**, a function needs the address of that pointer, a pointer to a pointer.
+To change the caller's **pointer**, a function needs the address of that pointer, a pointer to a pointer.
 
 Write `point_to_max(pp, arr, n)`. `arr` is an array of `n` `int`s (at least one). `pp` is the address of the caller's pointer. After the call, the caller's pointer must point to the **largest** element of `arr`. If the largest value appears more than once, point to the first one. For example:
 

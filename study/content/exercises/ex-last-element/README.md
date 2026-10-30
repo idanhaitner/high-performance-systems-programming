@@ -2,7 +2,7 @@
 title: Return a pointer to the last element
 ---
 
-A small one, from "Four ways to name the same element" in the lesson "Pointer arithmetic and pointer mistakes": `a + i` is the address of `a[i]`.
+`a + i` is the address of `a[i]`.
 
 Write `last_element(a, n)`. The array `a` has `n` elements, at least one. The function returns a pointer to the last element. For example, for `int A[4]`, it returns `&A[3]`.
 

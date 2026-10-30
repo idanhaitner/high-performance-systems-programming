@@ -2,7 +2,7 @@
 title: Average without losing the half
 ---
 
-This exercise practices "Dividing whole numbers" from the lesson "Values and types": when both sides of `/` are whole numbers, C throws away the part after the decimal point.
+When both sides of `/` are whole numbers, C throws away the part after the decimal point.
 
 Write the **function** `average(total, count)`. (A function is a named piece of code that receives values and gives back, or **returns**, one answer.) It receives two `int`s and returns their average as a `double`, the C type for numbers with a decimal point. For example:
 

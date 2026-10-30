@@ -2,7 +2,7 @@
 title: Keep a count in a global variable
 ---
 
-A small one, from "Where each variable lives in the program file" in the lesson "Programs and processes": a **global** variable, written outside every function, lives for the whole run. A **local** variable, written inside a function, is created fresh on each call and is destroyed when the function returns.
+A **global** variable, written outside every function, lives for the whole run. A **local** variable, written inside a function, is created fresh on each call and is destroyed when the function returns.
 
 Here `total_calls` is a global. Other code reads it, so it must be the one that counts. Fix `count_call()` so that each call adds 1 to the global `total_calls`.
 

@@ -2,7 +2,7 @@
 title: Set the caller's pointer to NULL
 ---
 
-A small one, from "Changing the middle pointer" in the lesson "Pointers to pointers": to change the caller's pointer, a function needs the address of that pointer.
+To change the caller's pointer, a function needs the address of that pointer.
 
 Write `clear_pointer(pp)`. Here `pp` holds the address of the caller's pointer. After the call, the caller's pointer must be `NULL`, the value that means "points at nothing". The number it used to point to must not change. For example:
 

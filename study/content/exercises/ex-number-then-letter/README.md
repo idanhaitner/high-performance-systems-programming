@@ -2,7 +2,7 @@
 title: Read a number, then a letter
 ---
 
-This exercise practices "The input buffer: why scanf skips input" from the lesson "Printing and reading values": pressing Enter leaves a newline in the input buffer, and `%c` reads it as if it were your letter.
+Pressing Enter leaves a newline in the input buffer, and `%c` reads it as if it were your letter.
 
 This is a whole program, with its own `main`. It asks for a number and then a character, and prints both. The tests type the answers for you, each followed by Enter. For example, when the input is
 

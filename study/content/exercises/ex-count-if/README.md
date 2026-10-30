@@ -2,7 +2,7 @@
 title: Count with a function you are given
 ---
 
-This exercise practices "Passing a function to a function" from the lesson "Pointers to functions". A function can receive the address of another function and call it.
+A function can receive the address of another function and call it.
 
 Write `count_if(a, n, keep)`. It looks at each of the `n` `int`s in `a`, calls `keep` on it, and counts how many times `keep` says yes. `keep` is a pointer to a function that receives one `int` and returns an `int`: 1 for "yes, count it" and 0 for "no". For example, with
 

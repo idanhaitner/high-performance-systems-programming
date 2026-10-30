@@ -2,7 +2,7 @@
 title: Add up the command-line numbers
 ---
 
-This exercise practices both parts of the lesson "Command-line arguments": `argc` and `argv` hold the words typed after the program's name, and each word is text that you must turn into a number before you can add it.
+`argc` and `argv` hold the words typed after the program's name, and each word is text that you must turn into a number before you can add it.
 
 This time you write a whole program, with its own `main`. The tests run it as if you had typed, for example:
 
@@ -20,7 +20,7 @@ Your program must print the sum of all the numbers after the program's name, the
 
 Remember that `argv[0]` is the program's name, so the numbers are in `argv[1]` up to `argv[argc - 1]`. There may be any number of them, even none. With no numbers the sum is 0.
 
-To turn a word such as `"3"` into the number 3, use `atoi` from `<stdlib.h>`, as in the lesson. The tests only give clean whole numbers, so `atoi` is enough here.
+To turn a word such as `"3"` into the number 3, use `atoi` from `<stdlib.h>`. The tests only give clean whole numbers, so `atoi` is enough here.
 
 The starter prints only the first number. Press Test my code first and see which cases fail.
 

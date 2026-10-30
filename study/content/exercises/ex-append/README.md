@@ -2,7 +2,7 @@
 title: Grow an array one element at a time
 ---
 
-This exercise practices "Growing a block with realloc" from the lesson "Resizing memory and arrays of strings": `realloc` makes a heap block bigger, keeps what was in it, and may move it, so you must use the address it returns.
+`realloc` makes a heap block bigger, keeps what was in it, and may move it, so you must use the address it returns.
 
 Write `append(a, n, value)`. `a` is a heap array holding `*n` `int`s. `append` grows the block by **one** `int`, stores `value` in the new last place, adds 1 to `*n`, and returns the array's (possibly new) address. For example:
 

@@ -2,7 +2,7 @@
 title: Move a point through a pointer
 ---
 
-A small one, from "Defining and using a structure" in the lesson "Structures": when you have a pointer to a structure, `p->x` is the member `x` of the structure it points to.
+When you have a pointer to a structure, `p->x` is the member `x` of the structure it points to.
 
 Write `move_right(p, dx)`. It adds `dx` to the `x` of the point that `p` points to, and leaves `y` as it is. For example:
 

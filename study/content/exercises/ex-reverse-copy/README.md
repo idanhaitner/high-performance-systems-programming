@@ -2,7 +2,7 @@
 title: Return a reversed copy of an array
 ---
 
-This exercise practices "Asking for memory with malloc" and "Where the memory lives" from the lesson "Memory on request: malloc and free". A local array disappears when its function ends, but a heap block from `malloc` stays until someone frees it. So a function that hands back a new array must make it with `malloc`, and the caller frees it.
+A local array disappears when its function ends, but a heap block from `malloc` stays until someone frees it. So a function that hands back a new array must make it with `malloc`, and the caller frees it.
 
 Write `reverse_copy(a, n)`. It returns a **new** heap array of `n` `int`s that holds the elements of `a` in reverse order. The original array `a` must not change. For example:
 

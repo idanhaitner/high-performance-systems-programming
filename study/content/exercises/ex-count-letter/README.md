@@ -2,7 +2,7 @@
 title: Count one letter in a string
 ---
 
-A small one, from "A string is an array that ends with '\0'" in the lesson "Working with strings": a string has no stored length, so you walk along it until you reach `'\0'`.
+A string has no stored length, so you walk along it until you reach `'\0'`.
 
 Write `count_letter(text, letter)`. It returns how many times `letter` appears in `text`. For example, `count_letter("banana", 'a')` is 3. A capital letter is a different character, so `count_letter("Aa", 'a')` is 1.
 

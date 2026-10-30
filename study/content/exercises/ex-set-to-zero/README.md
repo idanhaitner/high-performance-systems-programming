@@ -2,7 +2,7 @@
 title: Set a variable to zero through a pointer
 ---
 
-A small one, from "Pointers: a variable that holds an address" in the lesson "Memory and pointers": if `p` holds the address of `x`, then writing to `*p` changes `x` itself.
+If `p` holds the address of `x`, then writing to `*p` changes `x` itself.
 
 Write `set_to_zero(p)`. After the call, the variable that `p` points to must hold 0. For example:
 

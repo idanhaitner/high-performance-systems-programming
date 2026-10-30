@@ -2,7 +2,7 @@
 title: Keep a value alive after the function ends
 ---
 
-A small one, from "Reason 2 for the heap: memory that outlives the function" in the lesson "Stack or heap?": a local variable is destroyed when its function returns, and a heap block stays until you free it.
+A local variable is destroyed when its function returns, and a heap block stays until you free it.
 
 Write `make_box(value)`. It returns the address of an `int` holding `value`, and that `int` must still be there after `make_box` returns. The caller frees it. If there is no memory, return `NULL`.
 

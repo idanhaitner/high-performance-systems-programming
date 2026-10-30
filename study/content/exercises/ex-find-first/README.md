@@ -2,7 +2,7 @@
 title: Find the first match with a moving pointer
 ---
 
-This exercise practices "Four ways to name the same element" and "Subtracting two pointers" from the lesson "Pointer arithmetic and pointer mistakes". Adding 1 to a pointer moves it to the next element, and `NULL` means "points nowhere".
+Adding 1 to a pointer moves it to the next element, and `NULL` means "points nowhere".
 
 Write `find_first(a, n, target)`. It looks through the `n` `int`s of `a` and returns a **pointer** to the first element equal to `target`. If no element matches, it returns `NULL`. For example:
 

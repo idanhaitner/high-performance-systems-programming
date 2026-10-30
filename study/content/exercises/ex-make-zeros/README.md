@@ -2,7 +2,7 @@
 title: Make a heap array of zeros
 ---
 
-A small one, from "calloc: memory that starts at zero" in the lesson "Memory on request: malloc and free": `calloc(n, size)` reserves room for `n` items of `size` bytes each, and fills all of it with zeros.
+`calloc(n, size)` reserves room for `n` items of `size` bytes each, and fills all of it with zeros.
 
 Write `make_zeros(n)`. It returns a new heap block holding `n` `int`s, all 0. The caller will free it. If there is no memory, `calloc` returns `NULL`, and you just pass that on. Using `malloc` with a loop that stores the zeros is also fine.
 

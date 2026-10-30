@@ -2,7 +2,7 @@
 title: Find the best student
 ---
 
-This exercise practices "Defining and using a structure" from the lesson "Structures": a structure bundles several values into one record, and a dot reaches one member, as in `s.grade`.
+A structure bundles several values into one record, and a dot reaches one member, as in `s.grade`.
 
 The code already describes a student:
 

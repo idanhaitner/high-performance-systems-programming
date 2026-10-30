@@ -2,7 +2,7 @@
 title: Grow an array safely
 ---
 
-A small one, from "A safer way to call realloc" in the lesson "Resizing memory and arrays of strings": if `realloc` fails, `a = realloc(a, ...)` overwrites your only copy of the old address with `NULL`.
+If `realloc` fails, `a = realloc(a, ...)` overwrites your only copy of the old address with `NULL`.
 
 Write `grow_and_fill(a, old_n, new_n, fill)`. The heap block `a` holds `old_n` `int`s. Make it hold `new_n` `int`s, and store `fill` in each of the new places. Return the block's address, which may have moved. For example, growing {1, 2} to 4 elements with `fill` 7 gives {1, 2, 7, 7}.
 

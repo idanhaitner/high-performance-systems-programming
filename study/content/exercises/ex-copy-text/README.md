@@ -2,7 +2,7 @@
 title: Copy a string into its own block
 ---
 
-This exercise practices "Three string tools" and "Step 1: three names" from the lesson "Resizing memory and arrays of strings": a copy of a string needs `strlen` + 1 bytes, because `strcpy` also copies the `'\0'` at the end.
+A copy of a string needs `strlen` + 1 bytes, because `strcpy` also copies the `'\0'` at the end.
 
 Write `copy_text(text)`. It returns a **new** heap block that holds a copy of the string `text`, using exactly as many bytes as the copy needs. For example:
 

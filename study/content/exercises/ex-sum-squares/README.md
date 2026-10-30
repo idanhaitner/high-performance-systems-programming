@@ -2,7 +2,7 @@
 title: Add up the squares
 ---
 
-This exercise practices the first surprise from the lesson "Why the machine matters": a number lives in a box of fixed size, and a total that grows too big no longer fits.
+A number lives in a box of fixed size, and a total that grows too big no longer fits.
 
 You will write a **function**. A function is a named piece of code that receives some input values and gives back one answer. Giving back the answer is called **returning** it, and C does it with the word `return`. `main` is the function where a whole program starts; here the tests bring their own, so you do not write `main`. The Test button calls your function for you with a few inputs and checks the answers.
 

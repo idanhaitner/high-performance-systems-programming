@@ -2,7 +2,7 @@
 title: A ticket counter that remembers
 ---
 
-This exercise practices "Where each variable lives in the program file" from the lesson "Programs and processes": a local variable lives on the stack and is destroyed when its function ends, while a global lives in `.data` or `.bss` for the whole run.
+A local variable lives on the stack and is destroyed when its function ends, while a global lives in `.data` or `.bss` for the whole run.
 
 Think of the ticket machine at a post office. Each person who presses the button gets the next number: 1, then 2, then 3. The machine must remember the last number it gave out.
 

@@ -2,7 +2,7 @@
 title: Swap two numbers through pointers
 ---
 
-This exercise practices "Pointers: a variable that holds an address" from the lesson "Memory and pointers": if `p` holds the address of `x`, then writing to `*p` changes `x` itself.
+If `p` holds the address of `x`, then writing to `*p` changes `x` itself.
 
 When you call a **function** (a named piece of code that receives values), C hands it **copies** of the values you pass. If the function changes its copy, the caller's variable stays the same. So a function that wants to change the caller's variables must receive their **addresses** instead. This is exactly why `scanf`, the function that reads a number you type, needs `&x`: it gets the address of `x` and writes the number into that box.
 

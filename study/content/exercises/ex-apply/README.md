@@ -2,7 +2,7 @@
 title: Call the function you are given
 ---
 
-A small one, from "Passing a function to a function" in the lesson "Pointers to functions": a function can receive another function, and call it through a pointer.
+A function can receive another function, and call it through a pointer.
 
 Write `apply(f, x)`. It calls the function `f` on the number `x` and returns the answer. For example, if `twice` doubles a number, `apply(twice, 5)` is 10.
 

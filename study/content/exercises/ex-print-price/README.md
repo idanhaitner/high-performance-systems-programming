@@ -2,7 +2,7 @@
 title: Print a line in an exact format
 ---
 
-A small one, from "Printing with printf" in the lesson "Printing and reading values": placeholders such as `%d` and `%.2f` say where each value goes and how it looks.
+Placeholders such as `%d` and `%.2f` say where each value goes and how it looks.
 
 The program reads a whole number and a decimal number, already written for you. Change the last `printf` so it prints exactly this shape, with 2 digits after the point:
 

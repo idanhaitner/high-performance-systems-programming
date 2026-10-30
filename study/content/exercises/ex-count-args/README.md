@@ -2,7 +2,7 @@
 title: Count the words after the program's name
 ---
 
-A small one, from "Receiving the arguments: argc and argv" in the lesson "Command-line arguments": `argc` counts every word on the command line, and that count includes the program's own name.
+`argc` counts every word on the command line, and that count includes the program's own name.
 
 Write a program that prints how many words were typed **after** the program's name, then a newline:
 
