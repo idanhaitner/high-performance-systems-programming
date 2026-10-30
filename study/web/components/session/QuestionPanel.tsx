@@ -49,7 +49,7 @@ export function QuestionPanel({ title, content, examples, hints, renderSolution,
       <div className="question-help">
         {hints.length > 0 && (
           <>
-            <button type="button" className="btn-help" aria-expanded={hintsOpen} onClick={toggleHints}>Hints ({hintsShown} of {hints.length})</button>
+            <button type="button" className="btn-quiet" aria-expanded={hintsOpen} onClick={toggleHints}>Hints ({hintsShown} of {hints.length})</button>
             {hintsOpen && (
               <div className="code-hints">
                 {hints.slice(0, hintsShown).map((hint, i) => (
@@ -59,7 +59,7 @@ export function QuestionPanel({ title, content, examples, hints, renderSolution,
                   </div>
                 ))}
                 {hintsShown < hints.length && (
-                  <button type="button" className="btn-help" onClick={() => setHintsShown((n) => n + 1)}>Next hint</button>
+                  <button type="button" onClick={() => setHintsShown((n) => n + 1)}>Next hint</button>
                 )}
               </div>
             )}

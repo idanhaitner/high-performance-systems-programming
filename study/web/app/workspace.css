@@ -49,7 +49,8 @@ html[data-workspace] button.btn-primary { border-color: var(--accent); backgroun
 html[data-workspace] button.btn-quiet { border-color: transparent; background: transparent; color: var(--ink); }
 html[data-workspace] button.is-on,
 html[data-workspace] button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
-html[data-workspace] :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* The editor draws its own ring, in an indigo that shows on the code panel. */
+html[data-workspace] :focus-visible:not(.cm-content) { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- Top bar and step bar ---------- */
 
@@ -64,7 +65,8 @@ html[data-workspace] .workspace-nav { display: flex; flex: none; align-items: ce
 html[data-workspace] .page ol.session-bar { flex: none; gap: 2px; margin: 0; padding: 0 16px; border-bottom: 1px solid var(--line); }
 html[data-workspace] .session-seg { min-height: 18px; padding: 6px 0; border: 0; border-radius: 0; background: transparent; }
 html[data-workspace] .session-seg:hover:not(:disabled) { background: transparent; }
-html[data-workspace] .session-seg::before { height: 4px; background: var(--ws-edge); }
+/* Only the size animates, so the colours of the other pages never flash on the way in. */
+html[data-workspace] .session-seg::before { height: 4px; background: var(--ws-edge); transition: transform 0.2s var(--ease); }
 html[data-workspace] .session-seg[data-status="done"]::before { background: var(--ink); box-shadow: none; }
 html[data-workspace] .session-seg[data-status="skipped"]::before { background: repeating-linear-gradient(-45deg, var(--ink) 0 3px, transparent 3px 6px); box-shadow: none; }
 html[data-workspace] .session-seg[data-status="current"]::before { background: var(--accent); transform: scaleY(2); }
@@ -122,19 +124,21 @@ html[data-workspace] .code-hints,
 html[data-workspace] .code-solution { align-self: stretch; }
 html[data-workspace] .code-hint { padding: 0 0 0 12px; border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
 html[data-workspace] .code-hint p { margin: 4px 0; }
-html[data-workspace] .code-hints > .btn-help { border-color: var(--ws-edge); background: transparent; color: var(--ink); }
 
 /* ---------- Editor ---------- */
 
-html[data-workspace] .code-editor { border: 0; border-radius: 0; }
+html[data-workspace] .code-editor { position: relative; border: 0; border-radius: 0; }
 html[data-workspace] .code-solution .code-editor { border-radius: 8px; }
-html[data-workspace] .code-editor:focus-within { outline: 2px solid var(--ws-ring-on-code); outline-offset: -2px; }
+/* An outline on this box would be painted over by the editor inside it, so the ring is a layer on top. It lets clicks through. */
+html[data-workspace] .code-editor:focus-within { outline: none; }
+html[data-workspace] .code-editor:focus-within::after { content: ""; position: absolute; inset: 0; z-index: 1; border: 2px solid var(--ws-ring-on-code); border-radius: inherit; pointer-events: none; }
 html[data-workspace] .workspace-code .code-editor { height: 100%; }
 html[data-workspace] .workspace-code .cm-editor { height: 100%; }
 html[data-workspace] .workspace-code .cm-scroller { min-height: 0; max-height: none; overflow: auto; }
 html[data-workspace] .workspace-code .code-editor-loading { min-height: 0; }
 /* The site-wide line number colour is too faint to read at 4.5:1. */
 html[data-workspace] .code-editor .cm-gutters { color: var(--code-muted); }
+html[data-workspace] .code-editor .cm-diagnostic { font-size: 1rem; }
 
 /* ---------- Results ---------- */
 
@@ -142,7 +146,7 @@ html[data-workspace] .workspace-code { display: flex; flex-direction: column; he
 html[data-workspace] .workspace-code > .split { flex: 1; }
 html[data-workspace] .results-panel { display: flex; flex-direction: column; height: 100%; }
 html[data-workspace] .results-tabs { display: flex; flex: none; gap: 4px; padding-inline: 12px; border-bottom: 1px solid var(--line); }
-html[data-workspace] button.results-tab { min-height: 36px; margin-bottom: -1px; padding: 6px 10px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--muted); font-size: 0.875rem; }
+html[data-workspace] button.results-tab { min-height: 36px; margin-bottom: -1px; padding: 6px 10px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--muted); font-size: 0.875rem; transition: none; }
 @media (pointer: coarse) {
   html[data-workspace] button.results-tab { min-height: 44px; }
 }
@@ -161,12 +165,15 @@ html[data-workspace] .code-result[data-state="ok"]:not(:has(.code-headline)) { p
 html[data-workspace] .code-result[data-state="ok"]:not(:has(.code-headline)) > :first-child { margin-top: 0; }
 html[data-workspace] .code-output { border-radius: 6px; }
 html[data-workspace] .code-casehint { border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
+/* Some of these labels are whole sentences, such as the exit code line. */
+html[data-workspace] .code-result > .code-label { font-size: 1rem; }
 html[data-workspace] .code-result .code-actions { margin: 12px 0 0; }
 html[data-workspace] .code-result .code-actions button { flex: none; }
 html[data-workspace] .code-result .session-download { min-height: 36px; padding: 6px 14px; border: 1px solid var(--ws-edge); border-radius: 8px; background: transparent; color: var(--ink); font-size: 0.9375rem; }
 
 html[data-workspace] .asm-panel { display: flex; flex-direction: column; height: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; }
 html[data-workspace] .asm-stale { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 0; border-radius: 0; background: transparent; color: var(--muted); }
+html[data-workspace] :is(.asm-intro, .asm-hint, .asm-stale) { font-size: 1rem; }
 html[data-workspace] .asm-stale button { min-height: 32px; padding: 2px 10px; color: var(--ink); }
 html[data-workspace] .asm-toggle button { font-size: 0.875rem; }
 /* Assembly scrolls here, both ways, so its sideways scrollbar is always in view. */
@@ -178,7 +185,7 @@ html[data-workspace] .workspace-actions { flex: none; flex-wrap: nowrap; justify
 html[data-workspace] .workspace-actions > button { flex: none; }
 html[data-workspace] .workspace-actions > .code-reset { margin-inline-end: auto; }
 html[data-workspace] .workspace-actions .code-confirm { flex: 1; margin: 0; padding: 0; border-radius: 0; background: transparent; }
-html[data-workspace] .workspace-actions .code-confirm p { flex: 1 1 auto; font-size: 0.9375rem; }
+html[data-workspace] .workspace-actions .code-confirm p { flex: 1 1 auto; }
 html[data-workspace] .workspace-actions .code-confirm-actions { flex: none; }
 /* Red means pass and fail here, so this is plain and relies on its words. */
 html[data-workspace] button.btn-danger { border-color: var(--ws-edge); background: transparent; color: var(--ink); }
