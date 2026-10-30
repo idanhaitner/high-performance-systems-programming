@@ -1,39 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Figtree, Heebo, JetBrains_Mono } from "next/font/google";
 import { Celebrate } from "@/components/Celebrate";
 import { PageEnter } from "@/components/PageEnter";
 import { Rail } from "@/components/Rail";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ViewTransitions } from "@/components/ViewTransitions";
 import { loadCourse } from "@/lib/course";
+import "@fontsource-variable/bricolage-grotesque/wght.css";
+import "@fontsource-variable/figtree/wght.css";
+import "@fontsource-variable/heebo/wght.css";
+import "@fontsource-variable/jetbrains-mono/wght.css";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import "./landing.css";
-
-const sans = Heebo({
-  subsets: ["latin", "hebrew"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sans",
-  display: "swap",
-});
-const body = Figtree({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
-  display: "swap",
-});
-const display = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-display",
-  display: "swap",
-});
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-mono",
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -61,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const course = loadCourse();
   return (
-    <html lang={course.lang} dir={course.dir} className={`${sans.variable} ${body.variable} ${display.variable} ${mono.variable}`}>
+    <html lang={course.lang} dir={course.dir}>
       <body>
         <ViewTransitions />
         <Celebrate />

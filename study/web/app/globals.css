@@ -53,6 +53,10 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   /* A soft spring (about 8% overshoot, settled by 75% of the duration), for things that should feel alive. */
   --ease-spring: linear(0, 0.06, 0.201, 0.378, 0.559, 0.721, 0.854, 0.954, 1.021, 1.062, 1.08, 1.083, 1.076, 1.063, 1.047, 1.033, 1.02, 1.009, 1.002, 0.997, 0.994, 0.993, 0.993, 0.994, 0.995, 0.996, 0.998, 0.999, 0.999, 1, 1, 1);
+  --font-sans: "Heebo Variable";
+  --font-body: "Figtree Variable";
+  --font-display: "Bricolage Grotesque Variable";
+  --font-mono: "JetBrains Mono Variable";
   --sans: var(--font-body), var(--font-sans), system-ui, sans-serif;
   --serif: var(--font-display), var(--font-sans), system-ui, sans-serif;
   --mono: var(--font-mono), ui-monospace, monospace;
