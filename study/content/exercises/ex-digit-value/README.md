@@ -4,11 +4,23 @@ title: Turn a digit character into its number
 
 A `char` holds a character's code, and `'0'` has the code 48, not 0.
 
-Write `digit_value(c)`. It receives a digit character, from `'0'` to `'9'`, and returns the number that digit stands for. So `digit_value('7')` is 7.
+Write `digit_value(c)`. It receives a digit character, from `'0'` to `'9'`, and returns the number that digit stands for.
 
 C promises that the digit characters have codes in a row: `'0'`, then `'1'`, then `'2'`, and so on.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `digit_value('7')`
+
+**Output:** `7`
+:::
+
+:::example
+**Input:** `digit_value('0')`
+
+**Output:** `0`
+:::
 
 :::hint
 `'7'` is 7 places after `'0'` in the table of codes. How can you get that distance?

@@ -4,9 +4,21 @@ title: Return a pointer to the last element
 
 `a + i` is the address of `a[i]`.
 
-Write `last_element(a, n)`. The array `a` has `n` elements, at least one. The function returns a pointer to the last element. For example, for `int A[4]`, it returns `&A[3]`.
+Write `last_element(a, n)`. The array `a` has `n` elements, at least one. The function returns a pointer to the last element.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `last_element(A, 4)`, where `A` is {10, 20, 30, 40}
+
+**Output:** `&A[3]`, the address of the 40
+:::
+
+:::example
+**Input:** `last_element(B, 1)`, where `B` is {7}
+
+**Output:** `&B[0]`, the address of the 7
+:::
 
 :::hint
 `a + n` is one place **past** the end of the array. Elements are counted from 0, so what is the index of the last of `n` elements?

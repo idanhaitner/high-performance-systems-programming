@@ -4,16 +4,15 @@ title: Set the caller's pointer to NULL
 
 To change the caller's pointer, a function needs the address of that pointer.
 
-Write `clear_pointer(pp)`. Here `pp` holds the address of the caller's pointer. After the call, the caller's pointer must be `NULL`, the value that means "points at nothing". The number it used to point to must not change. For example:
-
-```c
-int a = 1;
-int *p = &a;
-clear_pointer(&p);
-/* now p is NULL, and a is still 1 */
-```
+Write `clear_pointer(pp)`. Here `pp` holds the address of the caller's pointer. After the call, the caller's pointer must be `NULL`, the value that means "points at nothing". The number it used to point to must not change.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `int a = 1; int *p = &a; clear_pointer(&p);`
+
+**Output:** `p` is `NULL`, and `a` is still 1
+:::
 
 :::hint
 `pp = NULL;` changes only the function's own copy of the address. `pp` holds the address of the caller's pointer, so which expression *is* the caller's pointer?

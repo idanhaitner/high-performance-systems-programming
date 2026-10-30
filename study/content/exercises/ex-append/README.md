@@ -4,16 +4,7 @@ title: Grow an array one element at a time
 
 `realloc` makes a heap block bigger, keeps what was in it, and may move it, so you must use the address it returns.
 
-Write `append(a, n, value)`. `a` is a heap array holding `*n` `int`s. `append` grows the block by **one** `int`, stores `value` in the new last place, adds 1 to `*n`, and returns the array's (possibly new) address. For example:
-
-```c
-int *a = NULL;
-int n = 0;
-a = append(a, &n, 10);
-a = append(a, &n, 20);
-/* now n is 2, and a holds {10, 20} */
-free(a);
-```
+Write `append(a, n, value)`. `a` is a heap array holding `*n` `int`s. `append` grows the block by **one** `int`, stores `value` in the new last place, adds 1 to `*n`, and returns the array's (possibly new) address.
 
 Two details:
 
@@ -21,6 +12,18 @@ Two details:
 - The array may start empty, with `a` equal to `NULL`. That is fine: `realloc(NULL, size)` acts exactly like `malloc(size)`.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `a` is `NULL` and `n` is 0, then `a = append(a, &n, 10);` and `a = append(a, &n, 20);`
+
+**Output:** `n` is 2, and `a` holds {10, 20}
+:::
+
+:::example
+**Input:** `a` holds {1, 2, 3} and `n` is 3, then `a = append(a, &n, 4);`
+
+**Output:** `n` is 4, and `a` holds {1, 2, 3, 4}
+:::
 
 :::hint
 The new size is `*n + 1` elements, which is `(*n + 1) * sizeof(int)` bytes. Ask for that with `realloc(a, ...)` and keep the answer in a new variable, say `bigger`.

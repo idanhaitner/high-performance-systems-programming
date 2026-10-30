@@ -6,7 +6,7 @@ A local variable lives on the stack and is destroyed when its function ends, whi
 
 Think of the ticket machine at a post office. Each person who presses the button gets the next number: 1, then 2, then 3. The machine must remember the last number it gave out.
 
-Write the **function** `next_ticket()`. (A function is a named piece of code that gives back, or **returns**, an answer each time it is called.) It takes no input. The first call returns 1, the second returns 2, the third returns 3, and so on.
+Write the **function** `next_ticket()`. (A function is a named piece of code that gives back, or **returns**, an answer each time it is called.) It takes no input. Each call returns a number one bigger than the call before it, starting at 1.
 
 A plain local variable cannot do this. It is created fresh, at its starting value, every time the function starts, and destroyed when it returns.
 
@@ -15,6 +15,18 @@ C has a word for a local variable that remembers: `static`. Writing `static` in 
 The tests call `next_ticket()` many times in a row, in one run: once, once more, then ten more times.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `next_ticket()` called three times in a row
+
+**Output:** `1`, then `2`, then `3`
+:::
+
+:::example
+**Input:** `next_ticket()` called twelve times in a row
+
+**Output:** the twelfth call returns `12`
+:::
 
 :::hint
 If the first case passes but the second fails, the second call also returned 1. What happens to your count when the function returns?

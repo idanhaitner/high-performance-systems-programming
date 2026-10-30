@@ -19,6 +19,7 @@ type Exercise = {
   test: string | null;
   caseNames: string[];
   cases: Case[];
+  examples: unknown[];
 };
 type Lab = { id: string };
 type Step = { kind: string; exercise?: Exercise; lab?: Lab };
@@ -48,6 +49,9 @@ for (const session of course.sessions ?? []) {
 }
 
 const problems: string[] = [];
+for (const ex of exercises.values()) {
+  if (!ex.examples || ex.examples.length === 0) problems.push(`${ex.id}: needs at least one :::example block`);
+}
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "check-exercises-"));
 
 function compile(source: string, dir: string): { ok: boolean; stderr: string; exe: string } {

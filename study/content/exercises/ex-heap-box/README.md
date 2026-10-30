@@ -8,6 +8,18 @@ Write `make_box(value)`. It returns the address of an `int` holding `value`, and
 
 You are done when Test shows all three cases passing.
 
+:::example
+**Input:** `make_box(5)`
+
+**Output:** the address of an `int` holding 5, still valid after `make_box` returns
+:::
+
+:::example
+**Input:** `make_box(-1)`
+
+**Output:** the address of an `int` holding -1, still valid after `make_box` returns
+:::
+
 :::hint
 Returning `&value` or the address of any local variable gives a **dangling pointer**: it points at memory the program no longer owns. Which function reserves memory that stays until you free it? You need room for one `int`.
 :::

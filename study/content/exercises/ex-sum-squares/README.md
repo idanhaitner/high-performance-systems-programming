@@ -6,16 +6,25 @@ A number lives in a box of fixed size, and a total that grows too big no longer 
 
 You will write a **function**. A function is a named piece of code that receives some input values and gives back one answer. Giving back the answer is called **returning** it, and C does it with the word `return`. `main` is the function where a whole program starts; here the tests bring their own, so you do not write `main`. The Test button calls your function for you with a few inputs and checks the answers.
 
-Write `sum_squares(n)`. It must return the sum of the squares from 1 up to `n`, that is, 1×1 + 2×2 + … + n×n. For example:
-
-- `sum_squares(3)` is 1 + 4 + 9 = 14.
-- `sum_squares(0)` is 0, because there is nothing to add.
+Write `sum_squares(n)`. It must return the sum of the squares from 1 up to `n`, that is, 1×1 + 2×2 + … + n×n.
 
 The function returns a `long long`. That is a whole-number type that takes 8 bytes (64 bits) on the computers you will use; C only promises at least 64 bits. So it can hold numbers with up to 19 digits. On this course's machines it is the same size as `long`.
 
 You will need a **loop**, which repeats the lines inside it. `for (int i = 1; i <= n; i++)` runs once with `i` equal to 1, then 2, and so on up to `n`. (`i++` means "add 1 to `i`".)
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `sum_squares(3)`
+
+**Output:** `14`
+:::
+
+:::example
+**Input:** `sum_squares(0)`
+
+**Output:** `0`
+:::
 
 :::hint
 If a big case fails with a negative answer, you added only positive squares and still got a negative total. The lesson showed one way a positive calculation can come out negative.

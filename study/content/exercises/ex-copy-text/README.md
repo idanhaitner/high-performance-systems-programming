@@ -4,18 +4,23 @@ title: Copy a string into its own block
 
 A copy of a string needs `strlen` + 1 bytes, because `strcpy` also copies the `'\0'` at the end.
 
-Write `copy_text(text)`. It returns a **new** heap block that holds a copy of the string `text`, using exactly as many bytes as the copy needs. For example:
+Write `copy_text(text)`. It returns a **new** heap block that holds a copy of the string `text`, using exactly as many bytes as the copy needs.
 
-```c
-char name[] = "Mili";
-char *copy = copy_text(name);
-/* copy holds "Mili" in its own 5-byte block */
-free(copy);
-```
-
-The copy must be separate: changing `name` afterwards must not change `copy`. The code that calls `copy_text` frees the copy when it is done.
+The copy must be separate: changing the original string afterwards must not change the copy. The code that calls `copy_text` frees the copy when it is done.
 
 You are done when Test shows all four cases passing.
+
+:::example
+**Input:** `copy_text("Mili")`
+
+**Output:** a new block that holds `"Mili"`
+:::
+
+:::example
+**Input:** `copy_text("")`
+
+**Output:** a new block that holds `""`, the empty string
+:::
 
 :::hint
 First work out how many bytes you need: `strlen(text)` letters, plus 1 for the `'\0'`.

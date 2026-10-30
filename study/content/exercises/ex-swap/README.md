@@ -6,18 +6,23 @@ If `p` holds the address of `x`, then writing to `*p` changes `x` itself.
 
 When you call a **function** (a named piece of code that receives values), C hands it **copies** of the values you pass. If the function changes its copy, the caller's variable stays the same. So a function that wants to change the caller's variables must receive their **addresses** instead. This is exactly why `scanf`, the function that reads a number you type, needs `&x`: it gets the address of `x` and writes the number into that box.
 
-Write `swap(a, b)`. Here `a` and `b` are pointers to `int`: `a` holds the address of one variable and `b` holds the address of another. After the call, the two variables must have traded values. For example:
-
-```c
-int x = 3;
-int y = 8;
-swap(&x, &y);
-/* now x is 8 and y is 3 */
-```
+Write `swap(a, b)`. Here `a` and `b` are pointers to `int`: `a` holds the address of one variable and `b` holds the address of another. After the call, the two variables must have traded values.
 
 The function returns nothing, which C writes as `void`. Its only job is to change the two boxes.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `int x = 3; int y = 8; swap(&x, &y);`
+
+**Output:** `x` is 8 and `y` is 3
+:::
+
+:::example
+**Input:** `int x = -4; int y = 9; swap(&x, &y);`
+
+**Output:** `x` is 9 and `y` is -4
+:::
 
 :::hint
 A new local variable only holds a copy, so changing it does not reach the caller. Which expression is the caller's first box itself?

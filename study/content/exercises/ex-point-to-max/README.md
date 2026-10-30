@@ -4,18 +4,23 @@ title: Point to the largest element
 
 To change the caller's **pointer**, a function needs the address of that pointer, a pointer to a pointer.
 
-Write `point_to_max(pp, arr, n)`. `arr` is an array of `n` `int`s (at least one). `pp` is the address of the caller's pointer. After the call, the caller's pointer must point to the **largest** element of `arr`. If the largest value appears more than once, point to the first one. For example:
+Write `point_to_max(pp, arr, n)`. `arr` is an array of `n` `int`s (at least one). `pp` is the address of the caller's pointer. After the call, the caller's pointer must point to the **largest** element of `arr`. If the largest value appears more than once, point to the first one.
 
-```c
-int a[] = {4, 9, 2};
-int *p = NULL;
-point_to_max(&p, a, 3);
-/* now p == &a[1], so *p is 9 */
-```
-
-The pointer must point **into** the array, not to a copy. So after the call, `*p = 0;` changes `a[1]`.
+The pointer must point **into** the array, not to a copy. So after the call, `*p = 0;` changes that element of the array itself.
 
 You are done when Test shows all four cases passing.
+
+:::example
+**Input:** `int a[] = {4, 9, 2}; int *p = NULL; point_to_max(&p, a, 3);`
+
+**Output:** `p == &a[1]`, so `*p` is 9
+:::
+
+:::example
+**Input:** `int a[] = {6, 2, 6}; int *p = NULL; point_to_max(&p, a, 3);`
+
+**Output:** `p == &a[0]`, so `*p` is 6
+:::
 
 :::hint
 Keep a local pointer `best` to the largest element seen so far. It starts at `&arr[0]`. In the loop, compare `arr[i]` with the value `best` points to, `*best`.

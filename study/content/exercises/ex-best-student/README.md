@@ -21,9 +21,21 @@ Two details about the inputs:
 - `s` is a pointer to the first student, just as an array passed to a function arrives as a pointer to its first element. You still reach student number `i` with `s[i]`, and that student's grade with `s[i].grade`.
 - `const` in front means the function promises only to read the students, not to change them.
 
-If several students share the highest grade, return the **first** of them, the one with the smallest index. `n` is always at least 1. For example, with grades 70, 85, 92 the answer is 2, and with grades 80, 95, 95, 50 the answer is 1.
+If several students share the highest grade, return the **first** of them, the one with the smallest index. `n` is always at least 1.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `best_index(s, 3)`, where the three students have grades 70, 85, 92
+
+**Output:** `2`
+:::
+
+:::example
+**Input:** `best_index(s, 4)`, where the four students have grades 80, 95, 95, 50
+
+**Output:** `1`
+:::
 
 :::hint
 Keep a variable `best` that holds the index of the best student seen so far. Start it at 0, since the first student is the best of a group of one.

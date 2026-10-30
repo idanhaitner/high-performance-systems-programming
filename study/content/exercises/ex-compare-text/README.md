@@ -10,9 +10,27 @@ Write `compare_text(a, b)` without using `<string.h>`. Like `strcmp`, it returns
 - a **negative** number if `a` comes first,
 - a **positive** number if `b` comes first.
 
-For example, `compare_text("aab", "aaa")` is positive, and `compare_text("aaa", "aaaaa")` is negative, because the shorter string runs out first. Only the sign matters; any negative or positive number is fine.
+Only the sign matters; any negative or positive number is fine.
 
 You are done when Test shows all four cases passing.
+
+:::example
+**Input:** `compare_text("cat", "cat")`
+
+**Output:** `0`
+:::
+
+:::example
+**Input:** `compare_text("aab", "aaa")`
+
+**Output:** a positive number
+:::
+
+:::example
+**Input:** `compare_text("aaa", "aaaaa")`
+
+**Output:** a negative number
+:::
 
 :::hint
 Walk both strings together with one index `i`, starting at 0. Keep going while `a[i]` is not the end marker `'\0'` and `a[i] == b[i]`.

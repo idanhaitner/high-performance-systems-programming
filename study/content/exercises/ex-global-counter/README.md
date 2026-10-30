@@ -8,6 +8,18 @@ Here `total_calls` is a global. Other code reads it, so it must be the one that 
 
 You are done when Test shows all three cases passing.
 
+:::example
+**Input:** `count_call();` called once, when `total_calls` is 0
+
+**Output:** `total_calls` is 1
+:::
+
+:::example
+**Input:** `count_call();` called three times in a row, when `total_calls` starts at 0
+
+**Output:** `total_calls` is 3
+:::
+
 :::hint
 Which line creates a new variable inside the function? A line that begins with a type, such as `int`, creates one.
 :::

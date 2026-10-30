@@ -4,18 +4,23 @@ title: Count with a function you are given
 
 A function can receive the address of another function and call it.
 
-Write `count_if(a, n, keep)`. It looks at each of the `n` `int`s in `a`, calls `keep` on it, and counts how many times `keep` says yes. `keep` is a pointer to a function that receives one `int` and returns an `int`: 1 for "yes, count it" and 0 for "no". For example, with
-
-```c
-int is_even(int x) { return x % 2 == 0; }
-int a[] = {1, 2, 3, 4};
-```
-
-`count_if(a, 4, is_even)` returns 2, because two elements (2 and 4) are even.
+Write `count_if(a, n, keep)`. It looks at each of the `n` `int`s in `a`, calls `keep` on it, and counts how many times `keep` says yes. `keep` is a pointer to a function that receives one `int` and returns an `int`: 1 for "yes, count it" and 0 for "no".
 
 `count_if` must not know or care which question it is asking. The tests pass it different functions: "is it even?", "is it negative?", and "is it bigger than 100?".
 
 You are done when Test shows all four cases passing.
+
+:::example
+**Input:** `count_if(a, 4, is_even)`, where `a` is {1, 2, 3, 4} and `is_even` says yes to even numbers
+
+**Output:** `2`
+:::
+
+:::example
+**Input:** `count_if(b, 5, is_negative)`, where `b` is {-3, 5, -1, 0, 8} and `is_negative` says yes to numbers below 0
+
+**Output:** `2`
+:::
 
 :::hint
 Look at the parameter `int (*keep)(int)`: `keep` is a variable that holds a function's address. You call it just like a function: `keep(a[i])`.

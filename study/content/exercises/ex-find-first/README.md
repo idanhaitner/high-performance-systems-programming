@@ -4,19 +4,23 @@ title: Find the first match with a moving pointer
 
 Adding 1 to a pointer moves it to the next element, and `NULL` means "points nowhere".
 
-Write `find_first(a, n, target)`. It looks through the `n` `int`s of `a` and returns a **pointer** to the first element equal to `target`. If no element matches, it returns `NULL`. For example:
-
-```c
-int a[] = {7, 3, 9, 3};
-int *hit = find_first(a, 4, 3);
-/* hit == &a[1], so hit - a is 1 */
-int *miss = find_first(a, 4, 5);
-/* miss == NULL */
-```
+Write `find_first(a, n, target)`. It looks through the `n` `int`s of `a` and returns a **pointer** to the first element equal to `target`. If no element matches, it returns `NULL`.
 
 Use a pointer that walks through the array, instead of an index.
 
 You are done when Test shows all four cases passing.
+
+:::example
+**Input:** `find_first(a, 4, 3)`, where `a` is {7, 3, 9, 3}
+
+**Output:** `&a[1]`, the address of the first 3
+:::
+
+:::example
+**Input:** `find_first(a, 4, 5)`, where `a` is {7, 3, 9, 3}
+
+**Output:** `NULL`
+:::
 
 :::hint
 Loop with a pointer: `for (int *p = a; p < a + n; p++)`. `a + n` is the spot just past the last element, and inside the loop `*p` is the current element.

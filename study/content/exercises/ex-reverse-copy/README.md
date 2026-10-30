@@ -4,16 +4,21 @@ title: Return a reversed copy of an array
 
 A local array disappears when its function ends, but a heap block from `malloc` stays until someone frees it. So a function that hands back a new array must make it with `malloc`, and the caller frees it.
 
-Write `reverse_copy(a, n)`. It returns a **new** heap array of `n` `int`s that holds the elements of `a` in reverse order. The original array `a` must not change. For example:
-
-```c
-int a[] = {1, 2, 3};
-int *r = reverse_copy(a, 3);
-/* r holds {3, 2, 1}, and a still holds {1, 2, 3} */
-free(r);
-```
+Write `reverse_copy(a, n)`. It returns a **new** heap array of `n` `int`s that holds the elements of `a` in reverse order. The original array `a` must not change.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** `int a[] = {1, 2, 3}; int *r = reverse_copy(a, 3);`
+
+**Output:** `r` holds {3, 2, 1}, and `a` still holds {1, 2, 3}
+:::
+
+:::example
+**Input:** `int b[] = {4, 5, 6, 7}; int *r = reverse_copy(b, 4);`
+
+**Output:** `r` holds {7, 6, 5, 4}, and `b` still holds {4, 5, 6, 7}
+:::
 
 :::hint
 The new array must outlive the function, so make it with `malloc(n * sizeof(int))`, not as a local `int r[n]`.

@@ -4,22 +4,23 @@ title: Read a number, then a letter
 
 Pressing Enter leaves a newline in the input buffer, and `%c` reads it as if it were your letter.
 
-Write a whole program, with its own `main`. It asks for a number and then a character, and prints both. The tests type the answers for you, each followed by Enter. For example, when the input is
+Write a whole program, with its own `main`. It asks for a number and then a character, and prints both. The tests type the answers for you, each followed by Enter.
 
-```text
-5
-a
-```
-
-the program must print exactly:
-
-```text
-Enter a number: Enter a character: x = 5, ch = 'a'
-```
-
-(The two questions appear on one line because the typed answers are not printed: in a real terminal, your typing would show up between them.)
+The two questions appear on one line in the output because the typed answers are not printed: in a real terminal, your typing would show up between them.
 
 You are done when Test shows all three cases passing.
+
+:::example
+**Input:** typing `5`, Enter, `a`, Enter
+
+**Output:** `Enter a number: Enter a character: x = 5, ch = 'a'`
+:::
+
+:::example
+**Input:** typing `-12`, Enter, `Z`, Enter
+
+**Output:** `Enter a number: Enter a character: x = -12, ch = 'Z'`
+:::
 
 :::hint
 If `ch` is printed as `'` followed by a line break, which character was waiting in the buffer right after you typed the number and pressed Enter?

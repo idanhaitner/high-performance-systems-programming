@@ -4,9 +4,27 @@ title: Count one letter in a string
 
 A string has no stored length, so you walk along it until you reach `'\0'`.
 
-Write `count_letter(text, letter)`. It returns how many times `letter` appears in `text`. For example, `count_letter("banana", 'a')` is 3. A capital letter is a different character, so `count_letter("Aa", 'a')` is 1.
+Write `count_letter(text, letter)`. It returns how many times `letter` appears in `text`. A capital letter is a different character from the same letter in small form.
 
 You are done when Test shows all four cases passing.
+
+:::example
+**Input:** `count_letter("banana", 'a')`
+
+**Output:** `3`
+:::
+
+:::example
+**Input:** `count_letter("Aa", 'a')`
+
+**Output:** `1`
+:::
+
+:::example
+**Input:** `count_letter("hello", 'z')`
+
+**Output:** `0`
+:::
 
 :::hint
 Use a loop over `i` that keeps going while `text[i] != '\0'`. Do not use a fixed length: the strings have different lengths.

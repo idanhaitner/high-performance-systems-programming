@@ -8,6 +8,18 @@ Write `make_zeros(n)`. It returns a new heap block holding `n` `int`s, all 0. Th
 
 You are done when Test shows all three cases passing.
 
+:::example
+**Input:** `make_zeros(5)`
+
+**Output:** a new heap block holding {0, 0, 0, 0, 0}
+:::
+
+:::example
+**Input:** `make_zeros(1)`
+
+**Output:** a new heap block holding {0}
+:::
+
 :::hint
 With `calloc`, the size of one item is `sizeof(int)`, and you ask for `n` of them.
 :::
