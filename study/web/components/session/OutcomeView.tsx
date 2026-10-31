@@ -91,15 +91,29 @@ export function OutcomeView({ outcome, studentLines }: { outcome: RunOutcome; st
   );
 }
 
+const CASE_ICON_PATH: Record<CaseResult["status"], string> = {
+  pass: "M3.5 8.5l3 3 6-7",
+  fail: "M4 4l8 8M12 4l-8 8",
+  "not-run": "M4 8h8",
+};
+
 export function CaseList({ cases }: { cases: CaseView[] }) {
   const passed = cases.filter((c) => c.status === "pass").length;
+  const allPassed = passed === cases.length;
   return (
-    <div className="code-result" data-state={passed === cases.length ? "ok" : "bad"}>
-      <p className="code-headline">{passed === cases.length ? "All tests pass." : `${passed} of ${cases.length} tests pass.`}</p>
+    <div className="code-result code-verdict" data-state={allPassed ? "ok" : "bad"}>
+      <p className="code-headline">
+        {allPassed ? "All tests pass." : `${passed} of ${cases.length} tests pass.`}
+        {allPassed && <span className="code-tally">{passed} of {cases.length}</span>}
+      </p>
       <ul className="code-cases">
         {cases.map((c) => (
           <li key={c.name} data-status={c.status}>
-            <strong>{c.status === "pass" ? "Passed" : c.status === "fail" ? "Failed" : "Did not run"}:</strong> {c.name}
+            <svg className="code-case-icon" viewBox="0 0 16 16" aria-hidden="true">
+              <path d={CASE_ICON_PATH[c.status]} />
+            </svg>
+            <span className="sr-only">{c.status === "pass" ? "Passed" : c.status === "fail" ? "Failed" : "Did not run"}: </span>
+            <span className="code-case-name">{c.name}</span>
             {c.message && <pre className="code-output">{c.message}</pre>}
             {c.status === "fail" && c.hint && (
               <div className="code-casehint">
