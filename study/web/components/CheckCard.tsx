@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Inline } from "@/lib/inline";
 import type { Block } from "@/lib/types";
+import { CheckFrameContext } from "./session/check-frame";
 
 type Choice = { correct: boolean; text: React.ReactNode };
 type Blank = { correct: string; options: string[] };
@@ -225,6 +226,7 @@ export function CheckCard({
   prompt?: Block[];
   inText?: boolean;
 }) {
+  const frame = useContext(CheckFrameContext);
   const blanks = prompt ? blanksIn(prompt) : [];
   const blankMode = blanks.length > 0;
   const multi = !blankMode && choices.filter((choice) => choice.correct).length > 1;
@@ -261,23 +263,17 @@ export function CheckCard({
     reportCheck(id, false);
   }
 
-  return (
-    <form
-      className="card check"
-      id={id}
-      data-in-text={inText ? "" : undefined}
-      onSubmit={(event) => {
-        event.preventDefault();
-        setGraded(true);
-      }}
-    >
-      <div className="statement">
-        {blankMode && prompt ? (
-          <PromptBlocks blocks={prompt} menus={menus} values={values} onChange={changeBlank} />
-        ) : (
-          question
-        )}
-      </div>
+  const statement = (
+    <div className="statement">
+      {blankMode && prompt ? (
+        <PromptBlocks blocks={prompt} menus={menus} values={values} onChange={changeBlank} />
+      ) : (
+        question
+      )}
+    </div>
+  );
+  const options = (
+    <>
       {multi && <p className="check-note">Select every answer that applies.</p>}
       {!blankMode && (
         <div className="choices">
@@ -311,13 +307,49 @@ export function CheckCard({
           })}
         </div>
       )}
-      <div className="actions">
-        <button type="submit">Check</button>
-      </div>
+    </>
+  );
+  const results = (
+    <>
       {graded && !hasAnswer && <p className="check-result">Choose an answer first.</p>}
       {graded && hasAnswer && correct && <p className="check-result is-yes"><Mark right />Yes. That is the answer.</p>}
       {graded && hasAnswer && !correct && <p className="check-result is-no"><Mark right={false} />That is not it. The reason is below.</p>}
       {graded && hasAnswer && <div className="check-why">{why}</div>}
+    </>
+  );
+
+  return (
+    <form
+      className="card check"
+      id={id}
+      data-in-text={inText ? "" : undefined}
+      onSubmit={(event) => {
+        event.preventDefault();
+        setGraded(true);
+      }}
+    >
+      {frame ? (
+        frame({
+          question: statement,
+          answers: (
+            <>
+              {blankMode && !graded && <p className="results-empty">Choose an answer in each blank, then press Check.</p>}
+              {options}
+              {results}
+            </>
+          ),
+          right: graded && hasAnswer && correct,
+        })
+      ) : (
+        <>
+          {statement}
+          {options}
+          <div className="actions">
+            <button type="submit">Check</button>
+          </div>
+          {results}
+        </>
+      )}
     </form>
   );
 }

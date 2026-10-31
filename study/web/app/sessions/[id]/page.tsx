@@ -5,7 +5,7 @@ import type { RenderedStep } from "@/components/session/rendered";
 import { Stepper } from "@/components/session/Stepper";
 import { Mixed } from "@/lib/bidi";
 import { loadCourse } from "@/lib/course";
-import type { Block, SessionStep } from "@/lib/types";
+import type { Block, Lecture, SessionStep } from "@/lib/types";
 
 // Next's static export treats an empty list as "missing", so a course with no
 // sessions yet gets one placeholder page that says so.
@@ -14,6 +14,33 @@ const NO_SESSIONS = "none";
 export function generateStaticParams() {
   const ids = loadCourse().sessions.map((session) => ({ id: session.id }));
   return ids.length > 0 ? ids : [{ id: NO_SESSIONS }];
+}
+
+function SessionIntro({ title, lecture, summary }: { title: string; lecture?: Lecture; summary: string }) {
+  return (
+    <header className="session-intro">
+      {lecture && <p className="kicker">Lecture {lecture.number} · Step 2 of 2: practice</p>}
+      <h1><Mixed text={title} /></h1>
+      {lecture && (
+        <div className="session-before">
+          <p>
+            <strong>Read the lessons first.</strong> This practice does not teach anything new. It makes you
+            use the {lecture.lessons.length} lessons of Lecture {lecture.number}: {summary}.
+          </p>
+          <ol className="session-lessons">
+            {lecture.lessons.map((lesson) => (
+              <li key={lesson.id}>
+                <Link href={`/topics/${lesson.id}`}>
+                  <span>{String(lesson.lessonNumber).padStart(2, "0")}</span>
+                  <Mixed text={lesson.title} />
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+    </header>
+  );
 }
 
 export default async function SessionPage({ params }: { params: Promise<{ id: string }> }) {
@@ -79,30 +106,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   const rendered = Object.fromEntries(session.steps.map((step) => [step.id, { ...renderStep(step), ...lessonLink(step) }]));
   return (
     <article className="page chapter">
-      <header className="masthead session-masthead">
-        {lecture && <p className="kicker">Lecture {lecture.number} · Step 2 of 2: practice</p>}
-        <h1><Mixed text={session.title} /></h1>
-        {lecture && (
-          <div className="session-before">
-            <p>
-              <strong>Read the lessons first.</strong> This practice does not teach anything new. It makes you
-              use the {lecture.lessons.length} lessons of Lecture {lecture.number}:{" "}
-              {parts.filter(([n]) => n > 0).map(([n, one, many]) => `${n} ${n === 1 ? one : many}`).join(", ")}.
-            </p>
-            <ol className="session-lessons">
-              {lecture.lessons.map((lesson) => (
-                <li key={lesson.id}>
-                  <Link href={`/topics/${lesson.id}`}>
-                    <span>{String(lesson.lessonNumber).padStart(2, "0")}</span>
-                    <Mixed text={lesson.title} />
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-      </header>
-      <Stepper session={session} courseId={course.id} harness={course.harness} rendered={rendered} lectureNumber={lecture?.number ?? null} />
+      <Stepper session={session} courseId={course.id} harness={course.harness} rendered={rendered} lectureNumber={lecture?.number ?? null} intro={<SessionIntro title={session.title} lecture={lecture} summary={parts.filter(([n]) => n > 0).map(([n, one, many]) => `${n} ${n === 1 ? one : many}`).join(", ")} />} />
     </article>
   );
 }

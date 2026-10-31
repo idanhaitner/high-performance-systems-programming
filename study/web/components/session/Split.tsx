@@ -17,6 +17,9 @@ type Props = {
   className?: string;
 };
 
+// The question and its answer area. Coding and quick question steps share this, so the divider stays in one place across them.
+export const QUESTION_SPLIT = { name: "question", orientation: "vertical", start: 0.4, minFirst: 320, minSecond: 320 } as const;
+
 // Two panes with a draggable, keyboard-friendly divider. "vertical" is a vertical
 // divider with the panes side by side. Left to right only; no right-to-left dragging.
 export function Split({ courseId, name, orientation, start, minFirst, minSecond, label, first, second, className }: Props) {

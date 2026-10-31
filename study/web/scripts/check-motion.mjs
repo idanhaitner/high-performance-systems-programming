@@ -34,7 +34,7 @@ async function openSession(browser, options) {
   const { context, page } = await open(browser, "/", options);
   await page.evaluate((key) => localStorage.removeItem(key), SESSION_KEY);
   await page.goto(`${BASE}/sessions/lecture-1/`, { waitUntil: "networkidle" });
-  await page.waitForSelector(".session-step, .session .learn-step, .session-nav");
+  await page.waitForSelector(".session-step");
   return { context, page };
 }
 
@@ -148,27 +148,24 @@ const groups = {
 
   async "step-change"(browser) {
     let { context, page } = await openSession(browser);
-    const wrapper = () => page.$eval(".session-count + *, .session-head + *", (el) => [getComputedStyle(el).animationName, el.style.getPropertyValue("--dir")]);
-    const initial = await wrapper();
-    expect("step-change", initial[0] === "none", `the first step animates on page load (${initial[0]})`);
-    await page.click(".session-nav button.btn-primary");
+    const NEXT = ".workspace-nav button.btn-primary";
+    const entrance = () => page.$eval(".session-current .session-step > *, .reading-step", (el) => getComputedStyle(el.closest(".reading-step") ?? el).animationName);
+    expect("step-change", (await entrance()) === "none", "the first step animates on page load");
+    const barTop = () => page.$eval(".workspace-nav", (el) => el.getBoundingClientRect().top);
+    const before = await barTop();
+    await page.click(NEXT);
     await page.waitForTimeout(50);
-    const next = await wrapper();
-    expect("step-change", next[0] === "step-in" && next[1] === "1", `after Next: animation ${next[0]}, --dir "${next[1]}"`);
-    await page.click(".session-nav button:first-child");
-    await page.waitForTimeout(50);
-    const back = await wrapper();
-    expect("step-change", back[0] === "step-in" && back[1] === "-1", `after Back: animation ${back[0]}, --dir "${back[1]}"`);
-    for (let i = 0; i < 3; i++) await page.click(".session-nav button.btn-primary").catch(() => {});
-    await page.waitForTimeout(400);
-    const steps = await page.$$eval(".session-head ~ div:not(.session-nav)", (els) => els.map((el) => getComputedStyle(el).opacity));
-    expect("step-change", steps.length === 1 && steps[0] === "1", `after quick Nexts: ${steps.length} steps, opacity ${steps}`);
+    const fades = await page.$eval(".step-in .question-panel", (el) => getComputedStyle(el).animationName);
+    expect("step-change", fades === "panel-in", `after Next: the question panel animation is ${fades}`);
+    expect("step-change", (await barTop()) === before, "the top bar moved between steps");
+    const frame = await page.$eval(".step-in", (el) => getComputedStyle(el).animationName);
+    expect("step-change", frame === "none", `the whole frame animates (${frame}), so the bars and divider would flicker`);
     await context.close();
     ({ context, page } = await openSession(browser, { reducedMotion: "reduce" }));
-    await page.click(".session-nav button.btn-primary");
+    await page.click(NEXT);
     await page.waitForTimeout(50);
-    const reduced = await page.$eval(".session-head + *", (el) => getComputedStyle(el).transform);
-    expect("step-change", reduced === "none", `reduced motion still slides the step (${reduced})`);
+    const reduced = await page.$eval(".step-in .question-panel", (el) => getComputedStyle(el).transform);
+    expect("step-change", reduced === "none", `reduced motion still moves the step (${reduced})`);
     await context.close();
   },
 
@@ -187,9 +184,9 @@ const groups = {
 
     ({ context, page } = await openSession(browser));
     for (let i = 0; i < 40 && !(await page.locator(".step-kind[data-kind=exercise]").count()); i++) {
-      const skip = page.locator(".session-nav .session-skip");
+      const skip = page.locator(".workspace-nav button", { hasText: "Skip for now" });
       // A reading step can finish while we click, which disables Skip, so retry on the next loop.
-      await ((await skip.isEnabled()) ? skip : page.locator(".session-nav button.btn-primary")).click({ timeout: 3000 }).catch(() => {});
+      await ((await skip.isEnabled()) ? skip : page.locator(".workspace-nav button.btn-primary")).click({ timeout: 3000 }).catch(() => {});
     }
     const run = page.locator(".code-actions button", { hasText: /^Run$/ }).first();
     const runOnce = async () => {
@@ -228,10 +225,9 @@ const groups = {
   },
 
   async finished(browser) {
-    const { context, page } = await open(browser, "/");
-    await page.evaluate((key) => localStorage.setItem(key, JSON.stringify({ step: 35, done: [], skipped: [] })), SESSION_KEY);
-    await page.goto(`${BASE}/sessions/lecture-1/`, { waitUntil: "networkidle" });
-    await page.click(".session-nav .session-skip");
+    const { context, page } = await openSession(browser);
+    await page.locator(".session-seg").last().click();
+    await page.locator(".workspace-nav button", { hasText: "Skip for now" }).click();
     await page.waitForTimeout(50);
     const anim = await page.$eval(".session-finished", (el) => getComputedStyle(el).animationName).catch(() => "missing");
     expect("finished", anim === "finish-in", `session finished animation "${anim}"`);
