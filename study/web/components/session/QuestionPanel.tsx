@@ -18,10 +18,23 @@ export function QuestionPanel({ title, content, examples, hints, renderSolution,
   const [hintsOpen, setHintsOpen] = useState(false);
   const [solutionOpen, setSolutionOpen] = useState(false);
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const newestHint = useRef<HTMLDivElement>(null);
+  const focusHint = useRef(false);
 
   useEffect(() => {
     if (focusTitle) titleRef.current?.focus();
   }, [focusTitle]);
+
+  // The Next hint button goes away with the last hint, and every new hint is what the student wants to read next.
+  useEffect(() => {
+    if (focusHint.current) newestHint.current?.focus();
+    focusHint.current = false;
+  }, [hintsShown]);
+
+  const nextHint = () => {
+    focusHint.current = true;
+    setHintsShown((n) => n + 1);
+  };
 
   const toggleHints = () => {
     setHintsShown((n) => Math.max(n, 1));
@@ -53,13 +66,13 @@ export function QuestionPanel({ title, content, examples, hints, renderSolution,
             {hintsOpen && (
               <div className="code-hints">
                 {hints.slice(0, hintsShown).map((hint, i) => (
-                  <div key={i} className="code-hint">
+                  <div key={i} ref={i === hintsShown - 1 ? newestHint : undefined} tabIndex={-1} className="code-hint">
                     <p className="code-label">Hint {i + 1} of {hints.length}</p>
                     {hint}
                   </div>
                 ))}
                 {hintsShown < hints.length && (
-                  <button type="button" onClick={() => setHintsShown((n) => n + 1)}>Next hint</button>
+                  <button type="button" onClick={nextHint}>Next hint</button>
                 )}
               </div>
             )}

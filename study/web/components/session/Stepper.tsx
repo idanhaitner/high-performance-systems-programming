@@ -75,9 +75,17 @@ export function Stepper({
     if (shown.current !== null && shown.current !== state.step) {
       const box = top.current?.getBoundingClientRect();
       if (box && box.top < 0) top.current?.scrollIntoView({ block: "start", behavior: "instant" });
+      // The top bar with the button the student just pressed is gone, so focus would fall to the page. A quick question has no heading, so it uses the question.
+      const left = session.steps[shown.current];
+      const arrived = session.steps[state.step];
+      if (dir !== 0 && left?.kind === "exercise" && arrived?.kind !== "exercise") {
+        const heading = top.current?.querySelector<HTMLElement>(".session-step :is(h2, .statement)");
+        heading?.setAttribute("tabindex", "-1");
+        heading?.focus();
+      }
     }
     shown.current = state.step;
-  }, [ready, state.step]);
+  }, [ready, state.step, dir, session.steps]);
 
   const finished = state.step >= total;
   const current = finished ? null : session.steps[state.step];

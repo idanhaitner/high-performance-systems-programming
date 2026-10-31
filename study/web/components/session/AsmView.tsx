@@ -10,7 +10,7 @@ type ViewProps = {
 
 export function AsmView({ lines, activeSourceLine, onHoverAsm }: ViewProps) {
   return (
-    <pre className="asm-lines" aria-label="Assembly code" onMouseLeave={() => onHoverAsm(null)}>
+    <pre className="asm-lines" aria-label="Assembly code" tabIndex={0} onMouseLeave={() => onHoverAsm(null)}>
       {lines.map((l, i) => (
         <span
           key={i}
@@ -36,7 +36,7 @@ type PanelProps = ViewProps & {
 export function AsmPanel({ optimize, onOptimize, onUpdate, locked, stale, diagnostics, ...view }: PanelProps) {
   return (
     <aside className="asm-panel" aria-label="Assembly">
-      <p className="asm-intro">This is the machine code your C turns into. Hover a line of C to see its instructions.</p>
+      <p className="asm-intro">This is the machine code your C turns into. Point at a line of C with the mouse, or move the typing cursor to it, to light up the instructions it became.</p>
       <div className="asm-toggle" role="group" aria-label="Optimization level">
         <button type="button" aria-pressed={!optimize} disabled={locked} onClick={() => onOptimize(false)}>-O0</button>
         <button type="button" aria-pressed={optimize} disabled={locked} onClick={() => onOptimize(true)}>-O2</button>

@@ -57,6 +57,12 @@ describe("results panel", () => {
     expect(onTab).toHaveBeenCalledTimes(2);
   });
 
+  it("lets the keyboard reach both panels, so long output can be scrolled", () => {
+    render("output");
+    expect(panel("output").getAttribute("tabindex")).toBe("0");
+    expect(panel("assembly").getAttribute("tabindex")).toBe("0");
+  });
+
   it("shows only the selected panel, with the output in a live region", () => {
     render("output");
     expect(panel("output").hidden).toBe(false);

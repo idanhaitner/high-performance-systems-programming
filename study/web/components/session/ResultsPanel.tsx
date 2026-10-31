@@ -50,10 +50,10 @@ export function ResultsPanel({ tab, onTab, output, assembly }: Props) {
         ))}
       </div>
       {/* Both panels stay mounted, so the live region is already in place when a result arrives. */}
-      <div role="tabpanel" id="results-panel-output" aria-labelledby="results-tab-output" aria-live="polite" className="results-body" hidden={tab !== "output"}>
+      <div role="tabpanel" id="results-panel-output" aria-labelledby="results-tab-output" aria-live="polite" className="results-body" tabIndex={0} hidden={tab !== "output"}>
         {output}
       </div>
-      <div role="tabpanel" id="results-panel-assembly" aria-labelledby="results-tab-assembly" className="results-body" hidden={tab !== "assembly"}>
+      <div role="tabpanel" id="results-panel-assembly" aria-labelledby="results-tab-assembly" className="results-body" tabIndex={0} hidden={tab !== "assembly"}>
         {assembly}
       </div>
     </div>

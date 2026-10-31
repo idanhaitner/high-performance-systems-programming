@@ -182,4 +182,22 @@ describe("Split", () => {
     fire("pointerup", 550);
     expect(Number(localStorage.getItem("study:c:split:question"))).toBeCloseTo(0.55);
   });
+
+  it("ignores a drag started with a button other than the main one", () => {
+    const setPointerCapture = vi.fn();
+    Object.assign(HTMLElement.prototype, { setPointerCapture, releasePointerCapture: vi.fn() });
+    render();
+    const fire = (type: string, clientX: number, button: number) =>
+      act(() => {
+        const event = new MouseEvent(type, { clientX, clientY: 0, button, bubbles: true, cancelable: true });
+        Object.defineProperty(event, "pointerId", { value: 1 });
+        divider().dispatchEvent(event);
+      });
+    fire("pointerdown", 400, 2);
+    fire("pointermove", 550, 2);
+    fire("pointerup", 550, 2);
+    expect(setPointerCapture).not.toHaveBeenCalled();
+    expect(now()).toBe("40");
+    expect(localStorage.getItem("study:c:split:question")).toBeNull();
+  });
 });

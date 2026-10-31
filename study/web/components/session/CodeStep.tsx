@@ -9,7 +9,7 @@ import { clearCode, readCode, writeCode } from "@/lib/session-store";
 import { buildTestSource } from "@/lib/test-output";
 import { functionVerdict, programVerdict, type ProgramRun, type TestVerdict } from "@/lib/test-verdict";
 import type { SessionStep } from "@/lib/types";
-import { workspaceShortcut } from "@/lib/workspace";
+import { useTabLayout, workspaceShortcut } from "@/lib/workspace";
 import { exerciseZip } from "@/lib/zip";
 import { AsmPanel } from "./AsmView";
 import { CaseList, OutcomeView, type CaseView } from "./OutcomeView";
@@ -64,6 +64,8 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
   const [hoverC, setHoverC] = useState<number | null>(null);
   const [hoverAsm, setHoverAsm] = useState<number | null>(null);
 
+  const tabbed = useTabLayout();
+
   const codeRef = useRef(code);
   const viewTabs = useRef<Record<View, HTMLButtonElement | null>>({ question: null, code: null });
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -80,9 +82,14 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
     }
   }, [courseId, ex.id]);
 
-  useEffect(() => () => {
-    flush();
-    if (coolTimer.current) clearTimeout(coolTimer.current);
+  // Reloading or closing the tab does not unmount anything, so it needs its own save.
+  useEffect(() => {
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
+      if (coolTimer.current) clearTimeout(coolTimer.current);
+    };
   }, [flush]);
 
   const edit = useCallback((value: string) => {
@@ -191,7 +198,12 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
     setLastAction(action);
     setBusy(true);
     setConfirmReset(false);
-    if (action !== "asm") setTab("output");
+    if (action !== "asm") {
+      setTab("output");
+      setView("code");
+      // Hiding the question would drop focus to the page.
+      if (tabbed && document.getElementById("workspace-question")?.contains(document.activeElement)) viewTabs.current.code?.focus();
+    }
     try {
       await tidy();
       await (action === "run" ? doRun() : action === "test" ? doTest() : doAsm(opt));
@@ -225,6 +237,8 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
       if (!shortcut) return;
       e.preventDefault();
       e.stopPropagation();
+      // Holding the keys down must not send the code again after each cooldown.
+      if (e.repeat || e.isComposing) return;
       act(shortcut === "run" ? "run" : "test");
     };
     document.addEventListener("keydown", onKey, true);
@@ -281,6 +295,8 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
 
   const linked = useMemo(() => (tab !== "assembly" || hoverAsm === null ? [] : [hoverAsm]), [tab, hoverAsm]);
   const error = result?.kind === "error" ? result.error : null;
+  // In the wide layout both panes show and the tabs are hidden, so the panes are not tab panels there.
+  const paneRole = (id: View) => (tabbed ? { role: "tabpanel", "aria-labelledby": `workspace-tab-${id}` } : {});
 
   return (
     <div className="session-step code-step" data-view={view}>
@@ -291,6 +307,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
             ref={(el) => { viewTabs.current[v.id] = el; }}
             type="button"
             role="tab"
+            id={`workspace-tab-${v.id}`}
             className="results-tab"
             aria-selected={view === v.id}
             aria-controls={`workspace-${v.id}`}
@@ -311,7 +328,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
         minSecond={320}
         label="Resize the question and code panels"
         first={
-          <div id="workspace-question" className="workspace-fill">
+          <div id="workspace-question" className="workspace-fill" {...paneRole("question")}>
             <QuestionPanel
               title={ex.title}
               content={rendered.content}
@@ -323,7 +340,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
           </div>
         }
         second={
-          <div id="workspace-code" className="workspace-code">
+          <div id="workspace-code" className="workspace-code" {...paneRole("code")}>
             <Split
               courseId={courseId}
               name="results"

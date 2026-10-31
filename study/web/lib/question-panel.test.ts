@@ -78,6 +78,29 @@ describe("question panel", () => {
     expect(text()).not.toContain("third");
   });
 
+  it("moves focus to each hint that Next hint reveals, including the last", () => {
+    render({ hints: ["first", "second", "third"] });
+    click("Hints (0 of 3)");
+    const active = () => (document.activeElement as HTMLElement).textContent;
+
+    button("Next hint").focus();
+    click("Next hint");
+    expect(active()).toContain("second");
+    expect(document.activeElement?.getAttribute("tabindex")).toBe("-1");
+
+    button("Next hint").focus();
+    click("Next hint");
+    expect(hasButton("Next hint")).toBe(false);
+    expect(active()).toContain("third");
+  });
+
+  it("leaves focus alone when the hints are opened", () => {
+    render({ hints: ["first", "second"] });
+    button("Hints (0 of 2)").focus();
+    click("Hints (0 of 2)");
+    expect(document.activeElement).toBe(button("Hints (1 of 2)"));
+  });
+
   it("has no Hints button without hints", () => {
     render();
     expect(hasButton("Hints")).toBe(false);

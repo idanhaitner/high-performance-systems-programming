@@ -1,7 +1,7 @@
 import type { RunOutcome } from "./run-result";
 import { outputsMatch, parseTestOutput, type CaseResult } from "./test-output";
 
-// What the Test button shows: a compile error on its own, or the case list
+// What the Submit button shows: a compile error on its own, or the case list
 // with any crash or timeout shown above it.
 export type TestVerdict =
   | { kind: "outcome"; outcome: RunOutcome }
