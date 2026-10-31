@@ -196,8 +196,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   button.btn-primary:hover:not(:disabled) { box-shadow: var(--lift); }
 }
 button.btn-primary:active:not(:disabled) { box-shadow: none; }
-/* Next cannot be pressed until the step is done, so it gives way to the step's own action. */
-.session-nav button.btn-primary:disabled { background: var(--card-solid); color: var(--ink); box-shadow: none; }
 
 /* Quiet: optional actions. Text only until hovered, with no outline or lift. */
 .btn-quiet { border-color: transparent; background: transparent; color: var(--accent-ink); }
@@ -777,8 +775,6 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .session-source { margin: 24px 0 0; padding-top: 12px; border-top: 2px dashed var(--line); color: var(--muted); font-size: 0.9375rem; }
 .chapter-hop.is-practice { background: var(--sun); color: var(--on-card); }
 
-.session { scroll-margin-top: calc(var(--bar-h) + 16px); }
-.session-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 8px; }
 .page ol.session-bar { display: flex; flex-direction: row; gap: 3px; margin: 0 0 12px; padding: 0; list-style: none; }
 .page ol.session-bar li { flex: 1; min-width: 0; margin: 0; }
 .session-seg {
@@ -798,9 +794,6 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .session-seg[data-status="done"]::before { background: var(--mint); box-shadow: inset 0 0 0 2px var(--edge); }
 .session-seg[data-status="skipped"]::before { background: repeating-linear-gradient(-45deg, var(--sun) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 2px var(--edge); }
 .session-seg[data-status="current"]::before { background: var(--accent); transform: scaleY(1.5); }
-.session-count { margin: 0; color: var(--muted); font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
-.session-lesson { margin-inline-start: auto; color: var(--muted); font-size: 0.9375rem; }
-.session-lesson:hover { color: var(--accent-ink); }
 .step-kind {
   display: inline-flex;
   align-items: center;
@@ -817,9 +810,7 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 .step-kind[data-kind="check"] { background: var(--coral); }
 .step-kind[data-kind="exercise"] { background: var(--sun); }
 .step-kind[data-kind="lab"] { background: var(--accent); color: var(--on-accent); }
-.session-step { margin: 24px 0 32px; scroll-margin-top: calc(var(--bar-h) + 24px); }
 .session-step > h2:first-of-type { margin-top: 0; }
-.session-step > .card.check:first-child { margin-top: 8px; }
 .session-note { margin: 8px 0; padding: 12px 16px; border-radius: var(--r-sm); background: var(--accent-soft); color: var(--muted); }
 .session-download {
   display: inline-flex;
@@ -835,26 +826,9 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 }
 .session-confirm { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-weight: 600; cursor: pointer; }
 .session-confirm input { width: 20px; height: 20px; accent-color: var(--accent); }
-.session-nav {
-  position: sticky;
-  bottom: 12px;
-  z-index: 5;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  padding: 10px;
-  border: 2px solid var(--edge);
-  border-radius: var(--r-pill);
-  background: var(--card-solid);
-}
-.session-nav .session-skip { margin-inline-start: auto; }
 .session-finished h2 { margin-top: 0; }
 .session-finished { animation: finish-in 0.3s var(--ease) backwards; }
 @keyframes finish-in { from { opacity: 0; transform: scale(0.97); } }
-/* A new step slides in 12px from the side the student moved towards. */
-.step-in { animation: step-in 0.2s var(--ease) backwards; }
-@keyframes step-in { from { opacity: 0; transform: translateX(calc(var(--dir) * 12px)); } }
 .code-run { animation: fade-in 0.2s var(--ease) backwards; }
 .practice.is-fresh { animation: fade-in 0.2s var(--ease) backwards; }
 
@@ -991,9 +965,6 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
   .choices label.is-picked { transform: translate(-2px, -2px); box-shadow: var(--lift-sm); }
   .fold-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 2px; padding: 12px 16px; }
   .fold-row .kicker { grid-column: 1 / -1; }
-  .session-nav { border-radius: var(--r-card); }
-  .session-nav button { flex: 1 1 auto; }
-  .session-nav .session-skip { margin-inline-start: 0; }
   .code-actions button { flex: 1 1 auto; }
   .code-confirm { margin-block: 0; padding: 12px; border-radius: var(--r-sm); }
   .code-confirm p { flex-basis: 100%; }

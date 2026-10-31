@@ -3,7 +3,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WorkspaceBar } from "@/components/session/WorkspaceBar";
-import { useWorkspaceMode, workspaceShortcut } from "./workspace";
+import { workspaceShortcut } from "./workspace";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -20,40 +20,12 @@ afterEach(() => {
   host.remove();
 });
 
-describe("useWorkspaceMode", () => {
-  function Probe({ active }: { active: boolean }) {
-    useWorkspaceMode(active);
-    return null;
-  }
-  const render = (active: boolean) => act(() => root.render(createElement(Probe, { active })));
-  const marked = () => "workspace" in document.documentElement.dataset;
-
-  it("marks the page while active", () => {
-    render(true);
-    expect(marked()).toBe(true);
-    expect(document.documentElement.dataset.workspace).toBe("");
-  });
-  it("leaves the page alone while not active", () => {
-    render(false);
-    expect(marked()).toBe(false);
-  });
-  it("clears the mark when no longer active", () => {
-    render(true);
-    render(false);
-    expect(marked()).toBe(false);
-  });
-  it("clears the mark on unmount, such as following the Reread link", () => {
-    render(true);
-    act(() => root.render(null));
-    expect(marked()).toBe(false);
-  });
-});
-
 describe("WorkspaceBar", () => {
   const props = {
     lectureNumber: 1,
-    step: 3,
-    total: 26,
+    where: "Step 3 of 26",
+    kind: { id: "exercise", label: "Coding exercise" } as { id: "exercise"; label: string } | undefined,
+    atEnd: false,
     lesson: { id: "why-low-level", title: "Why low level" },
     canGoBack: true,
     onBack: vi.fn(),
@@ -71,6 +43,21 @@ describe("WorkspaceBar", () => {
   it("shows where the student is", () => {
     render();
     expect(host.textContent).toContain("Step 3 of 26");
+  });
+  it("labels the kind of step, for every kind", () => {
+    render();
+    const chip = host.querySelector(".step-kind");
+    expect(chip?.textContent).toBe("Coding exercise");
+    expect(chip?.getAttribute("data-kind")).toBe("exercise");
+  });
+  it("shows no label when no step is open", () => {
+    render({ kind: undefined });
+    expect(host.querySelector(".step-kind")).toBeNull();
+  });
+  it("offers only Back once the practice is finished", () => {
+    render({ atEnd: true });
+    expect(button("Back")).toBeDefined();
+    expect(host.querySelectorAll("button")).toHaveLength(1);
   });
   it("links back to the lecture", () => {
     render();

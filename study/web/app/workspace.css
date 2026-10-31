@@ -1,8 +1,9 @@
-/* The coding workspace (Stepper sets data-workspace on <html> for coding steps).
+/* The practice frame: every step of a practice, so moving between kinds of step changes only the panels.
    A calm work tool: neutral surfaces, one indigo accent, and the dark code slab as the
-   only heavy thing on screen. Everything is scoped, so no other page changes. */
+   only heavy thing on screen. Everything is scoped to a page with a .session, which CSS
+   knows before the first paint, so no other page changes and the sidebar never flashes. */
 
-html[data-workspace] {
+html:has(.session) {
   --bar-h: 0px;
   /* Control edges and the step bar: neutral, and at least 3:1 against the sheet. */
   --ws-edge: color-mix(in oklch, var(--muted) 72%, var(--sheet));
@@ -15,20 +16,25 @@ html[data-workspace] {
 
 /* ---------- Full window ---------- */
 
-html[data-workspace] body { height: 100dvh; overflow: hidden; background: var(--sheet); font-size: 1rem; line-height: 1.6; }
-html[data-workspace] :is(.rail, .session-masthead, .reading-progress) { display: none; }
-html[data-workspace] .shell { display: block; height: 100%; min-height: 0; padding-top: 0; }
-html[data-workspace] main,
-html[data-workspace] main > div { height: 100%; min-height: 0; }
-html[data-workspace] .page.chapter { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0; border-radius: 0; }
-html[data-workspace] .session,
-html[data-workspace] .session-current,
-html[data-workspace] .code-step { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0; }
-html[data-workspace] .code-step > .split { flex: 1; }
+html:has(.session) body { height: 100dvh; overflow: hidden; background: var(--sheet); font-size: 1rem; line-height: 1.6; }
+html:has(.session) :is(.rail, .reading-progress) { display: none; }
+html:has(.session) .shell { display: block; height: 100%; min-height: 0; padding-top: 0; }
+html:has(.session) main,
+html:has(.session) main > div { height: 100%; min-height: 0; }
+html:has(.session) .page.chapter { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0; border-radius: 0; }
+html:has(.session) .session,
+html:has(.session) .session-current,
+html:has(.session) .code-step,
+html:has(.session) .check-step { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0; }
+html:has(.session) .code-step > .split { flex: 1; }
+
+/* Only what is inside the panels changes, so the bars and the divider's place hold still between steps. */
+html:has(.session) .step-in :is(.question-panel, .check-answers, .workspace-code, .reading-step) { animation: panel-in 0.15s var(--ease) backwards; }
+@keyframes panel-in { from { opacity: 0; } }
 
 /* ---------- Controls ---------- */
 
-html[data-workspace] button {
+html:has(.session) button {
   min-height: 36px;
   padding: 6px 14px;
   border: 1px solid var(--ws-edge);
@@ -36,206 +42,247 @@ html[data-workspace] button {
   font-size: 0.9375rem;
   transition: background-color 0.15s var(--ease);
 }
-html[data-workspace] button:is(:hover, :active):not(:disabled) { transform: none; box-shadow: none; }
+html:has(.session) button:is(:hover, :active):not(:disabled) { transform: none; box-shadow: none; }
 @media (hover: hover) and (pointer: fine) {
-  html[data-workspace] button:hover:not(:disabled) { background: var(--ws-wash); }
-  html[data-workspace] button.btn-primary:hover:not(:disabled) { background: color-mix(in oklch, var(--accent) 88%, var(--ink)); }
+  html:has(.session) button:hover:not(:disabled) { background: var(--ws-wash); }
+  html:has(.session) button.btn-primary:hover:not(:disabled) { background: color-mix(in oklch, var(--accent) 88%, var(--ink)); }
 }
 /* A finger needs more room than a mouse. */
 @media (pointer: coarse) {
-  html[data-workspace] button { min-height: 44px; }
+  html:has(.session) button { min-height: 44px; }
 }
-html[data-workspace] button.btn-primary { border-color: var(--accent); background: var(--accent); color: var(--on-accent); box-shadow: none; }
-html[data-workspace] button.btn-quiet { border-color: transparent; background: transparent; color: var(--ink); }
-html[data-workspace] button.is-on,
-html[data-workspace] button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+html:has(.session) button.btn-primary { border-color: var(--accent); background: var(--accent); color: var(--on-accent); box-shadow: none; }
+html:has(.session) button.btn-quiet { border-color: transparent; background: transparent; color: var(--ink); }
+html:has(.session) button.is-on,
+html:has(.session) button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
 /* The editor draws its own ring, in an indigo that shows on the code panel. */
-html[data-workspace] :focus-visible:not(.cm-content) { outline: 2px solid var(--accent); outline-offset: 2px; }
+html:has(.session) :focus-visible:not(.cm-content) { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- Top bar and step bar ---------- */
 
-html[data-workspace] .workspace-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; padding: 6px 16px; flex: none; }
-html[data-workspace] .workspace-where { display: flex; flex: 1 1 16rem; align-items: baseline; gap: 16px; min-width: 0; font-size: 0.9375rem; }
-html[data-workspace] .workspace-lecture { flex: none; font-weight: 600; }
-html[data-workspace] .workspace-count { flex: none; margin: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
-html[data-workspace] .workspace-lesson { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
-html[data-workspace] .workspace-lesson:hover { color: var(--accent-ink); }
-html[data-workspace] .workspace-nav { display: flex; flex: none; align-items: center; gap: 4px; margin-inline-start: auto; }
+html:has(.session) .workspace-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; padding: 6px 16px; flex: none; }
+html:has(.session) .workspace-where { display: flex; flex: 1 1 16rem; align-items: baseline; gap: 16px; min-width: 0; font-size: 0.9375rem; }
+html:has(.session) .workspace-lecture { flex: none; font-weight: 600; }
+html:has(.session) .workspace-count { flex: none; margin: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+/* The one piece of the site's colour in the bar, in the same place on every step. */
+html:has(.session) .step-kind { flex: none; align-self: center; min-height: 24px; padding: 0 10px; border-width: 1px; }
+html:has(.session) .workspace-lesson { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+html:has(.session) .workspace-lesson:hover { color: var(--accent-ink); }
+html:has(.session) .workspace-nav { display: flex; flex: none; align-items: center; gap: 4px; margin-inline-start: auto; }
 
-html[data-workspace] .page ol.session-bar { flex: none; gap: 2px; margin: 0; padding: 0 16px; border-bottom: 1px solid var(--line); }
-html[data-workspace] .session-seg { min-height: 18px; padding: 6px 0; border: 0; border-radius: 0; background: transparent; }
-html[data-workspace] .session-seg:hover:not(:disabled) { background: transparent; }
+html:has(.session) .page ol.session-bar { flex: none; gap: 2px; margin: 0; padding: 0 16px; border-bottom: 1px solid var(--line); }
+html:has(.session) .session-seg { min-height: 18px; padding: 6px 0; border: 0; border-radius: 0; background: transparent; }
+html:has(.session) .session-seg:hover:not(:disabled) { background: transparent; }
 /* Only the size animates, so the colours of the other pages never flash on the way in. */
-html[data-workspace] .session-seg::before { height: 4px; background: var(--ws-edge); transition: transform 0.2s var(--ease); }
-html[data-workspace] .session-seg[data-status="done"]::before { background: var(--ink); box-shadow: none; }
-html[data-workspace] .session-seg[data-status="skipped"]::before { background: repeating-linear-gradient(-45deg, var(--ink) 0 3px, transparent 3px 6px); box-shadow: none; }
-html[data-workspace] .session-seg[data-status="current"]::before { background: var(--accent); transform: scaleY(2); }
+html:has(.session) .session-seg::before { height: 4px; background: var(--ws-edge); transition: transform 0.2s var(--ease); }
+html:has(.session) .session-seg[data-status="done"]::before { background: var(--ink); box-shadow: none; }
+html:has(.session) .session-seg[data-status="skipped"]::before { background: repeating-linear-gradient(-45deg, var(--ink) 0 3px, transparent 3px 6px); box-shadow: none; }
+html:has(.session) .session-seg[data-status="current"]::before { background: var(--accent); transform: scaleY(2); }
 
 /* The Question and Code tabs exist only in the tab layout. */
-html[data-workspace] .workspace-views { display: none; flex: none; padding-inline: 16px; border-bottom: 1px solid var(--line); }
+html:has(.session) .workspace-views { display: none; flex: none; padding-inline: 16px; border-bottom: 1px solid var(--line); }
 
 /* ---------- Dividers ---------- */
 
-html[data-workspace] .split { display: grid; min-width: 0; min-height: 0; height: 100%; }
-html[data-workspace] .split[data-orientation="vertical"] { grid-template-columns: var(--split) 0 minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
-html[data-workspace] .split[data-orientation="horizontal"] { grid-template-rows: var(--split) 0 minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
-html[data-workspace] .split-pane { min-width: 0; min-height: 0; overflow: hidden; }
+html:has(.session) .split { display: grid; min-width: 0; min-height: 0; height: 100%; }
+html:has(.session) .split[data-orientation="vertical"] { grid-template-columns: var(--split) 0 minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+html:has(.session) .split[data-orientation="horizontal"] { grid-template-rows: var(--split) 0 minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
+html:has(.session) .split-pane { min-width: 0; min-height: 0; overflow: hidden; }
 
 /* The track takes no room, so the panes keep their full minimum, and the 8px hit target lies over their edges. */
-html[data-workspace] .split-divider { position: relative; z-index: 2; touch-action: none; }
-html[data-workspace] .split-divider::before,
-html[data-workspace] .split-divider::after { content: ""; position: absolute; background: var(--line); transition: background-color 0.15s var(--ease); }
+html:has(.session) .split-divider { position: relative; z-index: 2; touch-action: none; }
+html:has(.session) .split-divider::before,
+html:has(.session) .split-divider::after { content: ""; position: absolute; background: var(--line); transition: background-color 0.15s var(--ease); }
 /* The line runs the full length, and the grip marks where to take hold. */
-html[data-workspace] .split-divider::after { background: var(--ws-edge); border-radius: 2px; }
-html[data-workspace] [data-orientation="vertical"] > .split-divider { margin-inline: -4px; cursor: col-resize; }
-html[data-workspace] [data-orientation="vertical"] > .split-divider::before { inset-block: 0; inset-inline-start: calc(50% - 0.5px); width: 1px; }
-html[data-workspace] [data-orientation="vertical"] > .split-divider::after { top: calc(50% - 16px); inset-inline-start: calc(50% - 1.5px); width: 3px; height: 32px; }
-html[data-workspace] [data-orientation="horizontal"] > .split-divider { margin-block: -4px; cursor: row-resize; }
-html[data-workspace] [data-orientation="horizontal"] > .split-divider::before { inset-inline: 0; top: calc(50% - 0.5px); height: 1px; }
-html[data-workspace] [data-orientation="horizontal"] > .split-divider::after { left: calc(50% - 16px); top: calc(50% - 1.5px); width: 32px; height: 3px; }
-html[data-workspace] .split-divider:is(:hover, :active, :focus-visible)::before,
-html[data-workspace] .split-divider:is(:hover, :active, :focus-visible)::after { background: var(--accent); }
-html[data-workspace] .split-divider:focus-visible { outline-offset: -1px; border-radius: 2px; }
+html:has(.session) .split-divider::after { background: var(--ws-edge); border-radius: 2px; }
+html:has(.session) [data-orientation="vertical"] > .split-divider { margin-inline: -4px; cursor: col-resize; }
+html:has(.session) [data-orientation="vertical"] > .split-divider::before { inset-block: 0; inset-inline-start: calc(50% - 0.5px); width: 1px; }
+html:has(.session) [data-orientation="vertical"] > .split-divider::after { top: calc(50% - 16px); inset-inline-start: calc(50% - 1.5px); width: 3px; height: 32px; }
+html:has(.session) [data-orientation="horizontal"] > .split-divider { margin-block: -4px; cursor: row-resize; }
+html:has(.session) [data-orientation="horizontal"] > .split-divider::before { inset-inline: 0; top: calc(50% - 0.5px); height: 1px; }
+html:has(.session) [data-orientation="horizontal"] > .split-divider::after { left: calc(50% - 16px); top: calc(50% - 1.5px); width: 32px; height: 3px; }
+html:has(.session) .split-divider:is(:hover, :active, :focus-visible)::before,
+html:has(.session) .split-divider:is(:hover, :active, :focus-visible)::after { background: var(--accent); }
+html:has(.session) .split-divider:focus-visible { outline-offset: -1px; border-radius: 2px; }
 
 /* ---------- Question panel ---------- */
 
-html[data-workspace] .workspace-fill { height: 100%; }
-html[data-workspace] .question-panel { height: 100%; overflow: auto; padding: 20px 24px 32px; }
-html[data-workspace] .question-panel > * { max-width: 70ch; }
-html[data-workspace] .question-panel :is(h2, h3, h4) { font-family: var(--serif); font-weight: 600; letter-spacing: -0.01em; }
-html[data-workspace] .question-title { margin: 0 0 16px; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; }
-html[data-workspace] .question-section { margin-bottom: 24px; }
-html[data-workspace] .question-heading { margin: 0 0 4px; font-size: 1.0625rem; line-height: 1.4; }
-html[data-workspace] .question-example { margin-top: 12px; }
-html[data-workspace] .question-example .code-label { margin: 0 0 2px; font-family: var(--sans); letter-spacing: 0; line-height: 1.5; }
-html[data-workspace] .question-example > :last-child,
-html[data-workspace] .question-section > :last-child { margin-bottom: 0; }
-html[data-workspace] .question-example p { margin: 2px 0; }
+html:has(.session) .workspace-fill { height: 100%; }
+html:has(.session) .question-panel { height: 100%; overflow: auto; padding: 20px 24px 32px; }
+html:has(.session) .question-panel > * { max-width: 70ch; }
+html:has(.session) .question-panel :is(h2, h3, h4) { font-family: var(--serif); font-weight: 600; letter-spacing: -0.01em; }
+html:has(.session) .question-title { margin: 0 0 16px; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; }
+html:has(.session) .question-section { margin-bottom: 24px; }
+html:has(.session) .question-heading { margin: 0 0 4px; font-size: 1.0625rem; line-height: 1.4; }
+html:has(.session) .question-example { margin-top: 12px; }
+html:has(.session) .question-example .code-label { margin: 0 0 2px; font-family: var(--sans); letter-spacing: 0; line-height: 1.5; }
+html:has(.session) .question-example > :last-child,
+html:has(.session) .question-section > :last-child { margin-bottom: 0; }
+html:has(.session) .question-example p { margin: 2px 0; }
 /* Words in code stay readable without turning into coloured chips. */
-html[data-workspace] .question-panel :not(pre) > code { background: var(--ws-wash); color: var(--ink); }
-html[data-workspace] .question-panel .code-panel { margin: 12px 0; border: 0; border-radius: 8px; }
+html:has(.session) .question-panel :not(pre) > code { background: var(--ws-wash); color: var(--ink); }
+html:has(.session) .question-panel .code-panel { margin: 12px 0; border: 0; border-radius: 8px; }
 
-html[data-workspace] .question-help { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+html:has(.session) .question-help { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
 /* Hints and Solution are plain rows with a triangle that shows whether they are open. */
-html[data-workspace] .question-help > button { display: inline-flex; align-items: center; gap: 8px; margin-inline-start: -10px; padding-inline: 10px; border-color: transparent; background: transparent; color: var(--ink); font-size: 1rem; font-weight: 600; }
-html[data-workspace] .question-help > button::before { content: ""; width: 0; height: 0; border-block: 5px solid transparent; border-inline-start: 7px solid var(--muted); transition: transform 0.15s var(--ease); }
-html[data-workspace] .question-help > button[aria-expanded="true"]::before { transform: rotate(90deg); }
-html[data-workspace] .code-hints,
-html[data-workspace] .code-solution { align-self: stretch; }
-html[data-workspace] .code-hint { padding: 0 0 0 12px; border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
-html[data-workspace] .code-hint p { margin: 4px 0; }
+html:has(.session) .question-help > button { display: inline-flex; align-items: center; gap: 8px; margin-inline-start: -10px; padding-inline: 10px; border-color: transparent; background: transparent; color: var(--ink); font-size: 1rem; font-weight: 600; }
+html:has(.session) .question-help > button::before { content: ""; width: 0; height: 0; border-block: 5px solid transparent; border-inline-start: 7px solid var(--muted); transition: transform 0.15s var(--ease); }
+html:has(.session) .question-help > button[aria-expanded="true"]::before { transform: rotate(90deg); }
+html:has(.session) .code-hints,
+html:has(.session) .code-solution { align-self: stretch; }
+html:has(.session) .code-hint { padding: 0 0 0 12px; border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
+html:has(.session) .code-hint p { margin: 4px 0; }
+
+/* ---------- Quick questions ---------- */
+
+html:has(.session) .check-step > .card.check { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
+html:has(.session) .check-step .split { flex: 1; }
+html:has(.session) .check-answers { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+html:has(.session) .check-answers-body { flex: 1; min-height: 0; overflow: auto; padding: 20px 24px 32px; }
+html:has(.session) .check-answers-body > * { max-width: 70ch; }
+html:has(.session) .check-answers-body :not(pre) > code { background: var(--ws-wash); color: var(--ink); }
+html:has(.session) .check-note { margin: 0 0 12px; font-size: 1rem; }
+html:has(.session) .check-step .choices { margin: 0; }
+html:has(.session) .check-step .choices label { min-height: 44px; border: 1px solid var(--ws-edge); border-radius: 8px; background: transparent; color: var(--ink); font-weight: 400; transition: background-color 0.15s var(--ease); }
+@media (hover: hover) and (pointer: fine) {
+  html:has(.session) .check-step .choices label:hover { background: var(--ws-wash); }
+}
+/* The ring is the same weight in every state, so choosing never shifts the answers. */
+html:has(.session) .check-step .choices label.is-picked { border-color: var(--accent); background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--accent); transform: none; }
+html:has(.session) .check-step .choices label.is-right { border-color: var(--ok); box-shadow: inset 0 0 0 1px var(--ok); }
+html:has(.session) .check-step .choices label.is-wrong { border-color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger); }
+html:has(.session) .check-step .check-why { padding: 0 0 0 12px; border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
+
+/* ---------- Reading steps ---------- */
+
+html:has(.session) .reading-step { flex: 1; min-height: 0; height: 100%; margin: 0; overflow: auto; padding: 32px max(24px, calc((100% - 720px) / 2)) 48px; }
+html:has(.session) .session-intro { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+html:has(.session) .session-intro h1 { margin: 4px 0 16px; font-size: 2rem; line-height: 1.15; }
+html:has(.session) .session-before { margin: 0; padding: 0; border: 0; background: transparent; color: var(--ink); }
+html:has(.session) .session-lessons a { min-height: 32px; border-width: 1px; border-color: var(--ws-edge); border-radius: 8px; color: var(--ink); }
+html:has(.session) .session-lessons a:hover { background: var(--ws-wash); }
+html:has(.session) .session-download { border-width: 1px; border-radius: 8px; }
 
 /* ---------- Editor ---------- */
 
-html[data-workspace] .code-editor { position: relative; border: 0; border-radius: 0; }
-html[data-workspace] .code-solution .code-editor { border-radius: 8px; }
+html:has(.session) .code-editor { position: relative; border: 0; border-radius: 0; }
+html:has(.session) .code-solution .code-editor { border-radius: 8px; }
 /* An outline on this box would be painted over by the editor inside it, so the ring is a layer on top. It lets clicks through. */
-html[data-workspace] .code-editor:focus-within { outline: none; }
-html[data-workspace] .code-editor:focus-within::after { content: ""; position: absolute; inset: 0; z-index: 1; border: 2px solid var(--ws-ring-on-code); border-radius: inherit; pointer-events: none; }
-html[data-workspace] .workspace-code .code-editor { height: 100%; }
-html[data-workspace] .workspace-code .cm-editor { height: 100%; }
-html[data-workspace] .workspace-code .cm-scroller { min-height: 0; max-height: none; overflow: auto; }
-html[data-workspace] .workspace-code .code-editor-loading { min-height: 0; }
+html:has(.session) .code-editor:focus-within { outline: none; }
+html:has(.session) .code-editor:focus-within::after { content: ""; position: absolute; inset: 0; z-index: 1; border: 2px solid var(--ws-ring-on-code); border-radius: inherit; pointer-events: none; }
+html:has(.session) .workspace-code .code-editor { height: 100%; }
+html:has(.session) .workspace-code .cm-editor { height: 100%; }
+html:has(.session) .workspace-code .cm-scroller { min-height: 0; max-height: none; overflow: auto; }
+html:has(.session) .workspace-code .code-editor-loading { min-height: 0; }
 /* The site-wide line number colour is too faint to read at 4.5:1. */
-html[data-workspace] .code-editor .cm-gutters { color: var(--code-muted); }
-html[data-workspace] .code-editor .cm-diagnostic { font-size: 1rem; }
+html:has(.session) .code-editor .cm-gutters { color: var(--code-muted); }
+html:has(.session) .code-editor .cm-diagnostic { font-size: 1rem; }
 
 /* ---------- Results ---------- */
 
-html[data-workspace] .workspace-code { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-html[data-workspace] .workspace-code > .split { flex: 1; }
-html[data-workspace] .results-panel { display: flex; flex-direction: column; height: 100%; }
-html[data-workspace] .results-tabs { display: flex; flex: none; gap: 4px; padding-inline: 12px; border-bottom: 1px solid var(--line); }
-html[data-workspace] button.results-tab { min-height: 36px; margin-bottom: -1px; padding: 6px 10px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--muted); font-size: 0.875rem; transition: none; }
+html:has(.session) .workspace-code { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+html:has(.session) .workspace-code > .split { flex: 1; }
+html:has(.session) .results-panel { display: flex; flex-direction: column; height: 100%; }
+html:has(.session) .results-tabs { display: flex; flex: none; gap: 4px; padding-inline: 12px; border-bottom: 1px solid var(--line); }
+html:has(.session) button.results-tab { min-height: 36px; margin-bottom: -1px; padding: 6px 10px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--muted); font-size: 0.875rem; transition: none; }
 @media (pointer: coarse) {
-  html[data-workspace] button.results-tab { min-height: 44px; }
+  html:has(.session) button.results-tab { min-height: 44px; }
 }
-html[data-workspace] button.results-tab:hover:not(:disabled) { background: transparent; color: var(--ink); }
-html[data-workspace] button.results-tab[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--ink); }
-html[data-workspace] button.results-tab:focus-visible { outline-offset: -2px; }
-html[data-workspace] .results-body { flex: 1; min-height: 0; overflow: auto; padding: 12px 16px; }
+html:has(.session) button.results-tab:hover:not(:disabled) { background: transparent; color: var(--ink); }
+html:has(.session) button.results-tab[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--ink); }
+html:has(.session) button.results-tab:focus-visible { outline-offset: -2px; }
+html:has(.session) .results-body { flex: 1; min-height: 0; overflow: auto; padding: 12px 16px; }
 /* The panel that is not selected stays mounted, and hidden has to win over any display set here. */
-html[data-workspace] .results-body[hidden] { display: none; }
+html:has(.session) .results-body[hidden] { display: none; }
 /* These scroll, so a ring outside their edge would be cut off. */
-html[data-workspace] :is(.results-body, .asm-lines):focus-visible { outline-offset: -2px; }
-html[data-workspace] .results-empty { max-width: 70ch; margin: 0; color: var(--muted); }
+html:has(.session) :is(.results-body, .asm-lines, .asm-panel):focus-visible { outline-offset: -2px; }
+html:has(.session) .results-empty { max-width: 70ch; margin: 0; color: var(--muted); }
 
-html[data-workspace] .code-result { margin: 0 0 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; }
-html[data-workspace] .code-result:last-child { margin-bottom: 0; }
+html:has(.session) .code-result { margin: 0 0 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; }
+html:has(.session) .code-result:last-child { margin-bottom: 0; }
 /* What a program printed is neither a pass nor a fail, so it gets no green and no box. A pass has a headline that says so. */
-html[data-workspace] .code-result[data-state="ok"]:not(:has(.code-headline)) { padding: 0; border: 0; background: transparent; }
-html[data-workspace] .code-result[data-state="ok"]:not(:has(.code-headline)) > :first-child { margin-top: 0; }
-html[data-workspace] .code-output { border-radius: 6px; }
-html[data-workspace] .code-casehint { border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
+html:has(.session) .code-result[data-state="ok"]:not(:has(.code-headline)) { padding: 0; border: 0; background: transparent; }
+html:has(.session) .code-result[data-state="ok"]:not(:has(.code-headline)) > :first-child { margin-top: 0; }
+html:has(.session) .code-output { border-radius: 6px; }
+html:has(.session) .code-casehint { border-inline-start: 2px solid var(--line); border-radius: 0; background: transparent; }
 /* Some of these labels are whole sentences, such as the exit code line. */
-html[data-workspace] .code-result > .code-label { font-size: 1rem; }
-html[data-workspace] .code-result .code-actions { margin: 12px 0 0; }
-html[data-workspace] .code-result .code-actions button { flex: none; }
-html[data-workspace] .code-result .session-download { min-height: 36px; padding: 6px 14px; border: 1px solid var(--ws-edge); border-radius: 8px; background: transparent; color: var(--ink); font-size: 0.9375rem; }
+html:has(.session) .code-result > .code-label { font-size: 1rem; }
+html:has(.session) .code-result .code-actions { margin: 12px 0 0; }
+html:has(.session) .code-result .code-actions button { flex: none; }
+html:has(.session) .code-result .session-download { min-height: 36px; padding: 6px 14px; border: 1px solid var(--ws-edge); border-radius: 8px; background: transparent; color: var(--ink); font-size: 0.9375rem; }
 
 /* A verdict needs no box: a coloured headline over plain rows, with a tick or cross in place of a bullet. */
-html[data-workspace] .code-result.code-verdict { padding: 0; border: 0; background: transparent; }
-html[data-workspace] .code-verdict .code-headline { align-items: baseline; gap: 10px; margin: 0 0 12px; font-family: var(--serif); font-size: 1.25rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
-html[data-workspace] .code-verdict[data-state="ok"] .code-headline { color: var(--ok); }
-html[data-workspace] .code-verdict[data-state="bad"] .code-headline { color: var(--danger); }
-html[data-workspace] .code-tally { color: var(--muted); font-family: var(--sans); font-size: 0.9375rem; font-weight: 400; letter-spacing: 0; font-variant-numeric: tabular-nums; }
-html[data-workspace] .page ul.code-cases { gap: 4px; margin: 0; padding: 0; list-style: none; }
-html[data-workspace] .code-cases li { display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 8px 12px; border-radius: 8px; background: var(--ws-wash); }
-html[data-workspace] .code-cases li > :not(.code-case-icon) { grid-column: 2; }
-html[data-workspace] .code-case-icon { width: 16px; height: 16px; margin-top: 0.3rem; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-html[data-workspace] .code-cases li[data-status="pass"] .code-case-icon { stroke: var(--ok); }
-html[data-workspace] .code-cases li[data-status="fail"] .code-case-icon { stroke: var(--danger); }
-html[data-workspace] .code-cases .code-output { margin: 8px 0 0; }
+html:has(.session) .code-result.code-verdict { padding: 0; border: 0; background: transparent; }
+html:has(.session) .code-verdict .code-headline { align-items: baseline; gap: 10px; margin: 0 0 12px; font-family: var(--serif); font-size: 1.25rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+html:has(.session) .code-verdict[data-state="ok"] .code-headline { color: var(--ok); }
+html:has(.session) .code-verdict[data-state="bad"] .code-headline { color: var(--danger); }
+html:has(.session) .code-tally { color: var(--muted); font-family: var(--sans); font-size: 0.9375rem; font-weight: 400; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+html:has(.session) .page ul.code-cases { gap: 4px; margin: 0; padding: 0; list-style: none; }
+html:has(.session) .code-cases li { display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 8px 12px; border-radius: 8px; background: var(--ws-wash); }
+html:has(.session) .code-cases li > :not(.code-case-icon) { grid-column: 2; }
+html:has(.session) .code-case-icon { width: 16px; height: 16px; margin-top: 0.3rem; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+html:has(.session) .code-cases li[data-status="pass"] .code-case-icon { stroke: var(--ok); }
+html:has(.session) .code-cases li[data-status="fail"] .code-case-icon { stroke: var(--danger); }
+html:has(.session) .code-cases .code-output { margin: 8px 0 0; }
 /* Compiler messages and the question's own lists: no bullets for messages, and no indigo on any bullet. */
-html[data-workspace] .page ul.code-diags { margin: 8px 0 0; padding: 0; list-style: none; }
-html[data-workspace] li::marker { color: var(--muted); }
+html:has(.session) .page ul.code-diags { margin: 8px 0 0; padding: 0; list-style: none; }
+html:has(.session) li::marker { color: var(--muted); }
 
-html[data-workspace] .asm-panel { display: flex; flex-direction: column; height: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; }
-html[data-workspace] .asm-stale { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 0; border-radius: 0; background: transparent; color: var(--muted); }
-html[data-workspace] :is(.asm-intro, .asm-hint, .asm-stale) { font-size: 1rem; }
-html[data-workspace] .asm-stale button { min-height: 32px; padding: 2px 10px; color: var(--ink); }
-html[data-workspace] .asm-toggle button { font-size: 0.875rem; }
+html:has(.session) .asm-panel { display: flex; flex-direction: column; height: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; }
+html:has(.session) .asm-stale { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 0; border-radius: 0; background: transparent; color: var(--muted); }
+html:has(.session) :is(.asm-intro, .asm-hint, .asm-stale) { font-size: 1rem; }
+html:has(.session) .asm-stale button { min-height: 32px; padding: 2px 10px; color: var(--ink); }
+html:has(.session) .asm-toggle button { font-size: 0.875rem; }
 /* Assembly scrolls here, both ways, so its sideways scrollbar is always in view. */
-html[data-workspace] .asm-lines { flex: 1 0 6rem; max-height: none; border-radius: 6px; font-size: 0.875rem; }
+html:has(.session) .asm-lines { flex: 1 0 6rem; max-height: none; border-radius: 6px; font-size: 0.875rem; }
 
 /* ---------- Action row ---------- */
 
-html[data-workspace] .workspace-actions { flex: none; flex-wrap: nowrap; justify-content: flex-end; min-height: 53px; margin: 0; padding: 8px 12px; border-top: 1px solid var(--line); background: var(--sheet); }
-html[data-workspace] .workspace-actions > button { flex: none; }
-html[data-workspace] .workspace-actions > .code-reset { margin-inline-end: auto; }
-html[data-workspace] .workspace-actions .code-confirm { flex: 1; margin: 0; padding: 0; border-radius: 0; background: transparent; }
-html[data-workspace] .workspace-actions .code-confirm p { flex: 1 1 auto; }
-html[data-workspace] .workspace-actions .code-confirm-actions { flex: none; }
+html:has(.session) .workspace-actions { flex: none; flex-wrap: nowrap; justify-content: flex-end; min-height: 53px; margin: 0; padding: 8px 12px; border-top: 1px solid var(--line); background: var(--sheet); }
+html:has(.session) .workspace-actions > button { flex: none; }
+html:has(.session) .workspace-actions > .code-reset { margin-inline-end: auto; }
+html:has(.session) .workspace-actions .code-confirm { flex: 1; margin: 0; padding: 0; border-radius: 0; background: transparent; }
+html:has(.session) .workspace-actions .code-confirm p { flex: 1 1 auto; }
+html:has(.session) .workspace-actions .code-confirm-actions { flex: none; }
 /* Red means pass and fail here, so this is plain and relies on its words. */
-html[data-workspace] button.btn-danger { border-color: var(--ws-edge); background: transparent; color: var(--ink); }
+html:has(.session) button.btn-danger { border-color: var(--ws-edge); background: transparent; color: var(--ink); }
 
 /* ---------- Small windows: two tabs instead of dividers ---------- */
 
 @media (max-width: 767px), (max-height: 499px) {
-  html[data-workspace] .workspace-views { display: flex; gap: 4px; }
-  html[data-workspace] .split-divider { display: none; }
-  html[data-workspace] .split[data-orientation] { display: block; height: auto; }
-  html[data-workspace] .code-step > .split { flex: 1; min-height: 0; }
-  html[data-workspace] .code-step > .split > .split-pane { height: 100%; overflow: hidden; }
-  html[data-workspace] .code-step[data-view="question"] > .split > .split-pane:last-child,
-  html[data-workspace] .code-step[data-view="code"] > .split > .split-pane:first-child { display: none; }
+  html:has(.session) .workspace-views { display: flex; gap: 4px; }
+  html:has(.session) .split-divider { display: none; }
+  html:has(.session) .split[data-orientation] { display: block; height: auto; }
+  html:has(.session) .code-step > .split { flex: 1; min-height: 0; }
+  html:has(.session) .code-step > .split > .split-pane { height: 100%; overflow: hidden; }
+  html:has(.session) .code-step[data-view="question"] > .split > .split-pane:last-child,
+  html:has(.session) .code-step[data-view="code"] > .split > .split-pane:first-child { display: none; }
 
   /* The editor and results scroll together, and the action row stays in reach under them. */
-  html[data-workspace] .workspace-code > .split { min-height: 0; overflow: auto; }
-  html[data-workspace] .workspace-code > .split > .split-pane { overflow: visible; }
-  html[data-workspace] .workspace-code .code-editor,
-  html[data-workspace] .workspace-code .cm-editor { height: auto; }
-  html[data-workspace] .workspace-code .cm-scroller { min-height: 12rem; overflow-y: visible; }
-  html[data-workspace] .workspace-code .results-panel { height: auto; }
-  html[data-workspace] .workspace-code .results-body { overflow: visible; }
-  html[data-workspace] .asm-panel { height: auto; }
-  html[data-workspace] .asm-lines { flex: none; }
+  html:has(.session) .workspace-code > .split { min-height: 0; overflow: auto; }
+  html:has(.session) .workspace-code > .split > .split-pane { overflow: visible; }
+  html:has(.session) .workspace-code .code-editor,
+  html:has(.session) .workspace-code .cm-editor { height: auto; }
+  html:has(.session) .workspace-code .cm-scroller { min-height: 12rem; overflow-y: visible; }
+  html:has(.session) .workspace-code .results-panel { height: auto; }
+  html:has(.session) .workspace-code .results-body { overflow: visible; }
+  html:has(.session) .asm-panel { height: auto; }
+  html:has(.session) .asm-lines { flex: none; }
 
-  html[data-workspace] .question-panel { padding: 16px 16px 24px; }
-  html[data-workspace] .workspace-where { flex-basis: 100%; }
-  html[data-workspace] .workspace-actions .code-confirm { flex-wrap: wrap; }
+  html:has(.session) .question-panel { padding: 16px 16px 24px; }
+
+  /* A quick question stacks: it scrolls as one, with Check still in reach. */
+  html:has(.session) .check-step .split[data-orientation] { height: 100%; overflow: auto; }
+  html:has(.session) .check-step .split-pane { overflow: visible; }
+  html:has(.session) .check-step .question-panel { height: auto; overflow: visible; padding-bottom: 0; }
+  html:has(.session) .check-answers { height: auto; }
+  html:has(.session) .check-answers-body { overflow: visible; padding: 16px 16px 24px; }
+  html:has(.session) .check-answers .workspace-actions { position: sticky; bottom: 0; }
+  html:has(.session) .reading-step { padding: 20px 16px 32px; }
+  html:has(.session) .workspace-where { flex-basis: 100%; }
+  html:has(.session) .workspace-actions .code-confirm { flex-wrap: wrap; }
 }
 /* In a short, wide window the top bar has room for one row. */
 @media (max-height: 499px) and (min-width: 768px) {
-  html[data-workspace] .workspace-where { flex-basis: 16rem; }
+  html:has(.session) .workspace-where { flex-basis: 16rem; }
 }

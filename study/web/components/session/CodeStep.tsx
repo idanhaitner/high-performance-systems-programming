@@ -16,7 +16,7 @@ import { CaseList, OutcomeView, type CaseView } from "./OutcomeView";
 import { QuestionPanel } from "./QuestionPanel";
 import type { RenderedStep } from "./rendered";
 import { ResultsPanel } from "./ResultsPanel";
-import { Split } from "./Split";
+import { QUESTION_SPLIT, Split } from "./Split";
 
 const Editor = dynamic(() => import("./Editor").then((m) => m.Editor), {
   ssr: false,
@@ -320,12 +320,8 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
         ))}
       </div>
       <Split
+        {...QUESTION_SPLIT}
         courseId={courseId}
-        name="question"
-        orientation="vertical"
-        start={0.4}
-        minFirst={320}
-        minSecond={320}
         label="Resize the question and code panels"
         first={
           <div id="workspace-question" className="workspace-fill" {...paneRole("question")}>

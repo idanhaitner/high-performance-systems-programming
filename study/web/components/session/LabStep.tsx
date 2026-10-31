@@ -10,7 +10,7 @@ export function LabStep({ step, content, done, onComplete }: { step: Extract<Ses
   const [finished, setFinished] = useState(done);
   const zip = step.lab.zip.startsWith("/") ? step.lab.zip : `/${step.lab.zip}`;
   return (
-    <div className="session-step">
+    <div className="session-step reading-step">
       <h2><Mixed text={step.lab.title} /></h2>
       {content}
       <p>
