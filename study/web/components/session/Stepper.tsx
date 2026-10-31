@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Mixed } from "@/lib/bidi";
 import { readSession, resumeStep, writeSession, type SessionState } from "@/lib/session-store";
 import type { Session, SessionStep } from "@/lib/types";
@@ -72,6 +72,20 @@ export function Stepper({
   useEffect(() => {
     if (hasExercise) void import("./Editor");
   }, [hasExercise]);
+
+  const shownStep = useRef<number | null>(null);
+
+  // The button the student pressed can vanish or turn off on the new step, which drops focus to the page.
+  // A question or exercise focuses its own title, so this covers the reading steps. Never on page load.
+  useEffect(() => {
+    if (!ready) return;
+    const from = shownStep.current;
+    shownStep.current = state.step;
+    if (from === null || from === state.step || !moved) return;
+    const heading = document.querySelector<HTMLElement>(".session .reading-step > h2");
+    heading?.setAttribute("tabindex", "-1");
+    heading?.focus({ preventScroll: true });
+  }, [ready, state.step, moved]);
 
   const finished = state.step >= total;
   const current = finished ? null : session.steps[state.step];

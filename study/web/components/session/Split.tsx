@@ -74,6 +74,7 @@ export function Split({ courseId, name, orientation, start, minFirst, minSecond,
   };
 
   const onPointerDown = (event: PointerEvent) => {
+    if (event.button !== 0) return;
     dragging.current = true;
     event.currentTarget.setPointerCapture(event.pointerId);
     event.preventDefault();

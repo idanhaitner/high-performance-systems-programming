@@ -29,6 +29,11 @@ function sameSpot(before: string, after: string, at: number): number {
   return i;
 }
 
+// The line the cursor is on, while the student is typing in this editor.
+function cursorLine(v: EditorView): number | null {
+  return v.hasFocus ? v.state.doc.lineAt(v.state.selection.main.head).number : null;
+}
+
 const setHighlight = StateEffect.define<number[]>();
 
 const highlightField = StateField.define({
@@ -126,14 +131,16 @@ export function Editor({ value, onChange, diagnostics, onHoverLine, onFormat, hi
       ),
       EditorView.updateListener.of((u) => {
         if (u.docChanged) cb.current.onChange(u.state.doc.toString());
+        // The cursor line does what the mouse does, so the link to the assembly also works from the keyboard.
+        if (!readOnly && (u.focusChanged || (u.selectionSet && u.view.hasFocus))) cb.current.onHoverLine?.(cursorLine(u.view));
       }),
       EditorView.domEventHandlers({
         mousemove(event, v) {
           const pos = v.posAtCoords({ x: event.clientX, y: event.clientY });
           cb.current.onHoverLine?.(pos === null ? null : v.state.doc.lineAt(pos).number);
         },
-        mouseleave() {
-          cb.current.onHoverLine?.(null);
+        mouseleave(_event, v) {
+          cb.current.onHoverLine?.(cursorLine(v));
         },
       }),
     ];
