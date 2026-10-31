@@ -946,6 +946,11 @@ button.glossary-cover { width: 100%; border-color: transparent; border-radius: v
 
 /* ---------- Narrow screens: rail becomes a top bar with a drawer ---------- */
 
+/* Every text size is in rem, so raising the root makes all of it bigger on a phone at once. */
+@media (max-width: 860px), (max-height: 499px) {
+  html { font-size: 125%; }
+}
+
 @media (max-width: 860px) {
   :root { --bar-h: calc(60px + env(safe-area-inset-top, 0px)); }
   .shell { display: block; padding-top: var(--bar-h); }

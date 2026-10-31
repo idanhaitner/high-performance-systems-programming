@@ -464,11 +464,12 @@ body:has(.landing) .reading-progress { display: none; }
 @media (max-width: 860px) {
   .shell:has(.landing) { display: block; padding-top: 0; }
   .page.landing { padding: 0 16px 32px; }
-  .landing-bar { width: 100%; justify-content: space-between; gap: 12px; }
+  .landing-bar { width: 100%; justify-content: space-between; gap: 4px; }
   .landing-links, .landing-bar .landing-cta-small { display: none; }
   .landing-bar .theme-switch { margin-inline-end: -16px; }
-  .landing-toggle { display: grid; }
-  .landing-mark { min-height: 44px; white-space: nowrap; }
+  .landing-toggle { display: grid; flex: none; }
+  /* The name stays on one line, so it follows the screen width and leaves room for the menu button. */
+  .landing-mark { min-height: 44px; font-size: min(0.875rem, 4.4vw); white-space: nowrap; }
   .landing-menu:not([hidden]) {
     display: block;
     position: fixed;
@@ -487,16 +488,18 @@ body:has(.landing) .reading-progress { display: none; }
   .hero h1 br { display: none; }
   .hero-sub { font-size: 1.125rem; line-height: 1.75rem; }
   .page.landing .fan { height: 16rem; }
-  .fan li { width: 9rem; height: 12rem; margin-left: -4.5rem; }
+  .fan li { width: 7.5rem; height: 10rem; margin-left: -3.75rem; }
   .fan a { padding: 12px; }
   .fan-num { font-size: 2.25rem; line-height: 2.5rem; }
-  .fan-title { font-size: 0.875rem; line-height: 1.25rem; }
+  .fan-title { font-size: 0.75rem; line-height: 1rem; }
   .tagline { padding: 48px 0; }
   .marquee { margin: 0 -16px; }
   .tagline p { font-size: 1.875rem; line-height: 2.25rem; }
   .landing section > h2 { font-size: 1.875rem; line-height: 2.25rem; }
   .page.landing :is(.how-cards, .benefits ul, .deck-grid) { grid-template-columns: minmax(0, 1fr); }
   .how-card:nth-child(n) { transform: none; }
+  /* A full-width card still tilted for its entrance would stick out past the screen edge. */
+  .how-card.rv:nth-child(n):not(.is-in) { rotate: 0deg; }
   /* On phones the tabs become a strip you swipe sideways, above the open lecture. */
   .deck-index { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .deck-tabs { flex-direction: row; margin: 0 -16px; padding: 8px 16px 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; }
