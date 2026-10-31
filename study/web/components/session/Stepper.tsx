@@ -21,7 +21,7 @@ function StepView({ step, courseId, done, onComplete, harness, rendered, moved, 
     case "check":
       return <CheckStep step={step} content={rendered.content} done={done} onComplete={onComplete} courseId={courseId} title={checkTitle} moved={moved} />;
     case "lab":
-      return <LabStep step={step} content={rendered.content} done={done} onComplete={onComplete} />;
+      return <LabStep step={step} pages={rendered.labPages ?? []} courseId={courseId} done={done} onComplete={onComplete} />;
     case "exercise":
       return <ExerciseStep step={step} courseId={courseId} done={done} onComplete={onComplete} harness={harness} rendered={rendered} moved={moved} />;
   }

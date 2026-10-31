@@ -25,7 +25,7 @@ This lab has two parts. Part 1 is the timing. Part 2 is a final exercise that us
 
 ## Part 1: what to do in VS Code
 
-1. Download the zip below and unzip it. In VS Code, choose **File → Open Folder…** and open the unzipped folder.
+1. Download the lab files with the button on this page, and unzip them. In VS Code, choose **File → Open Folder…** and open the unzipped folder.
 2. Open a terminal inside VS Code: **Terminal → New Terminal**. This lab needs `gcc` and `make`. On macOS, install them by typing `xcode-select --install`. There, `gcc` is really Apple's compiler `clang` under another name, which is fine for this lab. On Linux, type `sudo apt install build-essential`. On Windows, use WSL (the Linux system built into Windows) and the same Linux command.
 3. Type `make test` and press Enter. It builds a small 1024 × 1024 grid and checks both sums. Right now it prints `WRONG`, because both functions return 0. After that, make prints a line like `make: *** [test] Error 1`. This is expected: it just means the test failed.
 4. Open `stride.c` and write both functions. `sum_rows` adds up every number in `grid` row by row, so its inner loop moves along one row. `sum_cols` adds them up column by column, so its inner loop moves down one column.
