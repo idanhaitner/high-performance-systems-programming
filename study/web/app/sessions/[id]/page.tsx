@@ -5,6 +5,7 @@ import type { RenderedStep } from "@/components/session/rendered";
 import { Stepper } from "@/components/session/Stepper";
 import { Mixed } from "@/lib/bidi";
 import { loadCourse } from "@/lib/course";
+import { splitLabPages } from "@/lib/lab-pages";
 import type { Block, Lecture, SessionStep } from "@/lib/types";
 
 // Next's static export treats an empty list as "missing", so a course with no
@@ -89,7 +90,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
       case "check":
         return { content: render([step.block]) };
       case "lab":
-        return { content: render(step.lab.body) };
+        return { labPages: splitLabPages(step.lab.body).map((page) => ({ title: page.title, part: page.part, content: render(page.blocks) })) };
       case "exercise":
         return {
           content: render(step.exercise.statement),

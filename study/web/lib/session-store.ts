@@ -64,6 +64,15 @@ export function writeSplit(courseId: string, name: string, fraction: number) {
   set(`${storageKey(courseId)}:split:${name}`, String(fraction));
 }
 
+export function readLabPage(courseId: string, labId: string): number {
+  const page = Number(get(`${storageKey(courseId)}:lab-page:${labId}`));
+  return Number.isInteger(page) && page >= 0 ? page : 0;
+}
+
+export function writeLabPage(courseId: string, labId: string, page: number) {
+  set(`${storageKey(courseId)}:lab-page:${labId}`, String(page));
+}
+
 export function clearCode(courseId: string, exerciseId: string) {
   try {
     localStorage.removeItem(`${storageKey(courseId)}:code:${exerciseId}`);
