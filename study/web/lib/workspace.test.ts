@@ -129,4 +129,14 @@ describe("workspaceShortcut", () => {
     expect(workspaceShortcut(key({ ctrlKey: true, altKey: true }))).toBeNull();
     expect(workspaceShortcut(key({ key: "a", ctrlKey: true }))).toBeNull();
   });
+  it("saves on Ctrl or Cmd + S, in either case", () => {
+    expect(workspaceShortcut(key({ key: "s", ctrlKey: true }))).toBe("save");
+    expect(workspaceShortcut(key({ key: "s", metaKey: true }))).toBe("save");
+    expect(workspaceShortcut(key({ key: "S", ctrlKey: true }))).toBe("save");
+  });
+  it("leaves S alone without Ctrl or Cmd, or with Shift or Alt", () => {
+    expect(workspaceShortcut(key({ key: "s" }))).toBeNull();
+    expect(workspaceShortcut(key({ key: "S", ctrlKey: true, shiftKey: true }))).toBeNull();
+    expect(workspaceShortcut(key({ key: "s", metaKey: true, altKey: true }))).toBeNull();
+  });
 });

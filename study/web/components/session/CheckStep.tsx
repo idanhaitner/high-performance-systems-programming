@@ -24,7 +24,7 @@ export function CheckStep({ step, content, done, onComplete, courseId, title, mo
   }, [moved]);
 
   // The same divider as a coding exercise, so the question stays put and only the right side changes between them.
-  const frame = useCallback<CheckFrame>(({ question, answers, right }) => (
+  const frame = useCallback<CheckFrame>(({ question, answers, results, right }) => (
     <Split
       {...QUESTION_SPLIT}
       courseId={courseId}
@@ -36,12 +36,14 @@ export function CheckStep({ step, content, done, onComplete, courseId, title, mo
         </div>
       }
       second={
+        // Check sits right under the choices, so the answer and the button are close, and the result appears below them.
         <div className="check-answers">
-          <div className="check-answers-body">{answers}</div>
-          <div className="code-actions workspace-actions">
+          {answers}
+          <div className="check-actions">
             {/* Once the step is solved, Next in the top bar is the one primary action. */}
             <button type="submit" className={done || right ? undefined : "btn-primary"}>Check</button>
           </div>
+          {results}
         </div>
       }
     />

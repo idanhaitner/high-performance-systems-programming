@@ -335,9 +335,9 @@ export function CheckCard({
             <>
               {blankMode && !graded && <p className="results-empty">Choose an answer in each blank, then press Check.</p>}
               {options}
-              {results}
             </>
           ),
+          results,
           right: graded && hasAnswer && correct,
         })
       ) : (

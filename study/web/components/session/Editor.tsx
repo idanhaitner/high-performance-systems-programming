@@ -1,5 +1,6 @@
 "use client";
 
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import { cpp } from "@codemirror/lang-cpp";
 import { setDiagnostics, type Diagnostic as CmDiagnostic } from "@codemirror/lint";
 import { EditorState, StateEffect, StateField, type Extension } from "@codemirror/state";
@@ -119,9 +120,11 @@ export function Editor({ value, onChange, diagnostics, onHoverLine, onFormat, hi
       drawSelection(),
       indentOnInput(),
       bracketMatching(),
+      // Typing ( [ { or a quote adds its closing partner, and Backspace between an empty pair removes both.
+      closeBrackets(),
       highlightActiveLine(),
       EditorView.lineWrapping,
-      keymap.of([{ key: "Shift-Alt-f", run: format }, { key: "Mod-s", run: format }, ...defaultKeymap, ...historyKeymap, indentWithTab]),
+      keymap.of([{ key: "Shift-Alt-f", run: format }, ...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
       cLanguage,
       syntaxHighlighting(highlight),
       theme,

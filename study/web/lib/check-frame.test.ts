@@ -46,9 +46,16 @@ describe("a check in a practice step", () => {
     renderStep();
     expect(panes()[0].querySelector(".question-panel .question-title")?.textContent).toBe("Question 2 of 8");
   });
-  it("keeps Check in the action row, inside the form so it still submits", () => {
+  it("puts Check under the choices and the result under Check, inside the form so it still submits", () => {
     renderStep();
-    expect(check().closest(".workspace-actions")).not.toBeNull();
+    pick("Two");
+    act(() => check().click());
+    const choices = panes()[1].querySelector(".choices")!;
+    const result = panes()[1].querySelector(".check-result")!;
+    const follows = (a: Node, b: Node) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(follows(choices, check())).toBe(true);
+    expect(follows(check(), result)).toBe(true);
+    expect(check().closest(".workspace-actions")).toBeNull();
     expect(check().closest("form")).not.toBeNull();
   });
   it("makes Check the one primary action until the answer is right", () => {
