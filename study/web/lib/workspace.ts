@@ -15,8 +15,11 @@ export function useTabLayout(): boolean {
   );
 }
 
-// Ctrl or Cmd + Enter runs, and adding Shift submits. Alt is left alone, since it belongs to the browser and the OS.
-export function workspaceShortcut(event: Pick<KeyboardEvent, "key" | "ctrlKey" | "metaKey" | "shiftKey" | "altKey">): "run" | "submit" | null {
-  if (event.key !== "Enter" || event.altKey || !(event.ctrlKey || event.metaKey)) return null;
+// Ctrl or Cmd + Enter runs, and adding Shift submits. Ctrl or Cmd + S saves, which compiles.
+// Alt is left alone, since it belongs to the browser and the OS.
+export function workspaceShortcut(event: Pick<KeyboardEvent, "key" | "ctrlKey" | "metaKey" | "shiftKey" | "altKey">): "run" | "submit" | "save" | null {
+  if (event.altKey || !(event.ctrlKey || event.metaKey)) return null;
+  if (event.key.toLowerCase() === "s") return event.shiftKey ? null : "save";
+  if (event.key !== "Enter") return null;
   return event.shiftKey ? "submit" : "run";
 }

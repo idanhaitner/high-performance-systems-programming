@@ -232,14 +232,21 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
   // Capture phase, so this runs before CodeMirror's own Mod-Enter, which would add a blank line.
   // The listener is re-attached each render so it always calls the current act.
   useEffect(() => {
-    if (confirmReset) return;
     const onKey = (e: globalThis.KeyboardEvent) => {
       const shortcut = workspaceShortcut(e);
       if (!shortcut) return;
+      // Always, so the browser's own save dialog never opens, even while the reset prompt is up.
       e.preventDefault();
       e.stopPropagation();
+      if (confirmReset) return;
       // Holding the keys down must not send the code again after each cooldown.
       if (e.repeat || e.isComposing) return;
+      if (shortcut === "save") {
+        // Saving keeps the code now, then compiles it: the assembly when that tab is open, otherwise a run.
+        flush();
+        act(tab === "assembly" ? "asm" : "run");
+        return;
+      }
       act(shortcut === "run" ? "run" : "test");
     };
     document.addEventListener("keydown", onKey, true);
@@ -404,7 +411,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
               ) : (
                 <>
                   <button type="button" className="code-reset btn-quiet" ref={resetRef} onClick={() => setConfirmReset(true)}>Reset</button>
-                  <LockButton locked={locked} onClick={() => act("run")} title="Run (Ctrl+Enter or Cmd+Enter)" aria-keyshortcuts="Control+Enter Meta+Enter">{busy && lastAction === "run" ? "Running…" : "Run"}</LockButton>
+                  <LockButton locked={locked} onClick={() => act("run")} title="Run (Ctrl+Enter or Cmd+Enter, or Ctrl+S or Cmd+S)" aria-keyshortcuts="Control+Enter Meta+Enter Control+S Meta+S">{busy && lastAction === "run" ? "Running…" : "Run"}</LockButton>
                   {/* Once the step is solved, Next in the top bar is the one primary action. */}
                   <LockButton locked={locked} className={done ? undefined : "btn-primary"} onClick={() => act("test")} title="Submit (Ctrl+Shift+Enter or Cmd+Shift+Enter)" aria-keyshortcuts="Control+Shift+Enter Meta+Shift+Enter">{busy && lastAction === "test" ? "Submitting…" : "Submit"}</LockButton>
                 </>
