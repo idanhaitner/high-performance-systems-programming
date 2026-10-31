@@ -169,35 +169,34 @@ export function Rail({
                   onClick={() => toggleLecture(lecture.id)}
                 >
                   <span className="lecture-label-kicker">Lecture {String(lecture.number).padStart(2, "0")}</span>
-                  <span><Mixed text={lecture.title} /></span>
-                  <span className="lecture-label-meta">
-                    {finished ? (
-                      <span className="lecture-done-mark">
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M3.5 8.5 6.5 11.5 12.5 4.5" />
-                        </svg>
-                        <span className="sr-only">Finished</span>
-                      </span>
-                    ) : ids.length ? <><span className="sr-only">Checks solved: </span>{solvedHere}/{ids.length}</> : lecture.lessons.length}
-                  </span>
+                  {ids.length > 0 && (
+                    <span className={`lecture-label-count${finished ? " is-done" : ""}`}>
+                      <span className="sr-only">{finished ? "Finished. " : ""}Checks solved: </span>{solvedHere}/{ids.length}
+                    </span>
+                  )}
+                  <span className="lecture-label-title"><Mixed text={lecture.title} /></span>
+                  <span className="lecture-label-chevron" aria-hidden="true" />
+                  {ids.length > 0 && (
+                    <span className="lecture-bar" aria-hidden="true">
+                      <span style={{ "--fill": solvedHere / ids.length } as React.CSSProperties} />
+                    </span>
+                  )}
                 </button>
                 <div className="lecture-lessons" id={`rail-${lecture.id}`}>
                   {lecture.lessons.map((lesson) => {
                     const href = `/topics/${lesson.id}`;
                     const current = samePath(pathname, href);
-                    const finished = lesson.practiceIds.length > 0 && lesson.practiceIds.every((id) => solved.includes(id));
+                    const checks = lesson.practiceIds.length;
+                    const solvedInLesson = lesson.practiceIds.filter((id) => solved.includes(id)).length;
                     return (
                       <Link key={lesson.id} href={href} className={current ? "is-current" : ""}>
-                        <span className={`dot${finished ? " is-done" : ""}`}>
-                          {finished ? (
-                            <svg className="dot-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-label="finished">
-                              <path d="M3 8.5 6.5 12 13 4.5" />
-                            </svg>
-                          ) : (
-                            lesson.lessonNumber
-                          )}
+                        <span className="lesson-thread" aria-hidden="true">
+                          <span style={{ "--fill": checks ? solvedInLesson / checks : 0 } as React.CSSProperties} />
                         </span>
-                        <span><Mixed text={lesson.title} /></span>
+                        <span>
+                          <Mixed text={lesson.title} />
+                          {checks > 0 && solvedInLesson === checks && <span className="sr-only"> (finished)</span>}
+                        </span>
                       </Link>
                     );
                   })}
@@ -206,9 +205,7 @@ export function Rail({
                       href={`/sessions/${lecture.sessionId}/`}
                       className={`rail-session${samePath(pathname, `/sessions/${lecture.sessionId}`) ? " is-current" : ""}`}
                     >
-                      <span className="dot" aria-hidden="true">
-                        <svg className="dot-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.5v9l7.5-4.5z" /></svg>
-                      </span>
+                      <svg className="rail-session-mark" viewBox="0 0 10 12" fill="currentColor" aria-hidden="true"><path d="M1 1.5v9L9 6z" /></svg>
                       <span>Practice<small>After the lessons</small></span>
                     </Link>
                   )}

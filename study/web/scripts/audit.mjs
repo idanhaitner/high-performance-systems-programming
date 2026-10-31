@@ -126,7 +126,7 @@ async function checkView(page, where, failures, seenSvg) {
       const drift = Math.max(...lefts) - Math.min(...lefts);
       if (drift > 1.5) problems.push(`${label} drift by ${drift.toFixed(1)}px`);
     };
-    align(".chapters-nav .dot", "chapter numbers");
+    align(".chapters-nav .lesson-thread", "lesson progress lines");
     align(".chapter-list .num", "home chapter numbers", "a");
     for (const row of document.querySelectorAll(".actions, .card-head")) {
       const buttons = [...row.querySelectorAll("button")].map((button) => ({
