@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { SearchBox } from "@/components/SearchBox";
+import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { Mixed } from "@/lib/bidi";
 import { readProgress } from "@/lib/progress";
 import type { SearchHit } from "@/lib/types";
@@ -125,6 +126,7 @@ export function Rail({
           <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
         </button>
         <p className="course-name"><Link href="/"><Mixed text={title} /></Link></p>
+        <ThemeSwitch />
       </div>
       <div
         className="rail-panel"

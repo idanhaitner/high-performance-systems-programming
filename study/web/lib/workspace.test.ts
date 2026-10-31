@@ -11,6 +11,8 @@ let host: HTMLElement;
 let root: Root;
 
 beforeEach(() => {
+  // The bar holds the theme switch, and jsdom has no matchMedia.
+  vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
   host = document.body.appendChild(document.createElement("div"));
   root = createRoot(host);
 });
@@ -18,6 +20,7 @@ beforeEach(() => {
 afterEach(() => {
   act(() => root.unmount());
   host.remove();
+  vi.unstubAllGlobals();
 });
 
 describe("WorkspaceBar", () => {
@@ -57,7 +60,11 @@ describe("WorkspaceBar", () => {
   it("offers only Back once the practice is finished", () => {
     render({ atEnd: true });
     expect(button("Back")).toBeDefined();
-    expect(host.querySelectorAll("button")).toHaveLength(1);
+    expect(host.querySelectorAll('button:not([role="switch"])')).toHaveLength(1);
+  });
+  it("keeps the dark mode switch on the bar, even when the practice is finished", () => {
+    render({ atEnd: true });
+    expect(host.querySelector('[role="switch"]')?.getAttribute("aria-label")).toBe("Dark mode");
   });
   it("links back to the lecture", () => {
     render();

@@ -52,6 +52,10 @@ html:has(.session) button[aria-disabled="true"] { opacity: 0.45; cursor: not-all
 @media (pointer: coarse) {
   html:has(.session) button { min-height: 44px; }
 }
+html:has(.session) button.theme-switch { width: 36px; height: 36px; padding: 0; border-color: transparent; background: transparent; color: var(--ink); }
+@media (pointer: coarse) {
+  html:has(.session) button.theme-switch { width: 44px; height: 44px; }
+}
 html:has(.session) button.btn-primary { border-color: var(--accent); background: var(--accent); color: var(--on-accent); box-shadow: none; }
 html:has(.session) button.btn-quiet { border-color: transparent; background: transparent; color: var(--ink); }
 html:has(.session) button.is-on,

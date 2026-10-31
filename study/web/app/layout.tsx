@@ -5,6 +5,7 @@ import { Rail } from "@/components/Rail";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ViewTransitions } from "@/components/ViewTransitions";
 import { loadCourse } from "@/lib/course";
+import { themeScript } from "@/lib/theme";
 import "@fontsource-variable/bricolage-grotesque/wght.css";
 import "@fontsource-variable/figtree/wght.css";
 import "@fontsource-variable/heebo/wght.css";
@@ -40,7 +41,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const course = loadCourse();
   return (
-    <html lang={course.lang} dir={course.dir}>
+    // The theme script sets an attribute on <html> before React starts, so React should not treat it as a mismatch.
+    <html lang={course.lang} dir={course.dir} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
         <ViewTransitions />
         <Celebrate />
