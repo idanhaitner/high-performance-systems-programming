@@ -1,64 +1,25 @@
-import Link from "next/link";
-import { Mixed } from "@/lib/bidi";
+import { GlossaryBrowser, type GlossaryItem, type GlossaryLecture } from "@/components/GlossaryBrowser";
 import { loadCourse } from "@/lib/course";
 
 export default function GlossaryPage() {
   const course = loadCourse();
-  const known = new Set(course.topics.map((topic) => topic.id));
-  const groups = course.topics
-    .map((topic) => ({
-      id: topic.id,
-      title: topic.title,
-      number: course.lectures.length > 1
-        ? `${topic.lectureNumber}.${String(topic.lessonNumber).padStart(2, "0")}`
-        : String(topic.lessonNumber).padStart(2, "0"),
-      entries: course.glossary.filter((entry) => entry.topic === topic.id),
-    }))
-    .filter((group) => group.entries.length > 0);
-  const loose = course.glossary.filter((entry) => !known.has(entry.topic));
+  const lectureOf = new Map(course.topics.map((topic) => [topic.id, topic.lectureId]));
+  const entries: GlossaryItem[] = course.glossary.map((entry) => ({
+    ...entry,
+    lectureId: lectureOf.get(entry.topic) ?? null,
+    hasLesson: lectureOf.has(entry.topic),
+  }));
+  const lectures: GlossaryLecture[] = course.lectures
+    .filter((lecture) => entries.some((entry) => entry.lectureId === lecture.id))
+    .map((lecture) => ({ id: lecture.id, label: `Lecture ${lecture.number}` }));
 
   return (
     <article className="page glossary">
       <header className="masthead">
         <h1>Glossary</h1>
       </header>
-      <p className="lead">All {course.glossary.length} terms used in the lessons, grouped by the lesson that defines them.</p>
-      {groups.length > 0 && (
-        <nav className="glossary-jump" aria-label="Chapters in the glossary">
-          {groups.map((group) => (
-            <a key={group.id} href={`#glossary-${group.id}`}><Mixed text={group.title} /></a>
-          ))}
-        </nav>
-      )}
-      {groups.map((group) => (
-        <section className="glossary-group" id={`glossary-${group.id}`} key={group.id}>
-          <h2>
-            <span className="num">{group.number}</span>
-            <Mixed text={group.title} />
-          </h2>
-          <div className="glossary-grid">
-            {group.entries.map((entry) => (
-              <article className="glossary-card" id={entry.anchor} key={entry.anchor}>
-                <h3><Mixed text={entry.term} /></h3>
-                <p><Mixed text={entry.definition} /></p>
-                <Link href={`/topics/${entry.topic}`}>Open the lesson</Link>
-              </article>
-            ))}
-          </div>
-        </section>
-      ))}
-      {loose.length > 0 && (
-        <section className="glossary-group">
-          <div className="glossary-grid">
-            {loose.map((entry) => (
-              <article className="glossary-card" id={entry.anchor} key={entry.anchor}>
-                <h3><Mixed text={entry.term} /></h3>
-                <p><Mixed text={entry.definition} /></p>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
+      <p className="lead">Every word the lessons use, in plain language. Look one up, or cover the meanings and test yourself.</p>
+      <GlossaryBrowser entries={entries} lectures={lectures} />
     </article>
   );
 }

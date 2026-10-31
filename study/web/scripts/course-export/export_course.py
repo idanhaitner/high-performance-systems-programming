@@ -113,6 +113,7 @@ def main() -> None:
             "topicTitle": titles.get(topic_id, topic_id),
             "definition": str(entry.get("definition") or ""),
             "anchor": anchor,
+            "code": str(entry.get("code")).lower() == "true",
         })
         search.append({
             "kind": "Glossary",

@@ -54,6 +54,7 @@ export type GlossaryEntry = {
   topicTitle: string;
   definition: string;
   anchor: string;
+  code?: boolean;
 };
 
 export type SearchHit = {

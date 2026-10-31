@@ -531,7 +531,7 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 }
 /* No hover on touch screens, so give the arrow's space back to the title. */
 @media (hover: none) { .toc-go { display: none; } }
-.lesson-section, .practice, .formal, .check, .glossary-card { scroll-margin-top: calc(var(--bar-h) + 24px); }
+.lesson-section, .practice, .formal, .check { scroll-margin-top: calc(var(--bar-h) + 24px); }
 
 .card, .formal, .callout {
   position: relative;
@@ -713,55 +713,86 @@ th { background: var(--accent-soft); font-weight: 700; color: var(--ink); }
 
 /* ---------- Glossary ---------- */
 
-.glossary-jump {
+/* A dictionary, not a wall of cards: terms in one column, meanings in the next, big letters in the margin. */
+.page.glossary { container-type: inline-size; }
+.page.glossary > * { max-width: none; }
+.glossary-find {
   position: sticky;
-  top: calc(var(--bar-h) + 12px);
+  top: var(--bar-h);
   z-index: 5;
-  display: flex;
-  gap: 4px;
-  width: fit-content;
-  max-width: 100%;
-  margin: 16px 0 8px;
-  padding: 4px;
-  overflow-x: auto;
-  border: 2px solid var(--edge);
-  border-radius: var(--r-pill);
-  background: var(--card-solid);
-  scrollbar-width: none;
+  margin: 24px -8px 0;
+  padding: 8px;
+  background: var(--sheet);
 }
-.glossary-jump a {
-  flex: none;
-  display: inline-flex;
+.glossary-find input { min-height: 52px; border-color: var(--edge); font-size: 1.0625rem; }
+.glossary-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+.glossary-filter { display: flex; gap: 2px; padding: 2px; border: 2px solid var(--edge); border-radius: var(--r-pill); }
+.glossary-filter label { display: block; cursor: pointer; }
+.glossary-filter span {
+  display: flex;
   align-items: center;
-  min-height: 36px;
-  padding: 4px 14px;
+  min-height: 40px;
+  padding: 2px 14px;
   border-radius: var(--r-pill);
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   white-space: nowrap;
-  text-decoration: none;
+  transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
 }
-.glossary-jump a:hover { background: var(--accent-soft); color: var(--ink); }
-.page.glossary { container-type: inline-size; }
-.glossary-group { margin-top: 40px; scroll-margin-top: calc(var(--bar-h) + 80px); }
-.glossary-group h2 { display: flex; align-items: baseline; gap: 12px; margin: 0 0 16px; font-size: 1.5rem; }
-.glossary-group .num { color: var(--accent-ink); font-variant-numeric: tabular-nums; }
-.glossary-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-@container (min-width: 36rem) { .glossary-grid { grid-template-columns: 1fr 1fr; } }
-.glossary-card {
+@media (hover: hover) and (pointer: fine) {
+  .glossary-filter label:hover input:not(:checked) + span { background: var(--accent-soft); color: var(--ink); }
+}
+.glossary-filter input:checked + span { background: var(--accent); color: var(--on-accent); }
+.glossary-filter input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.glossary-test[aria-pressed="true"] { background: var(--mint); color: var(--on-card); }
+.glossary-status { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; min-height: 44px; margin-top: 8px; color: var(--muted); font-size: 0.9375rem; }
+.glossary-status p { margin: 0; }
+button.glossary-reset { min-height: 36px; padding: 2px 12px; font-size: 0.875rem; }
+.glossary-empty { margin-top: 16px; }
+.glossary-empty p { margin: 0 0 12px; }
+
+.glossary-letter { margin-top: 28px; }
+.glossary-letter h2 {
   margin: 0;
-  padding: 16px 20px;
-  border: 2px solid var(--edge);
-  border-radius: var(--r-card);
-  background: var(--card-solid);
-  scroll-margin-top: calc(var(--bar-h) + 80px);
+  color: var(--accent-ink);
+  font-size: 2.5rem;
+  line-height: 1;
 }
-.glossary-card:target { background: var(--mint); color: var(--on-card); }
-.glossary-card h3 { margin: 0; font-size: 1.1875rem; }
-.glossary-card p { margin: 6px 0 0; }
-.glossary-card a { display: inline-block; margin-top: 10px; font-size: 0.875rem; font-weight: 600; }
-.glossary-card:target a { color: var(--on-card); }
+.glossary-list { margin: 8px 0 0; }
+.glossary-row {
+  padding-block: 14px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: calc(var(--bar-h) + 84px);
+  transition: background-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.glossary-list > .glossary-row:first-child { border-top-color: transparent; }
+.glossary-row:target { border-top-color: transparent; border-radius: 2px; background: var(--mint); box-shadow: 0 0 0 8px var(--mint); color: var(--on-card); }
+.glossary-row:target :is(a, .glossary-lesson) { color: var(--on-card); }
+.glossary-row dt { font-family: var(--serif); font-size: 1.1875rem; font-weight: 700; line-height: 1.35; }
+.glossary-row dt.is-code { font-family: var(--mono); font-size: 1rem; font-weight: 600; line-height: 1.6; }
+.glossary-row dd { margin: 4px 0 0; outline-offset: 4px; }
+.glossary-row dd p { margin: 0; }
+.glossary-row dd.is-revealed { animation: fade-in 0.18s var(--ease); }
+.glossary-xref { color: inherit; text-decoration: underline dotted; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .glossary-xref:hover { color: var(--accent-ink); text-decoration-style: solid; }
+  .glossary-lesson:hover { color: var(--accent-ink); }
+}
+.glossary-lesson { display: inline-block; padding-block: 4px; color: var(--muted); font-size: 0.875rem; text-underline-offset: 3px; }
+button.glossary-cover { width: 100%; border-color: transparent; border-radius: var(--r-sm); background: var(--mint-soft); color: var(--ink); text-align: start; }
+.glossary-row:target button.glossary-cover { background: rgb(255 255 255 / 0.4); color: var(--on-card); }
+@media (hover: hover) and (pointer: fine) {
+  button.glossary-cover:hover:not(:disabled) { border-color: var(--edge); }
+}
+
+@container (min-width: 34rem) {
+  .glossary-letter { display: grid; grid-template-columns: 3rem minmax(0, 1fr); align-items: start; }
+  .glossary-list { margin-top: 0; }
+  .glossary-letter h2 { position: sticky; top: calc(var(--bar-h) + 76px); padding-top: 8px; }
+  .glossary-row { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 16px; }
+  .glossary-row dd { margin: 0; }
+}
 
 /* ---------- Lecture practice ---------- */
 
