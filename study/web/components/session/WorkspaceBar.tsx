@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { Mixed } from "@/lib/bidi";
 import type { SessionStep } from "@/lib/types";
 
@@ -33,6 +34,7 @@ export function WorkspaceBar({ lectureNumber, where, kind, lesson, canGoBack, on
         )}
       </div>
       <div className="workspace-nav">
+        <ThemeSwitch />
         <button type="button" className="btn-quiet" onClick={onBack} disabled={!canGoBack}>Back</button>
         {!atEnd && (
           <>

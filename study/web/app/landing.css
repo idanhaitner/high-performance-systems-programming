@@ -81,6 +81,7 @@ body:has(.landing) .reading-progress { display: none; }
 .landing-cta:active { transform: translate(2px, 2px); box-shadow: none; transition-duration: 0.1s; }
 .deck-grid a:active { transform: scale(0.98); box-shadow: none; transition-duration: 0.1s; }
 /* Inside the outlined nav bar: no outline or shadow of its own, so the two pills do not double up. */
+.landing-bar .theme-switch { margin-inline-end: -14px; }
 .landing-cta-small { padding: 10px 18px; border: 0; box-shadow: none; font-size: 0.875rem; line-height: 1.25rem; }
 .landing-cta-small:active { transform: scale(0.97); }
 .cta-arrow { display: inline-block; margin-inline-start: 10px; transition: transform 0.3s var(--ease-spring); }
@@ -465,6 +466,7 @@ body:has(.landing) .reading-progress { display: none; }
   .page.landing { padding: 0 16px 32px; }
   .landing-bar { width: 100%; justify-content: space-between; gap: 12px; }
   .landing-links, .landing-bar .landing-cta-small { display: none; }
+  .landing-bar .theme-switch { margin-inline-end: -16px; }
   .landing-toggle { display: grid; }
   .landing-mark { min-height: 44px; white-space: nowrap; }
   .landing-menu:not([hidden]) {

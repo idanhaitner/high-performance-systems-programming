@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { ThemeSwitch } from "@/components/ThemeSwitch";
 
 const LINKS = [
   { href: "#how", label: "How it works" },
@@ -62,6 +63,7 @@ export function LandingNav({ startHref }: { startHref: string }) {
             <Link key={link.href} href={link.href}>{link.label}</Link>
           ))}
         </nav>
+        <ThemeSwitch />
         <Link className="landing-cta landing-cta-small" href={startHref}>Start lecture 1</Link>
         <button
           ref={toggleRef}
