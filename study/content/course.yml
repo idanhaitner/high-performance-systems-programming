@@ -246,6 +246,7 @@ glossary:
     topic: c-data-types
     definition: A situation the C rules do not cover, such as dividing by zero or a signed int growing too large. The program may do anything, so you must avoid it.
   - term: sizeof
+    code: true
     topic: c-data-types
     definition: A C operator that tells you how many bytes a type or variable takes, for example sizeof(int) is 4 on typical machines.
   - term: format specifier
@@ -255,24 +256,29 @@ glossary:
     topic: printf-and-scanf
     definition: The waiting area for the characters you type, including the Enter key. scanf takes only what it needs and leaves the rest for the next read.
   - term: getchar
+    code: true
     topic: printf-and-scanf
     definition: A function that takes one character from the input buffer and returns it. It returns EOF when the input has ended.
   - term: magic number
     topic: printf-and-scanf
     definition: A number written in the code with no name or explanation, such as 32 for the distance between small and capital letters. Give it a name instead.
   - term: const
+    code: true
     topic: c-data-types
     definition: A word that makes a variable read-only. const int limit = 30; cannot be changed by assignment later.
   - term: "#define"
+    code: true
     topic: c-data-types
     definition: A preprocessor line that makes a name stand for some text. #define MAX 30 replaces every MAX with 30 before compiling. It has no type and no semicolon.
   - term: string
     topic: strings
     definition: Text stored in a char array and ended by the character '\0'. The array needs one more cell than the number of letters.
   - term: strcmp
+    code: true
     topic: strings
     definition: A function that compares two strings letter by letter. It returns 0 if they are equal, a negative number if the first comes first, and a positive number otherwise.
   - term: strtok
+    code: true
     topic: strings
     definition: A function that splits a string into pieces at the delimiter characters you give it. Later calls pass NULL to continue in the same string. It changes the string.
   - term: warning
@@ -303,15 +309,19 @@ glossary:
     topic: source-to-process
     definition: A program that is currently running. Each process has its own memory and its own ID number.
   - term: ".text"
+    code: true
     topic: source-to-process
     definition: The part of a program file that holds the machine instructions, that is, your compiled code.
   - term: ".data"
+    code: true
     topic: source-to-process
     definition: The part of a program file that holds global variables that start with a non-zero value, such as int count = 5; at file level.
   - term: ".bss"
+    code: true
     topic: source-to-process
     definition: The part of a program's memory for global variables that start at zero. The file only records how much space is needed, not the zeros themselves.
   - term: ".rodata"
+    code: true
     topic: source-to-process
     definition: The read-only part of a program file, typically holding fixed text such as the string in printf("hello").
   - term: stack
@@ -321,9 +331,11 @@ glossary:
     topic: source-to-process
     definition: The memory area for values you request at run time with malloc and give back with free.
   - term: argc
+    code: true
     topic: command-line-arguments
     definition: The number of words on the command line, counting the program name itself. For ./sum 3 4, argc is 3.
   - term: argv
+    code: true
     topic: command-line-arguments
     definition: The list of words on the command line, as text. argv[0] is the program name, argv[1] is the first word after it, and so on.
   - term: pointer to pointer
@@ -333,6 +345,7 @@ glossary:
     topic: pointer-arithmetic
     definition: Adding a number to a pointer, or subtracting two pointers. It counts whole elements, not bytes, so for an int pointer p + 1 is 4 bytes further on.
   - term: NULL
+    code: true
     topic: pointer-arithmetic
     definition: A special pointer value that means "points nowhere". Following a NULL pointer crashes the program, so check for it first.
   - term: segmentation fault
@@ -342,21 +355,26 @@ glossary:
     topic: function-pointers
     definition: A variable that holds the address of a function. Calling through it runs that function, so a program can choose which function to run while it is running.
   - term: typedef
+    code: true
     topic: function-pointers
     definition: A way to give an existing type a new, shorter name, such as typedef void (*func)(int *); for a function pointer type.
   - term: dynamic memory allocation
     topic: malloc-and-free
     definition: Asking for memory while the program runs, with malloc, calloc, or realloc, instead of fixing the size when you write the code. The memory comes from the heap.
   - term: malloc
+    code: true
     topic: malloc-and-free
     definition: A function that reserves a block of the given number of bytes on the heap and returns its address, or NULL if there is no memory left. The bytes start as garbage.
   - term: free
+    code: true
     topic: malloc-and-free
     definition: A function that gives a heap block back. It needs the exact address malloc returned, and each block may be freed only once.
   - term: calloc
+    code: true
     topic: malloc-and-free
     definition: Like malloc, but takes a count and the size of one element, and sets every byte of the new block to zero.
   - term: "void *"
+    code: true
     topic: malloc-and-free
     definition: A pointer to a value of unknown type. malloc returns one, and C converts it to the pointer type you store it in.
   - term: memory leak
@@ -369,15 +387,19 @@ glossary:
     topic: malloc-and-free
     definition: Calling free twice on the same block. It is a bug that usually stops the program. Setting the pointer to NULL after free prevents it.
   - term: realloc
+    code: true
     topic: realloc-and-strings
     definition: A function that changes the size of a heap block, keeping its contents. It may move the block, so you must use the address it returns.
   - term: strlen
+    code: true
     topic: realloc-and-strings
     definition: A function that counts the characters in a string, not counting the '\0' at the end. strlen("Mili") is 4.
   - term: strcpy
+    code: true
     topic: realloc-and-strings
     definition: A function that copies one string, including its '\0', into another place in memory. The destination must be big enough.
   - term: fgets
+    code: true
     topic: realloc-and-strings
     definition: A function that reads one line of text into an array, never more than the size you give it. It keeps the newline if it fits.
   - term: stack overflow
