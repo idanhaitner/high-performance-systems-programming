@@ -187,6 +187,27 @@ const groups = {
     expect("progress", shown === 1, "after solving a practice, lesson 1 shows no progress");
     await context.close();
   },
+
+  async "practice-button-readable"(browser) {
+    const luminance = (rgb) => {
+      const [r, g, b] = rgb.match(/[\d.]+/g).map((v) => {
+        const c = Number(v) / 255;
+        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    for (const colorScheme of ["light", "dark"]) {
+      const { context, page } = await open(browser, 1440, { colorScheme });
+      const [color, background] = await page.$eval(".deck-lecture:not([hidden]) .deck-practice-go", (el) => {
+        const style = getComputedStyle(el);
+        return [style.color, style.backgroundColor];
+      });
+      const [lighter, darker] = [luminance(color), luminance(background)].sort((a, b) => b - a);
+      const ratio = (lighter + 0.05) / (darker + 0.05);
+      expect("practice-button-readable", ratio >= 4.5, `${colorScheme}: Start practice contrast is ${ratio.toFixed(2)}, needs 4.5`);
+      await context.close();
+    }
+  },
 };
 
 const browser = await chromium.launch();

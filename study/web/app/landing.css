@@ -420,7 +420,7 @@ body:has(.landing) .reading-progress { display: none; }
 .deck-practice:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .deck-practice strong { font: 700 1.25rem/1.75rem var(--serif); letter-spacing: -0.02em; }
 .deck-practice > span:not(.deck-practice-go) { grid-column: 1; font-size: 0.9375rem; line-height: 1.375rem; }
-.deck-practice-go { grid-column: 2; grid-row: 1 / span 2; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 18px; border: 2px solid var(--edge); border-radius: 9999px; background: var(--card-solid); font-weight: 700; white-space: nowrap; }
+.deck-practice-go { grid-column: 2; grid-row: 1 / span 2; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 18px; border: 2px solid var(--edge); border-radius: 9999px; background: var(--card-solid); color: var(--ink); font-weight: 700; white-space: nowrap; }
 .deck-practice-go span { transition: transform 0.2s var(--ease); }
 [dir="rtl"] .deck-practice-go span { display: inline-block; rotate: 180deg; }
 
