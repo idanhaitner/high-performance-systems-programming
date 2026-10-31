@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import type { AsmLine, Diagnostic } from "@/lib/run-result";
 
 type ViewProps = {
@@ -34,8 +35,16 @@ type PanelProps = ViewProps & {
 };
 
 export function AsmPanel({ optimize, onOptimize, onUpdate, locked, stale, diagnostics, ...view }: PanelProps) {
+  const panel = useRef<HTMLElement>(null);
+
+  // Update turns off during the compile and then goes away, so focus waits in the panel.
+  const update = () => {
+    panel.current?.focus();
+    onUpdate();
+  };
+
   return (
-    <aside className="asm-panel" aria-label="Assembly">
+    <aside ref={panel} tabIndex={-1} className="asm-panel" aria-label="Assembly">
       <p className="asm-intro">This is the machine code your C turns into. Point at a line of C with the mouse, or move the typing cursor to it, to light up the instructions it became.</p>
       <div className="asm-toggle" role="group" aria-label="Optimization level">
         <button type="button" aria-pressed={!optimize} disabled={locked} onClick={() => onOptimize(false)}>-O0</button>
@@ -44,7 +53,7 @@ export function AsmPanel({ optimize, onOptimize, onUpdate, locked, stale, diagno
       </div>
       {stale && (
         <p className="asm-stale" role="status">
-          Your code changed. <button type="button" disabled={locked} onClick={onUpdate}>Update</button>
+          Your code changed. <button type="button" disabled={locked} onClick={update}>Update</button>
         </p>
       )}
       {diagnostics ? (
