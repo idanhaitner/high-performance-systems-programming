@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import type { AsmLine, Diagnostic } from "@/lib/run-result";
+import { LockButton } from "./LockButton";
 
 type ViewProps = {
   lines: AsmLine[];
@@ -47,8 +48,8 @@ export function AsmPanel({ optimize, onOptimize, onUpdate, locked, stale, diagno
     <aside ref={panel} tabIndex={-1} className="asm-panel" aria-label="Assembly">
       <p className="asm-intro">This is the machine code your C turns into. Point at a line of C with the mouse, or move the typing cursor to it, to light up the instructions it became.</p>
       <div className="asm-toggle" role="group" aria-label="Optimization level">
-        <button type="button" aria-pressed={!optimize} disabled={locked} onClick={() => onOptimize(false)}>-O0</button>
-        <button type="button" aria-pressed={optimize} disabled={locked} onClick={() => onOptimize(true)}>-O2</button>
+        <LockButton locked={locked} aria-pressed={!optimize} onClick={() => onOptimize(false)}>-O0</LockButton>
+        <LockButton locked={locked} aria-pressed={optimize} onClick={() => onOptimize(true)}>-O2</LockButton>
         <span className="asm-hint">{optimize ? "-O2 asks the compiler to make the code faster." : "-O0 keeps the code close to what you wrote."}</span>
       </div>
       {stale && (

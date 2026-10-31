@@ -12,6 +12,7 @@ import type { SessionStep } from "@/lib/types";
 import { useTabLayout, workspaceShortcut } from "@/lib/workspace";
 import { exerciseZip } from "@/lib/zip";
 import { AsmPanel } from "./AsmView";
+import { LockButton } from "./LockButton";
 import { CaseList, OutcomeView, type CaseView } from "./OutcomeView";
 import { QuestionPanel } from "./QuestionPanel";
 import type { RenderedStep } from "./rendered";
@@ -357,7 +358,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
                         <div className="code-result" data-state="bad">
                           <p className="code-headline">{error.message}</p>
                           <div className="code-actions">
-                            <button type="button" onClick={retry} disabled={locked}>{wait > 0 ? `Retry in ${wait}s` : "Retry"}</button>
+                            <LockButton locked={locked} onClick={retry}>{wait > 0 ? `Retry in ${wait}s` : "Retry"}</LockButton>
                             <button type="button" className="session-download" onClick={download}>Download to run in VS Code</button>
                           </div>
                         </div>
@@ -403,9 +404,9 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
               ) : (
                 <>
                   <button type="button" className="code-reset btn-quiet" ref={resetRef} onClick={() => setConfirmReset(true)}>Reset</button>
-                  <button type="button" onClick={() => act("run")} disabled={locked} title="Run (Ctrl+Enter or Cmd+Enter)" aria-keyshortcuts="Control+Enter Meta+Enter">{busy && lastAction === "run" ? "Running…" : "Run"}</button>
+                  <LockButton locked={locked} onClick={() => act("run")} title="Run (Ctrl+Enter or Cmd+Enter)" aria-keyshortcuts="Control+Enter Meta+Enter">{busy && lastAction === "run" ? "Running…" : "Run"}</LockButton>
                   {/* Once the step is solved, Next in the top bar is the one primary action. */}
-                  <button type="button" className={done ? undefined : "btn-primary"} onClick={() => act("test")} disabled={locked} title="Submit (Ctrl+Shift+Enter or Cmd+Shift+Enter)" aria-keyshortcuts="Control+Shift+Enter Meta+Shift+Enter">{busy && lastAction === "test" ? "Submitting…" : "Submit"}</button>
+                  <LockButton locked={locked} className={done ? undefined : "btn-primary"} onClick={() => act("test")} title="Submit (Ctrl+Shift+Enter or Cmd+Shift+Enter)" aria-keyshortcuts="Control+Shift+Enter Meta+Shift+Enter">{busy && lastAction === "test" ? "Submitting…" : "Submit"}</LockButton>
                 </>
               )}
             </div>

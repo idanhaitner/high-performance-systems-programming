@@ -44,9 +44,10 @@ html:has(.session) button {
 }
 html:has(.session) button:is(:hover, :active):not(:disabled) { transform: none; box-shadow: none; }
 @media (hover: hover) and (pointer: fine) {
-  html:has(.session) button:hover:not(:disabled) { background: var(--ws-wash); }
-  html:has(.session) button.btn-primary:hover:not(:disabled) { background: color-mix(in oklch, var(--accent) 88%, var(--ink)); }
+  html:has(.session) button:hover:not(:disabled, [aria-disabled="true"]) { background: var(--ws-wash); }
+  html:has(.session) button.btn-primary:hover:not(:disabled, [aria-disabled="true"]) { background: color-mix(in oklch, var(--accent) 88%, var(--ink)); }
 }
+html:has(.session) button[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 /* A finger needs more room than a mouse. */
 @media (pointer: coarse) {
   html:has(.session) button { min-height: 44px; }
