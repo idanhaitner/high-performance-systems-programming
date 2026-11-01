@@ -3,9 +3,10 @@ id: stack-or-heap
 title: Stack or heap?
 sources:
   - "Lecture 2 - Memory management.pptx"
+  - "ps2.pdf"
 ---
 
-You now know two places to keep an array. A **local array**, like `int A[100];` inside a function, lives on the **stack** and disappears by itself when the function ends. A block from `malloc` lives on the **heap** and stays until you `free` it. This last lesson of Lecture 2 compares the two: three reasons to use the heap, three reasons to prefer the stack, and a complete example of a function that builds an array and hands it back.
+You now know two places to keep an array. A **local array**, like `int A[100];` inside a function, lives on the **stack** and disappears by itself when the function ends. A block from `malloc` lives on the **heap** and stays until you `free` it. This lesson compares the two: three reasons to use the heap, three reasons to prefer the stack, and a complete example of a function that builds an array and hands it back.
 
 ## Reason 1 for the heap: big arrays
 
@@ -98,6 +99,17 @@ So the rule of thumb is:
 | it is needed only while this function runs | it must still exist after the function returns |
 | its size never changes | its size may change while the program runs |
 
+Here is how the two compare side by side:
+
+| Question | Stack | Heap |
+| --- | --- | --- |
+| How do you get it? | usually automatic: declare a variable | ask with `malloc` or `calloc` |
+| When is it released? | when the function returns | when you call `free` |
+| How big can it be? | fairly small | suits large blocks |
+| What usually goes wrong? | stack overflow, or a pointer to a local that is gone | a memory leak, or use after `free` |
+
+Where something lives and how long it lives are two separate questions. In `int *A = malloc(100);` inside a function, `A` lives on the stack and dies with the function, while the block it points to lives on the heap and stays.
+
 :::trap
 Returning the address of a local array, or of any local variable. The memory is reused as soon as the function returns. If the array must outlive the function, make it with `malloc` and let the caller `free` it.
 :::
@@ -182,6 +194,4 @@ The first element is `x`, at index 0, and each next one is 1 more. The last inde
 :::
 :::
 
-## Lecture 2 in one paragraph
-
-A pointer can point to another pointer, and `**` follows both arrows; that is how a function changes the caller's pointer. Adding to a pointer moves by whole elements, subtracting two pointers counts elements, and `sizeof` tells an array (its full size) apart from a pointer (8 bytes). A pointer that was never set, or is `NULL`, must not be followed. Functions have addresses too, so a function pointer lets you pass, store, and return functions. `malloc` reserves heap memory while the program runs, `calloc` does the same with zeros, `realloc` resizes it, and `free` returns it, exactly once, at the address `malloc` gave. The heap suits large arrays, arrays that must outlive a function, and arrays that change size; the stack is faster and frees itself.
+**Next:** [Structures on the stack and on the heap](topic:structures-on-the-heap) uses all of this with structures, and shows how the order of a structure's members changes its size.

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 270" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #1b1740; }
+  .gone { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #6b6690; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+
+  <rect width="720" height="270" fill="#f7f6ff"/>
+  <g class="step" style="animation-delay:0.08s">
+    <text x="24" y="42" class="t" font-size="16" font-weight="700">int32_t a = 300;</text>
+    <rect x="24" y="60" width="168" height="56" fill="#ecebf5" stroke="#6b6690" stroke-width="1.5"/>
+    <text x="108" y="94" class="gone" font-size="17" text-anchor="middle">00000000</text>
+    <rect x="192" y="60" width="168" height="56" fill="#ecebf5" stroke="#6b6690" stroke-width="1.5"/>
+    <text x="276" y="94" class="gone" font-size="17" text-anchor="middle">00000000</text>
+    <rect x="360" y="60" width="168" height="56" fill="#ecebf5" stroke="#6b6690" stroke-width="1.5"/>
+    <text x="444" y="94" class="gone" font-size="17" text-anchor="middle">00000001</text>
+    <rect x="528" y="60" width="168" height="56" fill="#ffffff" stroke="#4b3cf5" stroke-width="2.5"/>
+    <text x="612" y="94" class="mono" font-size="17" text-anchor="middle" font-weight="700">00101100</text>
+  </g>
+  <g class="step" style="animation-delay:0.20s">
+    <path d="M24 128 H528" stroke="#6b6690" stroke-width="1.5" fill="none"/>
+    <text x="276" y="150" class="m" font-size="14" text-anchor="middle">3 bytes thrown away</text>
+    <path d="M612 120 V170" stroke="#4b3cf5" stroke-width="2" fill="none"/>
+    <path d="M606 168 L612 178 L618 168" fill="#4b3cf5"/>
+  </g>
+  <g class="step" style="animation-delay:0.32s">
+    <text x="24" y="214" class="t" font-size="16" font-weight="700">uint8_t b = (uint8_t)a;</text>
+    <rect x="528" y="182" width="168" height="56" fill="#ffffff" stroke="#4b3cf5" stroke-width="2.5"/>
+    <text x="612" y="216" class="mono" font-size="17" text-anchor="middle" font-weight="700">00101100</text>
+    <text x="24" y="240" class="m" font-size="14">The byte that stays is 32 + 8 + 4, so b is 44.</text>
+  </g>
+
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #1b1740; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+
+  <rect width="720" height="380" fill="#f7f6ff"/>
+  <text x="130" y="30" class="m" font-size="13" font-weight="700">HIGH ADDRESSES</text>
+  <g class="step" style="animation-delay:0.08s">
+    <rect x="130" y="42" width="340" height="86" rx="10" fill="#ffffff" stroke="#1b1740" stroke-width="2"/>
+    <text x="150" y="68" class="t" font-size="16" font-weight="700">main</text>
+    <text x="150" y="94" class="mono" font-size="14">n = 3</text>
+    <text x="150" y="116" class="mono" font-size="14">result = ?</text>
+  </g>
+  <g class="step" style="animation-delay:0.20s">
+    <rect x="130" y="136" width="340" height="86" rx="10" fill="#ffffff" stroke="#1b1740" stroke-width="2"/>
+    <text x="150" y="162" class="t" font-size="16" font-weight="700">twice</text>
+    <text x="150" y="188" class="mono" font-size="14">x = 3, y = ?</text>
+    <text x="150" y="210" class="m" font-size="14">return address: back into main</text>
+  </g>
+  <g class="step" style="animation-delay:0.32s">
+    <rect x="130" y="230" width="340" height="86" rx="10" fill="#ffffff" stroke="#4b3cf5" stroke-width="2.5"/>
+    <text x="150" y="256" class="t" font-size="16" font-weight="700">add (running now)</text>
+    <text x="150" y="282" class="mono" font-size="14">a = 3, b = 3, sum = ?</text>
+    <text x="150" y="304" class="m" font-size="14">return address: back into twice</text>
+  </g>
+  <g class="step" style="animation-delay:0.44s">
+    <path d="M580 316 H480" stroke="#4b3cf5" stroke-width="2" fill="none"/>
+    <path d="M482 310 L472 316 L482 322" fill="#4b3cf5"/>
+    <text x="588" y="312" class="t" font-size="14" font-weight="700">stack</text>
+    <text x="588" y="330" class="t" font-size="14" font-weight="700">pointer</text>
+    <path d="M60 60 V300" stroke="#4f4a75" stroke-width="2" fill="none"/>
+    <path d="M54 298 L60 310 L66 298" fill="#4f4a75"/>
+    <text x="24" y="50" class="m" font-size="13">grows</text>
+    <text x="130" y="346" class="m" font-size="13" font-weight="700">LOW ADDRESSES</text>
+    <text x="130" y="370" class="m" font-size="14">When add returns, its frame is removed first.</text>
+  </g>
+
+</svg>

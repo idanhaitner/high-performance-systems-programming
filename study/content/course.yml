@@ -33,6 +33,8 @@ changelog:
     note: Added a very small code question to every lesson's practice, 14 in all, and a final exercise at the end of both labs that uses everything from the lecture.
   - date: 2026-10-30
     note: Made the practice harder and cleaner. Exercises and labs now start from the bare function with no comments, the questions ask you to reason through traps instead of recalling a fact, and the code editor can format your code.
+  - date: 2026-11-01
+    note: Brought the second practice session (Tutorial 2) into Lecture 2. Four new lessons cover casting, how function calls use the stack, structures on the stack and on the heap, and finding memory bugs with GDB and Valgrind. Two other lessons gained use-after-free and a side-by-side comparison of the stack and the heap, and the practice has six more exercises.
 
 lectures:
   - id: lecture-1
@@ -49,12 +51,14 @@ lectures:
     number: 2
     title: Memory management
     summary: >
-      How to follow a pointer that points to another pointer, move a pointer
-      through an array, and keep the address of a function in a variable. Then
-      the main topic: asking for memory while the program runs, growing it,
-      giving it back, and choosing between a function's own short-lived memory
-      and memory that stays until you free it.
-    topics: [pointers-to-pointers, pointer-arithmetic, function-pointers, malloc-and-free, realloc-and-strings, stack-or-heap]
+      How a value changes when it moves to another type, how to follow a pointer
+      that points to another pointer, move a pointer through an array, and keep
+      the address of a function in a variable. Then the main topic: what a
+      function call does to memory, asking for memory while the program runs,
+      growing it, giving it back, and choosing between a function's own
+      short-lived memory and memory that stays until you free it. It ends with
+      records in memory and the tools that find memory bugs.
+    topics: [casting, pointers-to-pointers, pointer-arithmetic, function-pointers, stack-frames, malloc-and-free, realloc-and-strings, stack-or-heap, structures-on-the-heap, debugging-tools]
     session: sessions/lecture-2.md
 
 sources:
@@ -123,6 +127,19 @@ sources:
       - prac-stack-or-heap
       - prac-dangling-return
       - prac-initialize-trace
+  - path: "ps2.pdf"
+    type: exercise
+    status: incorporated
+    note: "Tutorial 2: casting and truncation, tracing stack frames, why the stack is not enough, use-after-free, structures on the stack and the heap, member order and padding, GDB, and Valgrind."
+    problems:
+      - prac-cast-division
+      - prac-cast-bits
+      - prac-frame-trace
+      - prac-stack-limits
+      - prac-struct-arrow
+      - prac-struct-layout
+      - prac-pick-the-tool
+      - prac-read-valgrind
 topics:
   - id: why-low-level
     file: topics/why-low-level.md
@@ -179,13 +196,20 @@ topics:
     summary: "How a program receives the words typed after its name, and how to turn them into numbers."
     exam_weight: taught
     prerequisites: [source-to-process]
+    unlocks: [casting]
+  - id: casting
+    file: topics/casting.md
+    title: "Changing a value's type: casting"
+    summary: "How a value moves to another type, why a big number can come out as a different number, and why the program never warns you."
+    exam_weight: taught
+    prerequisites: [command-line-arguments]
     unlocks: [pointers-to-pointers]
   - id: pointers-to-pointers
     file: topics/pointers-to-pointers.md
     title: Pointers to pointers
     summary: "A quick recap of pointers, then a pointer that holds the address of another pointer, and why a function needs one to change your pointer."
     exam_weight: taught
-    prerequisites: [command-line-arguments]
+    prerequisites: [casting]
     unlocks: [pointer-arithmetic]
   - id: pointer-arithmetic
     file: topics/pointer-arithmetic.md
@@ -200,13 +224,20 @@ topics:
     summary: "Keeping the address of a function in a variable, so you can pass a function to another function, store several in an array, or return one."
     exam_weight: taught
     prerequisites: [pointer-arithmetic]
+    unlocks: [stack-frames]
+  - id: stack-frames
+    file: topics/stack-frames.md
+    title: How function calls use the stack
+    summary: "Following a program line by line to see what each function call adds to memory, why local variables disappear, and what this memory cannot do."
+    exam_weight: taught
+    prerequisites: [function-pointers]
     unlocks: [malloc-and-free]
   - id: malloc-and-free
     file: topics/malloc-and-free.md
     title: "Memory on request: malloc and free"
     summary: "Asking for memory while the program runs, giving it back when you are done, and the mistakes that break a program when you give it back wrongly."
     exam_weight: taught
-    prerequisites: [function-pointers]
+    prerequisites: [stack-frames]
     unlocks: [realloc-and-strings]
   - id: realloc-and-strings
     file: topics/realloc-and-strings.md
@@ -221,6 +252,20 @@ topics:
     summary: "When a function's own short-lived memory is the better choice, when you need memory that stays until you free it, and how a function hands back an array it made."
     exam_weight: taught
     prerequisites: [realloc-and-strings]
+    unlocks: [structures-on-the-heap]
+  - id: structures-on-the-heap
+    file: topics/structures-on-the-heap.md
+    title: Structures on the stack and on the heap
+    summary: "Where a record can live in memory, how to reach its values in each case, keeping many records in one block, and how the order of its values changes its size."
+    exam_weight: taught
+    prerequisites: [stack-or-heap]
+    unlocks: [debugging-tools]
+  - id: debugging-tools
+    file: topics/debugging-tools.md
+    title: "Finding memory bugs: GDB and Valgrind"
+    summary: "Two free tools that stop a running program so you can look inside it, and report memory that was never given back."
+    exam_weight: taught
+    prerequisites: [structures-on-the-heap]
     unlocks: []
 
 glossary:
@@ -405,4 +450,58 @@ glossary:
   - term: stack overflow
     topic: stack-or-heap
     definition: A crash that happens when a program needs more stack memory than its limit, for example for a huge local array.
+  - term: conversion
+    topic: casting
+    definition: Moving a value to another type. It can happen by itself, as in double d = 42; (an implicit conversion), or because you asked for it with a cast.
+  - term: cast
+    topic: casting
+    definition: A type name in parentheses in front of a value, like (int)x, which asks for that value in that type. It never checks that the value fits.
+  - term: truncation
+    topic: casting
+    definition: What happens when a whole number moves into a smaller type. The leftmost bits are thrown away, so (uint8_t)300 is 44.
+  - term: unsigned
+    topic: casting
+    definition: A whole number type with no negative values. An unsigned byte holds 0 to 255.
+  - term: uint8_t
+    topic: casting
+    definition: A whole number type from stdint.h that is exactly one byte and has no negative values, so it holds 0 to 255. int8_t is also one byte and holds -128 to 127.
+  - term: stack frame
+    topic: stack-frames
+    definition: The piece of the stack that belongs to one call of a function. It holds the parameters, the local variables, and the return address, and it is removed when the function returns.
+  - term: return address
+    topic: stack-frames
+    definition: A saved address that says where the program continues when a function ends.
+  - term: register
+    topic: stack-frames
+    definition: A tiny storage spot inside the processor, much faster than memory.
+  - term: stack pointer
+    topic: stack-frames
+    definition: A register that holds the address of the top of the stack.
+  - term: variable-length array
+    topic: stack-frames
+    definition: A local array whose length is decided while the program runs, as in int grades[n];. It lives on the stack, so a large n can crash the program.
+  - term: use-after-free
+    topic: malloc-and-free
+    definition: The bug of reading or writing a heap block after freeing it. The program may seem fine, print garbage, or crash.
+  - term: padding
+    topic: structures
+    definition: Empty bytes the compiler adds inside or at the end of a structure, so that each member starts at a suitable address.
+  - term: GDB
+    topic: debugging-tools
+    definition: A debugger, a tool that runs your program under its control so you can pause it, move line by line, and look at variables and memory.
+  - term: breakpoint
+    topic: debugging-tools
+    definition: A spot in the code, chosen in a debugger, where the program pauses so you can look around.
+  - term: watchpoint
+    topic: debugging-tools
+    definition: A debugger setting that pauses the program at the moment a chosen variable changes, whichever line changed it.
+  - term: backtrace
+    topic: debugging-tools
+    definition: A GDB command that lists the stack frames at the current moment, showing which function called which.
+  - term: Valgrind
+    topic: debugging-tools
+    definition: A tool that runs your program and reports memory mistakes, such as memory that was never freed or a read past the end of a block.
+  - term: buffer overflow
+    topic: debugging-tools
+    definition: Writing past the end of an array, which overwrites whatever sits next to it in memory.
 exams: []
