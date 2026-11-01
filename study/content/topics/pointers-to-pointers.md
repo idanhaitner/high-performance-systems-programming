@@ -5,7 +5,7 @@ sources:
   - "Lecture 2 - Memory management.pptx"
 ---
 
-Lecture 1 ended with pointers: variables that hold the address of another variable. Lecture 2 is about **managing memory yourself**, and almost every tool for that hands you a pointer. So this lesson starts with a short recap of pointers, then takes one step further: a pointer that holds the address of *another pointer*. That sounds like a puzzle, but it is just the same idea used twice.
+In Lecture 1 you met pointers: variables that hold the address of another variable. The main topic of Lecture 2 is **managing memory yourself**, and almost every tool for that hands you a pointer. So this lesson starts with a short recap of pointers, then takes one step further: a pointer that holds the address of *another pointer*. That sounds like a puzzle, but it is just the same idea used twice.
 
 ## A quick recap: & and *
 

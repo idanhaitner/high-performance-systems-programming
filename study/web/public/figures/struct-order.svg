@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 290" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #1b1740; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+
+  <rect width="720" height="290" fill="#f7f6ff"/>
+  <g class="step" style="animation-delay:0.08s">
+    <text x="24" y="36" class="t" font-size="16" font-weight="700">BadStruct: 12 bytes</text>
+    <rect x="24" y="50" width="56" height="56" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="52" y="84" class="mono" font-size="15" text-anchor="middle">a</text>
+    <rect x="80" y="50" width="168" height="56" fill="#ecebf5" stroke="#6b6690" stroke-width="1.5"/>
+    <text x="164" y="84" class="m" font-size="14" text-anchor="middle">padding</text>
+    <rect x="248" y="50" width="224" height="56" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="360" y="84" class="mono" font-size="15" text-anchor="middle">b</text>
+    <rect x="472" y="50" width="56" height="56" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="500" y="84" class="mono" font-size="15" text-anchor="middle">c</text>
+    <rect x="528" y="50" width="168" height="56" fill="#ecebf5" stroke="#6b6690" stroke-width="1.5"/>
+    <text x="612" y="84" class="m" font-size="14" text-anchor="middle">padding</text>
+    <text x="52" y="126" class="m" font-size="13" text-anchor="middle">0</text>
+    <text x="164" y="126" class="m" font-size="13" text-anchor="middle">1 to 3</text>
+    <text x="360" y="126" class="m" font-size="13" text-anchor="middle">4 to 7</text>
+    <text x="500" y="126" class="m" font-size="13" text-anchor="middle">8</text>
+    <text x="612" y="126" class="m" font-size="13" text-anchor="middle">9 to 11</text>
+  </g>
+  <g class="step" style="animation-delay:0.24s">
+    <text x="24" y="178" class="t" font-size="16" font-weight="700">GoodStruct: 8 bytes</text>
+    <rect x="24" y="192" width="224" height="56" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="136" y="226" class="mono" font-size="15" text-anchor="middle">b</text>
+    <rect x="248" y="192" width="56" height="56" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="276" y="226" class="mono" font-size="15" text-anchor="middle">a</text>
+    <rect x="304" y="192" width="56" height="56" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="332" y="226" class="mono" font-size="15" text-anchor="middle">c</text>
+    <rect x="360" y="192" width="112" height="56" fill="#ecebf5" stroke="#6b6690" stroke-width="1.5"/>
+    <text x="416" y="226" class="m" font-size="14" text-anchor="middle">padding</text>
+    <text x="136" y="268" class="m" font-size="13" text-anchor="middle">0 to 3</text>
+    <text x="276" y="268" class="m" font-size="13" text-anchor="middle">4</text>
+    <text x="332" y="268" class="m" font-size="13" text-anchor="middle">5</text>
+    <text x="416" y="268" class="m" font-size="13" text-anchor="middle">6 to 7</text>
+  </g>
+
+</svg>

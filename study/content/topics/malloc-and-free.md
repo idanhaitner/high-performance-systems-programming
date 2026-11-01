@@ -3,9 +3,10 @@ id: malloc-and-free
 title: "Memory on request: malloc and free"
 sources:
   - "Lecture 2 - Memory management.pptx"
+  - "ps2.pdf"
 ---
 
-Until now, every array had a size written in the code, like `int a[4]`. But often you only learn how much memory you need **while the program runs**: how many students the user types in, how long a line of text is. This lesson shows how to ask for memory at that moment, with `malloc`, and how to give it back, with `free`. Asking for memory while the program runs is called **dynamic memory allocation**. It uses the **heap**, the memory area you met in [Programs and processes](topic:source-to-process).
+The last lesson ended with three limits of the stack: it is small, its memory dies when a function returns, and its arrays cannot grow. There is also a simpler problem. Until now, nearly every array had a size written in the code, like `int a[4]`. But often you only learn how much memory you need **while the program runs**: how many students the user types in, how long a line of text is. This lesson shows how to ask for memory at that moment, with `malloc`, and how to give it back, with `free`. Asking for memory while the program runs is called **dynamic memory allocation**. It uses the **heap**, the memory area you met in [Programs and processes](topic:source-to-process).
 
 ## Asking for memory with malloc
 
@@ -26,7 +27,7 @@ Line by line:
 
 - `malloc` receives **one number: how many bytes you want**. We want room for 1000 `int`s, and each `int` is `sizeof(int)` bytes (4 on typical machines), so we ask for `n * sizeof(int)`, that is 4000 bytes.
 - `malloc` returns the **address of the first byte** of the new block. We keep it in `A`.
-- From then on `A` is used exactly like an array: `A[i]`. In the previous lesson you saw why this works: `A[i]` just means `*(A + i)`.
+- From then on `A` is used exactly like an array: `A[i]`. In [Pointer arithmetic and pointer mistakes](topic:pointer-arithmetic) you saw why this works: `A[i]` just means `*(A + i)`.
 
 Always write `n * sizeof(int)`, not `n * 4`. The size of `int` is not the same on every machine, and `sizeof` also stays right if you later change the type.
 
@@ -97,7 +98,7 @@ free(A);   /* give the 4000 bytes back */
 
 `free` receives the address that `malloc` gave you and marks the block as free again. Nothing frees it for you: in C, it is the programmer's job.
 
-If you forget, the block stays reserved until the whole program ends, and nobody can use it. That is a **memory leak**. One small leak is harmless, but a leak inside a loop that runs a million times can eat all the memory of a long-running program, like a server.
+If you forget, the block stays reserved until the whole program ends, and nobody can use it. That is a **memory leak**. One small leak is harmless, but a leak inside a loop that runs a million times can eat all the memory of a long-running program, like a server. Long before it runs out, the whole computer can slow down, because the operating system starts moving memory to the disk to make room.
 
 :::definition id=def-memory-leak title="Memory leak" source="Lecture 2 - Memory management.pptx"
 A memory leak is heap memory that the program reserved and never freed, and can no longer free because it lost the address. It stays taken until the program ends.
@@ -133,7 +134,7 @@ free(A);
 A[0] = 5;  /* undefined behavior: the block is not yours anymore */
 ```
 
-After `free`, `A` still holds the old address, but the memory there may already belong to something else. A pointer like that is called a **dangling pointer**. Writing through it is undefined behavior, and it often does not crash right away, which makes it one of the hardest bugs to find.
+After `free`, `A` still holds the old address, but the memory there may already belong to something else. A pointer like that is called a **dangling pointer**. Using it is a bug called **use-after-free**. Reading or writing through it is undefined behavior, and it often does not crash right away, which makes it one of the hardest bugs to find.
 
 :::definition id=def-dangling title="Dangling pointer" source="Lecture 2 - Memory management.pptx"
 A dangling pointer holds the address of memory that is no longer yours, for example a block you already freed, or a local variable of a function that has returned.
@@ -154,6 +155,27 @@ Right after `free`, store `NULL` in the pointer. Then:
 
 :::trap
 Thinking `free(A)` also changes `A`. It does not: `A` keeps the old address, and only the memory behind it is gone. That is exactly why you write `A = NULL;` on the next line.
+:::
+
+`A = NULL;` only protects `A`. If another pointer also held that address, as after `int *B = A;`, then `B` is still dangling, and you have to clear it too.
+
+:::check id=chk-after-free-print
+```c
+int *p = malloc(3 * sizeof(*p));
+if (!p)
+    return 1;
+p[0] = 42;
+free(p);
+printf("%d\n", p[0]);
+```
+
+What must this program do?
+
+- [x] Nothing is promised: it may print 42, print garbage, or crash
+- [ ] It must crash, because the block was freed
+- [ ] It must print 42, because nothing overwrote the block
+
+Reading `p[0]` after `free` is undefined behavior, so the C rules promise nothing. Printing 42 does not make it correct. The old value may simply still be there.
 :::
 
 :::check id=chk-free-walk

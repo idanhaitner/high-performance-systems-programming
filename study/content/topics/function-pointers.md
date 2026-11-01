@@ -256,4 +256,4 @@ C does not check array bounds, and `c` is known only when the program runs. `A[5
 :::
 :::
 
-**Next:** [Memory on request: malloc and free](topic:malloc-and-free) leaves function pointers behind and turns to the main topic of Lecture 2: asking for memory while the program runs, and giving it back.
+**Next:** [How function calls use the stack](topic:stack-frames) leaves function pointers behind and follows a program line by line, to see what each call does to memory and where the stack falls short.
