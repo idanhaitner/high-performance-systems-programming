@@ -213,7 +213,7 @@ html:has(.session) .code-editor .cm-diagnostic { font-size: 1rem; }
 
 /* ---------- Results ---------- */
 
-html:has(.session) .workspace-code { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+html:has(.session) .workspace-code { position: relative; display: flex; flex-direction: column; height: 100%; min-height: 0; }
 html:has(.session) .workspace-code > .split { flex: 1; }
 html:has(.session) .results-panel { display: flex; flex-direction: column; height: 100%; }
 html:has(.session) .results-tabs { display: flex; flex: none; gap: 4px; padding-inline: 12px; border-bottom: 1px solid var(--line); }
@@ -330,4 +330,49 @@ html:has(.session) button.btn-danger { border-color: var(--ws-edge); background:
 /* In a short, wide window the top bar has room for one row. */
 @media (max-height: 499px) and (min-width: 768px) {
   html:has(.session) .workspace-where { flex-basis: 16rem; }
+}
+
+/* ---------- Function finder ---------- */
+/* A round button floating over the code, opening a small lookup panel above it. */
+
+html:has(.session) .finder { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+html:has(.session) .finder-button { position: absolute; right: 16px; bottom: 76px; display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 2px solid var(--code-border); border-radius: 50%; background: var(--accent); color: var(--on-accent); cursor: pointer; pointer-events: auto; box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.55); transition: transform 0.15s var(--ease); }
+html:has(.session) .finder-button:hover:not(:disabled) { background: var(--accent-ink); transform: translateY(-2px); }
+html:has(.session) .finder-button:active { transform: scale(0.95); }
+html:has(.session) .finder-button:focus-visible { outline: 2px solid var(--ws-ring-on-code); outline-offset: 3px; }
+html:has(.session) .finder-mark { width: 24px; height: 24px; stroke: currentColor; }
+html:has(.session) .finder-panel { position: absolute; right: 16px; bottom: 134px; display: flex; flex-direction: column; width: min(400px, calc(100% - 32px)); max-height: min(600px, calc(100% - 150px)); overflow: hidden; border: 1px solid var(--ws-edge); border-radius: 16px; background: var(--sheet); color: var(--ink); pointer-events: auto; box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.45); font-size: 0.9375rem; line-height: 1.45; transform-origin: bottom right; animation: finder-open 0.18s var(--ease); }
+@keyframes finder-open { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
+html:has(.session) .finder-head { display: flex; align-items: center; gap: 12px; padding: 14px 8px 10px 14px; }
+html:has(.session) .finder-head > div { flex: 1; min-width: 0; }
+html:has(.session) .finder-badge { display: grid; flex: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); }
+html:has(.session) .finder-badge .finder-mark { width: 20px; height: 20px; }
+html:has(.session) .finder-title { margin: 0; font-weight: 700; font-size: 1rem; line-height: 1.2; }
+html:has(.session) .finder-sub { margin: 2px 0 0; color: var(--muted); font-size: 0.875rem; }
+html:has(.session) button.finder-close { display: grid; flex: none; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted); cursor: pointer; }
+html:has(.session) button.finder-close svg { width: 18px; height: 18px; stroke: currentColor; }
+html:has(.session) button.finder-close:hover:not(:disabled) { background: var(--ws-wash); color: var(--ink); }
+html:has(.session) .finder-input { margin: 0 14px 12px; padding: 10px 16px; border: 1px solid var(--ws-edge); border-radius: 999px; background: var(--field); color: var(--ink); font: inherit; font-size: 1rem; }
+html:has(.session) .finder-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+html:has(.session) .finder-body { flex: 1; min-height: 0; overflow-y: auto; padding: 0 14px 8px; overscroll-behavior: contain; }
+html:has(.session) .finder-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 0 8px; }
+html:has(.session) .finder-chips p { width: 100%; margin: 0; color: var(--muted); font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+html:has(.session) .finder-chips button { min-height: 36px; padding: 6px 14px; border: 1px solid var(--ws-edge); border-radius: 999px; background: transparent; color: var(--ink); cursor: pointer; font-size: 0.875rem; }
+html:has(.session) .finder-empty { margin: 4px 0 12px; color: var(--muted); }
+html:has(.session) .finder-results { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin: 0; padding: 0 0 4px; list-style: none; }
+html:has(.session) .finder-card { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--ws-wash); }
+html:has(.session) .finder-card > p { margin: 6px 0 8px; color: var(--ink); }
+html:has(.session) .finder-card-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+html:has(.session) .finder-name { font: 600 0.9375rem var(--mono); color: var(--ink); }
+html:has(.session) .finder-header { color: var(--muted); font: 500 0.8125rem var(--mono); }
+html:has(.session) .finder-signature { display: block; overflow-x: auto; color: var(--muted); font: 400 0.8125rem/1.5 var(--mono); white-space: pre; }
+html:has(.session) .finder-example { margin-top: 8px; border-radius: 8px; background: var(--code); }
+html:has(.session) .finder-example pre { margin: 0; padding: 10px 12px 4px; overflow-x: auto; color: var(--code-ink); font: 400 0.8125rem/1.55 var(--mono); font-variant-ligatures: none; }
+html:has(.session) .finder-example code { padding: 0; background: none; color: inherit; font: inherit; }
+html:has(.session) button.finder-copy { display: block; margin: 0 6px 6px auto; min-height: 28px; padding: 3px 10px; border: 1px solid var(--code-border); border-radius: 999px; background: var(--code-head); color: var(--code-ink); cursor: pointer; font-size: 0.75rem; }
+html:has(.session) .finder-foot { margin: 0; padding: 10px 14px 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.8125rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.session) .finder-panel { animation: none; }
+  html:has(.session) .finder-button, html:has(.session) .finder-button:hover:not(:disabled), html:has(.session) .finder-button:active { transform: none; transition: none; }
 }
