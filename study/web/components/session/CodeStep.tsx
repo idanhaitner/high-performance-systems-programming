@@ -12,6 +12,7 @@ import type { SessionStep } from "@/lib/types";
 import { useTabLayout, workspaceShortcut } from "@/lib/workspace";
 import { exerciseZip } from "@/lib/zip";
 import { AsmPanel } from "./AsmView";
+import { FunctionFinder } from "./FunctionFinder";
 import { LockButton } from "./LockButton";
 import { CaseList, OutcomeView, type CaseView } from "./OutcomeView";
 import { QuestionPanel } from "./QuestionPanel";
@@ -417,6 +418,7 @@ export function CodeStep({ step, courseId, done, onComplete, harness, rendered, 
                 </>
               )}
             </div>
+            <FunctionFinder />
           </div>
         }
       />
