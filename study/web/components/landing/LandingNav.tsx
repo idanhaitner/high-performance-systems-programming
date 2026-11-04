@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 
 const LINKS = [
+  { href: "#syllabus", label: "Syllabus" },
   { href: "#how", label: "How it works" },
   { href: "#deck", label: "The lessons" },
   { href: "/glossary/", label: "Glossary" },
