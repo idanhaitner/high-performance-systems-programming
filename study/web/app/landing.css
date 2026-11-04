@@ -215,14 +215,14 @@ body:has(.landing) .reading-progress { display: none; }
 .deck-tab.rv:not(.is-in) { translate: -24px 0; }
 .final.rv:not(.is-in) { translate: 0 48px; scale: 0.96; }
 
-/* A slow ribbon of lesson cards between the hero and the tagline. Pointing at it pauses it. */
+/* A slow ribbon of the syllabus subjects between the hero and the tagline. Pointing at it pauses it. */
 .marquee {
   margin: 0 -24px;
   padding: 16px 0;
   overflow: clip;
   mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
 }
-/* The speed stays the same however many lessons ride on it (page.tsx sets --chips). */
+/* The speed stays the same however many subjects ride on it (page.tsx sets --chips). */
 .marquee-track { display: flex; width: max-content; animation: marquee calc(var(--chips, 14) * 2.85s) linear infinite; }
 .marquee:hover .marquee-track { animation-play-state: paused; }
 .page.landing .marquee ul { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 12px; margin: 0; padding: 0 12px 0 0; list-style: none; }
@@ -275,7 +275,7 @@ body:has(.landing) .reading-progress { display: none; }
 .tone-mint { background: var(--mint); }
 .tone-coral { background: var(--coral); }
 .tone-sun { background: var(--sun); }
-/* The other three hero card colors, used by the lesson chips in the marquee. */
+/* The other three hero card colors, used by the subject chips in the marquee. */
 .tone-card { background: var(--card-solid); color: var(--ink); }
 .tone-soft { background: linear-gradient(var(--accent-soft) 0 0), var(--card-solid); color: var(--ink); }
 .tone-accent { background: var(--accent); color: var(--on-accent); }
