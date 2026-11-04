@@ -8,6 +8,7 @@ import { Reveal } from "@/components/landing/Reveal";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Mixed } from "@/lib/bidi";
 import { loadCourse } from "@/lib/course";
+import { OUTCOMES, PARTS, SUBJECTS } from "@/lib/syllabus";
 import type { Session } from "@/lib/types";
 
 const pad = (value: number) => String(value).padStart(2, "0");
@@ -68,7 +69,7 @@ export default function HomePage() {
     <article className="page landing">
       <Reveal />
       <FanMotion />
-      <ScrollReveal selector=".landing section > h2, .how-card, .benefits li, .deck-tab, .deck-soon, .deck-panels, .final" />
+      <ScrollReveal selector=".landing section > h2, .syllabus-part, .outcome-list li, .how-card, .benefits li, .deck-tab, .deck-soon, .deck-panels, .final" />
       <LandingNav startHref={startHref} />
 
       <section className="hero" aria-labelledby="hero-title">
@@ -87,8 +88,9 @@ export default function HomePage() {
             ))}
           </h1>
           <p className="hero-sub">
-            Study cards for High Performance Systems Programming. For each lecture, first read its short lessons,
-            then do its practice: quick questions and real C you run right on the page. No C experience needed.
+            A study site for the course High Performance Systems Programming: how to write C, why some programs run
+            fast and others crawl, and how to split a job across many processor cores and a graphics card. Read short
+            lessons, answer quick questions, and run real C on the page. No C experience needed.
           </p>
           <HeroCta courseId={course.id} lessons={lessons.map(({ id, title }) => ({ id, title }))} />
         </div>
@@ -132,6 +134,56 @@ export default function HomePage() {
         </p>
       </section>
 
+      <section className="syllabus" id="syllabus" aria-labelledby="syllabus-title">
+        <h2 id="syllabus-title">What the course covers</h2>
+        <p className="deck-intro">
+          Ten subjects in three parts. You start with C, learn to make programs fast, and finish by running work on
+          many processor cores and on a graphics card. Subjects with a lecture link are already written here.
+        </p>
+        <div className="syllabus-parts">
+          {PARTS.map((part) => (
+            <div className={`syllabus-part tone-${part.tone}`} key={part.id}>
+              <h3>{part.title}</h3>
+              <p>{part.blurb}</p>
+              <ol>
+                {SUBJECTS.filter((subject) => subject.part === part.id).map((subject) => {
+                  const lecture = subject.lecture ? lectures.find((item) => item.number === subject.lecture) : undefined;
+                  const first = lecture?.lessons[0];
+                  return (
+                    <li className="subject" key={subject.number}>
+                      <span className="subject-num">{subject.number}</span>
+                      <div>
+                        <strong>{subject.title}</strong>
+                        <span>{subject.body}</span>
+                        {first ? (
+                          <Link className="subject-tag is-ready" href={`/topics/${first.id}`}>
+                            Lecture {lecture!.number} is ready <span aria-hidden="true">→</span>
+                          </Link>
+                        ) : (
+                          <span className="subject-tag">Arrives later in the semester</span>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="outcomes" id="outcomes" aria-labelledby="outcomes-title">
+        <h2 id="outcomes-title">What you will be able to do</h2>
+        <ol className="outcome-list">
+          {OUTCOMES.map((outcome, index) => (
+            <li key={outcome}>
+              <span>{index + 1}</span>
+              {outcome}
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section className="how" id="how" aria-labelledby="how-title">
         <h2 id="how-title">How to study each lecture</h2>
         <ol className="how-cards">
@@ -169,7 +221,7 @@ export default function HomePage() {
             ...lecture,
             practiceSummary: practiceSummary(course.sessions.find((session) => session.id === lecture.sessionId)),
           }))}
-          later="More lectures arrive through the semester: caches, the processor, many core machines, and graphics cards."
+          later="More lectures arrive through the semester: measuring speed, caches, many core processors, and graphics cards."
         />
       </section>
 
@@ -191,6 +243,7 @@ export default function HomePage() {
       <footer className="landing-foot">
         <span>High Performance Systems Programming</span>
         <nav aria-label="Footer">
+          <a href="#syllabus">Syllabus</a>
           <a href="#deck">All lectures</a>
           <Link href="/glossary/">Glossary</Link>
         </nav>

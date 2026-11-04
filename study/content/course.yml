@@ -4,9 +4,12 @@ lang: en
 dir: ltr
 summary: >
   Why some programs run fast and others run slow, explained from the ground up.
-  We start with how a computer stores numbers and text in memory, learn just
-  enough C to see that directly, and then build up, step by step, to
-  caches, the processor, many-core machines, and graphics cards. No prior C or
+  The course has three parts. First you learn C, a small language that shows
+  you how memory works, along with the Linux command line. Then you learn to
+  measure how long a program takes, and how the processor's cache, a small and
+  very fast memory, rewards code that reads nearby values in order. Last you
+  split a job across the several cores of one processor with OpenMP, and across
+  the thousands of tiny workers on a graphics card with CUDA. No prior C or
   systems knowledge is assumed. Each lesson has short explanations and practice
   questions.
 
