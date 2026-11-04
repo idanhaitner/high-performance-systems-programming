@@ -1,4 +1,4 @@
-// The course outline, learning outcomes, and grading, from the official syllabus.
+// The course outline and learning outcomes, from the official syllabus.
 // Subjects are written for a reader who starts from zero: every technical word is explained.
 
 export type Part = { id: string; tone: "mint" | "sun" | "coral"; title: string; blurb: string };
@@ -108,22 +108,4 @@ export const OUTCOMES = [
   "Write programs that use several cores with OpenMP, and judge the speedup.",
   "Write basic GPU programs with CUDA.",
   "Compare one core, many cores, and a GPU, and pick the right one for a job.",
-];
-
-export const GRADING = [
-  { label: "Final exam", percent: 80, note: "Written, at the end of the semester. You must pass it to pass the course." },
-  { label: "Four programming assignments", percent: 20, note: "5% each, done during the semester." },
-];
-
-export const COURSE_FACTS = [
-  { label: "Course number", value: "0-232.1.2081" },
-  { label: "Credits", value: "2 (3.00 ECTS)" },
-  { label: "Passing grade", value: "56" },
-  { label: "Semester", value: "Fall, 18 Oct 2026 to 15 Jan 2027" },
-];
-
-export const BOOKS = [
-  "Bryant and O'Hallaron, Computer Systems: A Programmer's Perspective, 3rd edition.",
-  "Kernighan and Ritchie, The C Programming Language, 2nd edition.",
-  "Hwu, Kirk, and El Hajj, Programming Massively Parallel Processors: A Hands on Approach, 5th edition.",
 ];

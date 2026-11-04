@@ -8,7 +8,7 @@ import { Reveal } from "@/components/landing/Reveal";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Mixed } from "@/lib/bidi";
 import { loadCourse } from "@/lib/course";
-import { BOOKS, COURSE_FACTS, GRADING, OUTCOMES, PARTS, SUBJECTS } from "@/lib/syllabus";
+import { OUTCOMES, PARTS, SUBJECTS } from "@/lib/syllabus";
 import type { Session } from "@/lib/types";
 
 const pad = (value: number) => String(value).padStart(2, "0");
@@ -69,7 +69,7 @@ export default function HomePage() {
     <article className="page landing">
       <Reveal />
       <FanMotion />
-      <ScrollReveal selector=".landing section > h2, .syllabus-part, .outcome-list li, .grading-grid > *, .how-card, .benefits li, .deck-tab, .deck-soon, .deck-panels, .final" />
+      <ScrollReveal selector=".landing section > h2, .syllabus-part, .outcome-list li, .how-card, .benefits li, .deck-tab, .deck-soon, .deck-panels, .final" />
       <LandingNav startHref={startHref} />
 
       <section className="hero" aria-labelledby="hero-title">
@@ -182,42 +182,6 @@ export default function HomePage() {
             </li>
           ))}
         </ol>
-      </section>
-
-      <section className="grading" id="grading" aria-labelledby="grading-title">
-        <h2 id="grading-title">How the course is graded</h2>
-        <div className="grading-grid">
-          <ul className="grading-bars">
-            {GRADING.map((item) => (
-              <li key={item.label}>
-                <div className="grading-head">
-                  <strong>{item.label}</strong>
-                  <span>{item.percent}%</span>
-                </div>
-                <span className="grading-bar" aria-hidden="true">
-                  <span style={{ "--fill": item.percent / 100 } as React.CSSProperties} />
-                </span>
-                <p>{item.note}</p>
-              </li>
-            ))}
-          </ul>
-          <dl className="course-facts">
-            {COURSE_FACTS.map((fact) => (
-              <div key={fact.label}>
-                <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-        <details className="books">
-          <summary>Books the course follows</summary>
-          <ul>
-            {BOOKS.map((book) => (
-              <li key={book}>{book}</li>
-            ))}
-          </ul>
-        </details>
       </section>
 
       <section className="how" id="how" aria-labelledby="how-title">
