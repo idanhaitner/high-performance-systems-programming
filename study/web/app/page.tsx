@@ -13,9 +13,9 @@ import type { Session } from "@/lib/types";
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
-// The same six colors as the hero cards, so a lesson's chip matches its card.
+// The same six colors as the hero cards, so a subject's chip matches its card.
 const CARD_TONES = ["mint", "sun", "coral", "card", "soft", "accent"];
-const cardTone = (lessonNumber: number) => CARD_TONES[(lessonNumber - 1) % CARD_TONES.length];
+const cardTone = (subjectNumber: number) => CARD_TONES[(subjectNumber - 1) % CARD_TONES.length];
 
 function practiceSummary(session: Session | undefined) {
   if (!session) return "";
@@ -63,7 +63,13 @@ export default function HomePage() {
   const lectures = course.lectures;
   const lessons = lectures.flatMap((lecture) => lecture.lessons);
   const startHref = lessons[0] ? `/topics/${lessons[0].id}` : "/";
-  const fan = lessons.slice(0, 6);
+  // Six cards fit the fan: the first six subjects, in course order. The chips below carry all ten.
+  const fan = SUBJECTS.slice(0, 6);
+  // A subject whose lecture is written links to that lecture's first lesson; the others link to the syllabus.
+  const subjectHref = (subject: (typeof SUBJECTS)[number]) => {
+    const first = lectures.find((item) => item.number === subject.lecture)?.lessons[0];
+    return first ? `/topics/${first.id}` : "/#syllabus";
+  };
 
   return (
     <article className="page landing">
@@ -94,12 +100,12 @@ export default function HomePage() {
           </p>
           <HeroCta courseId={course.id} lessons={lessons.map(({ id, title }) => ({ id, title }))} />
         </div>
-        <ol className="fan" aria-label="Lecture 1 lessons">
-          {fan.map((lesson, index) => (
-            <li key={lesson.id} style={{ "--i": index, "--n": fan.length } as React.CSSProperties}>
-              <Link href={`/topics/${lesson.id}`}>
-                <span className="fan-num">{lesson.lessonNumber}</span>
-                <span className="fan-title" data-vt-title><Mixed text={lesson.title} /></span>
+        <ol className="fan" aria-label="The first six subjects of the course">
+          {fan.map((subject, index) => (
+            <li key={subject.number} style={{ "--i": index, "--n": fan.length } as React.CSSProperties}>
+              <Link href={subjectHref(subject)}>
+                <span className="fan-num">{subject.number}</span>
+                <span className="fan-title"><Mixed text={subject.short} /></span>
               </Link>
             </li>
           ))}
@@ -107,12 +113,12 @@ export default function HomePage() {
       </section>
 
       <div className="marquee" aria-hidden="true">
-        <div className="marquee-track" style={{ "--chips": lessons.length } as React.CSSProperties}>
+        <div className="marquee-track" style={{ "--chips": SUBJECTS.length } as React.CSSProperties}>
           {[0, 1].map((copy) => (
             <ul key={copy}>
-              {lessons.concat(lessons).map((lesson, index) => (
-                <li key={`${lesson.id}-${index}`} className={`marquee-chip tone-${cardTone(lesson.lessonNumber)}`}>
-                  <span><Mixed text={lesson.title} /></span>
+              {SUBJECTS.concat(SUBJECTS).map((subject, index) => (
+                <li key={`${subject.number}-${index}`} className={`marquee-chip tone-${cardTone(subject.number)}`}>
+                  <span><Mixed text={subject.title} /></span>
                 </li>
               ))}
             </ul>

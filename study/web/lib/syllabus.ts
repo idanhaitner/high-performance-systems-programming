@@ -7,6 +7,8 @@ export type Subject = {
   number: number;
   part: Part["id"];
   title: string;
+  /** A few words for the hero card and the scrolling chip. */
+  short: string;
   /** What the subject teaches, in plain words. */
   body: string;
   /** Number of the lecture whose lessons already cover this subject. */
@@ -39,6 +41,7 @@ export const SUBJECTS: Subject[] = [
     number: 1,
     part: "c",
     title: "Introduction to C and systems programming",
+    short: "Intro to C",
     body: "How a computer stores numbers and text, how your C code turns into a running program, and why a low level language is worth learning.",
     lecture: 1,
   },
@@ -46,6 +49,7 @@ export const SUBJECTS: Subject[] = [
     number: 2,
     part: "c",
     title: "Pointers, arrays, and dynamic memory",
+    short: "Pointers and memory",
     body: "A pointer is the address of a value. You will follow pointers through arrays, and ask for memory while the program runs with malloc and give it back with free.",
     lecture: 2,
   },
@@ -53,48 +57,56 @@ export const SUBJECTS: Subject[] = [
     number: 3,
     part: "c",
     title: "Writing real C software",
+    short: "Real C software",
     body: "Splitting a program across several files, compiling and linking them, and keeping the pieces small enough to understand.",
   },
   {
     number: 4,
     part: "c",
     title: "C and the Linux operating system",
+    short: "C and Linux",
     body: "Working in the Linux command line, calling the operating system from C, and using tools that find bugs and show what a program is doing.",
   },
   {
     number: 5,
     part: "fast",
     title: "Measuring and understanding performance",
+    short: "Measuring speed",
     body: "Timing a program honestly, using a profiler (a tool that shows where the time goes), and finding the few places that make a program slow.",
   },
   {
     number: 6,
     part: "fast",
     title: "Cache, locality, and efficient C",
+    short: "Cache and locality",
     body: "A cache is a small, very fast memory close to the processor. Code that reads nearby values in order uses it well and runs faster.",
   },
   {
     number: 7,
     part: "parallel",
     title: "Multicore memory and cache coherence",
+    short: "Multicore memory",
     body: "What happens when several processor cores share memory, and how they keep their private caches from disagreeing.",
   },
   {
     number: 8,
     part: "parallel",
     title: "Parallel programming with OpenMP",
+    short: "OpenMP",
     body: "OpenMP is a way to mark a loop in C so that several cores each take a share of it. You will measure the speedup and see what slows it down.",
   },
   {
     number: 9,
     part: "parallel",
     title: "GPU architecture and an introduction to CUDA",
+    short: "GPUs and CUDA",
     body: "A GPU (graphics processing unit) runs thousands of simple threads at once. CUDA is the language extension used to program one.",
   },
   {
     number: 10,
     part: "parallel",
     title: "Efficient CUDA and CPU to GPU performance",
+    short: "Fast CUDA",
     body: "Moving data between the processor and the graphics card is slow. You will learn to arrange memory and work so the GPU stays busy.",
   },
 ];
