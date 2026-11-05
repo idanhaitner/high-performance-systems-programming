@@ -147,7 +147,7 @@ body:has(.landing) .reading-progress { display: none; }
 /* Leaving the hero: ScrollFx.tsx sets translate and opacity straight on the copy and the board (no inherited variable, so nothing below them is restyled). */
 
 /* The board of workers: one job in 42 pieces. A filled square is a finished piece. */
-.cores { margin: 0; animation: rise-in 0.9s var(--ease) 0.3s backwards; }
+.cores { margin: 72px 0 0; animation: rise-in 0.9s var(--ease) 0.3s backwards; }
 .core-board { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; padding: 16px; border: 2px solid var(--edge); border-radius: 24px; background: var(--card-solid); box-shadow: 8px 8px 0 var(--edge); }
 .core { position: relative; aspect-ratio: 1; border-radius: 8px; background: var(--accent-soft); overflow: clip; }
 .core::before, .core::after { content: ""; position: absolute; inset: 0; opacity: 0; background: var(--accent); }
@@ -166,7 +166,6 @@ body:has(.landing) .reading-progress { display: none; }
 .core-time { display: block; height: 8px; border-radius: 9999px; background: var(--accent-soft); overflow: clip; }
 .core-time span { display: block; height: 100%; border-radius: 9999px; background: var(--coral); transform-origin: 0 50%; transform: scaleX(0); }
 .core-time.is-run span { transform: scaleX(1); }
-.core-live { min-height: 2.5rem; font: 600 0.875rem/1.25rem var(--font-mono), monospace; color: var(--ink); }
 @media (prefers-reduced-motion: no-preference) {
   /* Before anyone picks, a diagonal wave of work rolls across the board by itself. */
   .core-board:not(.is-run) .core::before { animation: core-wave 3.6s ease-in-out var(--wave) infinite; }
@@ -182,12 +181,22 @@ body:has(.landing) .reading-progress { display: none; }
 @media (prefers-reduced-motion: reduce) { .core:nth-child(3n + 1)::before { opacity: 0.8; } }
 
 /* ---- Ticker: the ten subjects, rolling ---- */
-.ticker { padding: 24px 0; overflow: clip; }
-.ticker-track { display: flex; width: max-content; animation: marquee calc(var(--chips, 10) * 5s) linear infinite; }
+.ticker { --band-bg: var(--bg); padding: 28px 0 32px; overflow: clip; background: var(--band-bg); }
+/* The subjects fade in and out at the edges instead of being cut off mid-word. */
+.ticker::before, .ticker::after { content: ""; position: absolute; inset-block: 0; z-index: 1; width: min(12vw, 10rem); pointer-events: none; }
+.ticker::before { inset-inline-start: 0; background: linear-gradient(to right, var(--band-bg), transparent); }
+.ticker::after { inset-inline-end: 0; background: linear-gradient(to left, var(--band-bg), transparent); }
+[dir="rtl"] .ticker::before { background: linear-gradient(to left, var(--band-bg), transparent); }
+[dir="rtl"] .ticker::after { background: linear-gradient(to right, var(--band-bg), transparent); }
+/* Each subject is a small card, like the lesson cards below: outlined, with a hard shadow, in the site's tones. The gap between cards is the only separator. */
+.ticker-track { display: flex; width: max-content; will-change: transform; animation: marquee calc(var(--chips, 10) * 5s) linear infinite; }
 .ticker:hover .ticker-track { animation-play-state: paused; }
-.page.landing .ticker ul { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 48px; margin: 0; padding: 0 48px 0 0; list-style: none; }
-.ticker li { display: flex; align-items: center; gap: 48px; font: 700 2.25rem/2.5rem var(--serif); letter-spacing: -0.03em; white-space: nowrap; }
-.ticker-dot { width: 16px; height: 16px; border-radius: 4px; background: var(--sun); rotate: 45deg; }
+.page.landing .ticker ul { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 20px; margin: 0; padding: 0 20px 0 0; list-style: none; }
+.ticker li { display: flex; align-items: center; padding: 10px 22px; border: 2px solid var(--edge); border-radius: 16px; box-shadow: 4px 4px 0 var(--edge); font: 700 1.25rem/1.75rem var(--serif); letter-spacing: -0.02em; white-space: nowrap; color: var(--on-card); background: var(--mint); }
+.ticker li:nth-child(5n + 2) { background: var(--sun); }
+.ticker li:nth-child(5n + 3) { background: var(--coral); }
+.ticker li:nth-child(5n + 4) { background: var(--card-solid); color: var(--ink); }
+.ticker li:nth-child(5n) { background: var(--accent-soft); color: var(--ink); }
 @keyframes marquee { to { transform: translateX(-50%); } }
 [dir="rtl"] .ticker-track { animation-direction: reverse; }
 
@@ -448,6 +457,7 @@ body:has(.landing) .reading-progress { display: none; }
 @media (max-width: 1024px) {
   .landing-bar { gap: 12px; }
   .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  .cores { margin-top: 0; }
   .hero h1 { font-size: 3.75rem; }
   .ladder-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .ladder-stage { order: -1; top: 88px; z-index: 3; }
@@ -492,8 +502,8 @@ body:has(.landing) .reading-progress { display: none; }
   .hero-sub { font-size: 1.125rem; line-height: 1.75rem; }
   .sec-title { font-size: 2.25rem; line-height: 2.5rem; }
   .sec-intro { margin-bottom: 40px; font-size: 1.125rem; line-height: 1.75rem; }
-  .ticker li { font-size: 1.5rem; line-height: 2rem; gap: 24px; }
-  .page.landing .ticker ul { gap: 24px; padding-right: 24px; }
+  .ticker li { padding: 8px 18px; font-size: 1.125rem; line-height: 1.5rem; }
+  .page.landing .ticker ul { gap: 16px; padding-right: 16px; }
   .ladder-stage { padding: 16px; box-shadow: 4px 4px 0 var(--ink); }
   .ladder-readouts { height: 3.5rem; margin-bottom: 16px; }
   .ladder-readout { font-size: 1.5rem; line-height: 2rem; }
