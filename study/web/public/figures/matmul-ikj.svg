@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 490" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .g { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #17784f; }
+  .r { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #b4233f; }
+  .a { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4b3cf5; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #1b1740; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="490" fill="#f7f6ff"/>
+  <g class="step" style="animation-delay:0.08s">
+  <text x="24" y="30" class="t" font-size="16" text-anchor="start" font-weight="700">i-k-j: the inner loop changes j</text>
+  <text x="114" y="58" class="a" font-size="17" text-anchor="middle" font-weight="700">A</text>
+  <text x="352" y="58" class="a" font-size="17" text-anchor="middle" font-weight="700">B</text>
+  <rect x="24" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="54" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="84" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="114" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="144" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="174" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="24" y="100" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="54" y="100" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="84" y="100" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="114" y="100" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="144" y="100" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="174" y="100" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="24" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="54" y="130" width="30" height="30" fill="#fff0cc" stroke="#b07a00" stroke-width="1.2"/>
+  <rect x="84" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="114" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="144" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="174" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="24" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="54" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="84" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="114" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="144" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="174" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="24" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="54" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="84" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="114" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="144" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="174" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="24" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="54" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="84" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="114" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="144" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="174" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="262" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="292" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="322" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="352" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="382" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="412" y="70" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="262" y="100" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="292" y="100" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="322" y="100" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="352" y="100" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="382" y="100" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="412" y="100" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="262" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="292" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="322" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="352" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="382" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="412" y="130" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="262" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="292" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="322" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="352" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="382" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="412" y="160" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="262" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="292" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="322" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="352" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="382" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="412" y="190" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="262" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="292" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="322" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="352" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="382" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="412" y="220" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <text x="114" y="278" class="t" font-size="14" text-anchor="middle" font-weight="700">A[i][k]: loaded once</text>
+  <text x="352" y="278" class="g" font-size="14" text-anchor="middle" font-weight="700">One row of B: stride 1</text>
+  </g>
+  <g class="step" style="animation-delay:0.24s">
+  <text x="114" y="328" class="a" font-size="17" text-anchor="middle" font-weight="700">C</text>
+  <rect x="24" y="336" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="54" y="336" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="84" y="336" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="114" y="336" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="144" y="336" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="174" y="336" width="30" height="30" fill="#dcf5e8" stroke="#17784f" stroke-width="1.2"/>
+  <rect x="24" y="366" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="54" y="366" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="84" y="366" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="114" y="366" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="144" y="366" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <rect x="174" y="366" width="30" height="30" fill="#ffffff" stroke="#d3cff0" stroke-width="1.2"/>
+  <text x="352" y="358" class="g" font-size="14" text-anchor="middle" font-weight="700">One row of C: stride 1</text>
+  </g>
+  <g class="step" style="animation-delay:0.40s">
+  <rect x="476" y="52" width="220" height="200" rx="12" fill="#dcf5e8" stroke="#17784f" stroke-width="1.5"/>
+  <text x="492" y="80" class="g" font-size="14" text-anchor="start" font-weight="700">Simplified cache model</text>
+  <text x="492" y="110" class="t" font-size="13" text-anchor="start" font-weight="700">A[i][k]: loaded once,</text>
+  <text x="492" y="128" class="t" font-size="13" text-anchor="start" font-weight="700">reused N times</text>
+  <text x="492" y="158" class="t" font-size="13" text-anchor="start" font-weight="700">B row: 1 miss per 8 loads</text>
+  <text x="492" y="176" class="t" font-size="13" text-anchor="start">87.5% hits</text>
+  <text x="492" y="206" class="t" font-size="13" text-anchor="start" font-weight="700">C row stays hot across k</text>
+  <text x="492" y="236" class="g" font-size="14" text-anchor="start" font-weight="700">B and C: roughly 94% hits</text>
+  <text x="476" y="282" class="m" font-size="12" text-anchor="start">Measured: the last-level cache</text>
+  <text x="476" y="300" class="m" font-size="12" text-anchor="start">miss rate fell from 7.7% to 1.0%.</text>
+  </g>
+  <g class="step" style="animation-delay:0.56s">
+  <rect x="24" y="420" width="672" height="56" rx="10" fill="#1b1740" stroke="#1b1740" stroke-width="0"/>
+  <text x="44" y="444" class="w" font-size="14" text-anchor="start">for (j...) C[i][j] += aik * B[k][j];</text>
+  <text x="44" y="464" class="w" font-size="13" text-anchor="start">Both B and C walk along a row, and aik does not change.</text>
+  </g>
+</svg>

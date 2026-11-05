@@ -10,13 +10,13 @@ No prior C or systems knowledge is assumed. Every term is explained before it is
 
 ## What's in the course
 
-The course has 2 lectures so far. Read a lecture's lessons first, then do its practice.
+The course has 3 lectures so far. Read a lecture's lessons first, then do its practice.
 
-| | Lecture 1: Data, memory, and running programs | Lecture 2: Memory management |
-| --- | --- | --- |
-| **Lessons** | 8 | 6 |
-| **Coding exercises** | 16 | 12 |
-| **Lab** | Stride timing | Stack limit |
+| | Lecture 1: Data, memory, and running programs | Lecture 2: Memory management | Lecture 3: Memory layout, alignment, and the cache |
+| --- | --- | --- | --- |
+| **Lessons** | 8 | 6 | 6 |
+| **Coding exercises** | 16 | 12 | 9 |
+| **Lab** | Stride timing | Stack limit | Matrix multiplication |
 
 **Lecture 1 lessons**
 
@@ -37,6 +37,15 @@ The course has 2 lectures so far. Read a lecture's lessons first, then do its pr
 4. Memory on request: `malloc` and `free`
 5. Resizing memory and arrays of strings
 6. Stack or heap?
+
+**Lecture 3 lessons**
+
+1. How C lays out data in memory
+2. Alignment and padding
+3. Cache lines and hits
+4. Where a line goes in the cache
+5. Locality and prefetching
+6. Loop order, layout, and blocking
 
 ## How you learn on the site
 
