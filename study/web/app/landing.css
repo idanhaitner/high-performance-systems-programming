@@ -490,7 +490,9 @@ body:has(.landing) .reading-progress { display: none; }
   .page.landing { padding: 0 16px 32px; }
   .landing-bar { width: 100%; justify-content: space-between; gap: 4px; }
   .landing-links, .landing-bar .landing-cta-small { display: none; }
-  .landing-bar .theme-switch { margin-inline-end: -16px; }
+  /* With the links and the small button hidden, only the name, the theme switch, and the menu button are left.
+     The auto margin keeps the theme switch next to the menu button instead of floating in the middle. */
+  .landing-bar .theme-switch { margin-inline-start: auto; margin-inline-end: 0; }
   .landing-toggle { display: grid; flex: none; }
   /* The name stays on one line, so it follows the screen width and leaves room for the menu button. */
   .landing-mark { min-height: 44px; font-size: min(0.875rem, 4.4vw); white-space: nowrap; }
@@ -540,6 +542,11 @@ body:has(.landing) .reading-progress { display: none; }
   .landing .final h2 { font-size: 1.875rem; line-height: 2.25rem; }
   .final-cards span { width: 64px; height: 88px; }
   .final-cards span:nth-child(n + 3) { display: none; }
+}
+
+/* On the narrowest phones the name leaves no spare room, so the theme switch tucks in closer to the menu button. */
+@media (max-width: 360px) {
+  .landing-bar .theme-switch { margin-inline-end: -12px; }
 }
 
 @keyframes menu-in { from { opacity: 0; transform: translateY(24px); } }
