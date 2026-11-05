@@ -39,15 +39,25 @@ const groups = {
     const { context, page } = await open(browser, 1440);
     const cells = await page.locator(".core").count();
     expect("board", cells === 42, `the hero board has ${cells} workers, expected 42`);
-    await page.locator(".core-board").click();
-    await page.waitForTimeout(300);
-    const busy = await page.$eval(".core-live span", (el) => el.textContent);
-    expect("board", busy === "42", `clicking the board should put all 42 workers on the task, got ${busy}`);
+    await page.getByRole("button", { name: "42", exact: true }).click();
+    await page.waitForTimeout(900);
+    const all = await page.$eval(".core-live", (el) => el.textContent);
+    expect("board", /1 round\./.test(all), `42 workers should end at 1 round, got "${all}"`);
+    await page.getByRole("button", { name: "1", exact: true }).click();
+    await page.waitForTimeout(600);
+    const working = await page.$eval(".core-live", (el) => el.textContent);
+    expect("board", /per round/.test(working), `one worker should be shown mid-run, got "${working}"`);
+    await page.waitForTimeout(4200);
+    const one = await page.$eval(".core-live", (el) => el.textContent);
+    expect("board", /42 rounds/.test(one), `one worker should end at 42 rounds, got "${one}"`);
     await context.close();
     // With reduced motion the board is still there, just still.
     const still = await open(browser, 1440, { reducedMotion: "reduce" });
     const stillCells = await still.page.locator(".core").count();
     expect("board", stillCells === 42, "with reduced motion the board is missing");
+    await still.page.getByRole("button", { name: "42", exact: true }).click();
+    const instant = await still.page.$eval(".core-live", (el) => el.textContent);
+    expect("board", /1 round\./.test(instant), `with reduced motion the result should show at once, got "${instant}"`);
     await still.context.close();
   },
 

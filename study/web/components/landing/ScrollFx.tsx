@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 // The scroll and pointer effects of the home page, read at most once per animation frame.
 // - A thin bar at the top fills as you read down the page.
-// - The hero copy drifts up and fades as you leave it.
+// - The hero copy drifts up and fades as you leave it (set straight on the elements, never through an inherited variable).
 // - The speed ladder follows your place: the bars grow and the big number changes as each step reaches the middle.
 // - The tagline is pinned while you scroll, and its words light up (and dim again) in step with the scroll.
 // - Tiles lean toward the pointer, and the main buttons are pulled a little toward it.
@@ -17,6 +17,8 @@ export function ScrollFx() {
     const root = document.documentElement;
     const bar = document.querySelector<HTMLElement>(".scroll-bar");
     const hero = document.querySelector<HTMLElement>(".hero");
+    const heroCopy = document.querySelector<HTMLElement>(".hero-copy");
+    const board = document.querySelector<HTMLElement>(".cores");
     const tagline = document.querySelector<HTMLElement>(".tagline");
     const words = tagline ? [...tagline.querySelectorAll<HTMLElement>(".tagline-word")] : [];
     const ladder = document.querySelector<HTMLElement>(".ladder");
@@ -29,6 +31,8 @@ export function ScrollFx() {
     ladder?.classList.add("is-armed");
 
     let frame = 0;
+    let lastActive = -2;
+    let lastLit = -1;
     const clamp = (value: number) => Math.max(0, Math.min(1, value));
 
     const setStep = (active: number) => {
@@ -40,28 +44,41 @@ export function ScrollFx() {
       steps.forEach((step, index) => step.classList.toggle("is-active", index === active));
     };
 
+    // Every frame first reads the page, then writes to it. Mixing the two forces the browser to measure the page again after each write.
     const update = () => {
       frame = 0;
       const y = window.scrollY;
       const viewport = window.innerHeight;
 
-      if (bar) bar.style.transform = `scaleX(${clamp(y / Math.max(1, root.scrollHeight - viewport)).toFixed(4)})`;
-      if (hero) hero.style.setProperty("--hp", clamp(y / (hero.offsetHeight * 0.9)).toFixed(3));
-
+      // Read.
+      const range = Math.max(1, root.scrollHeight - viewport);
+      const heroProgress = hero ? clamp(y / (hero.offsetHeight * 0.9)) : 0;
+      let lit = -1;
       if (tagline && words.length) {
         const box = tagline.getBoundingClientRect();
         // 0 when the section reaches the top of the screen, 1 when it is about to leave.
         const progress = clamp((viewport * 0.3 - box.top) / Math.max(1, box.height - viewport * 0.4));
-        const lit = progress * (words.length + 1);
+        lit = Math.ceil(progress * (words.length + 1));
+      }
+      let active = -1;
+      steps.forEach((step, index) => {
+        // The active step is the last one whose top has passed the middle of the screen.
+        if (step.getBoundingClientRect().top < viewport * 0.55) active = index;
+      });
+
+      // Write. Only transform and opacity change every frame; class changes happen only when the answer changes.
+      if (bar) bar.style.transform = `scaleX(${clamp(y / range).toFixed(4)})`;
+      if (heroCopy) {
+        heroCopy.style.translate = `0 ${(heroProgress * -48).toFixed(1)}px`;
+        heroCopy.style.opacity = (1 - heroProgress * 0.7).toFixed(3);
+      }
+      if (board) board.style.translate = `0 ${(heroProgress * 40).toFixed(1)}px`;
+      if (lit !== lastLit) {
+        lastLit = lit;
         words.forEach((word, index) => word.classList.toggle("is-lit", index < lit));
       }
-
-      if (steps.length) {
-        // The active step is the last one whose top has passed the middle of the screen.
-        let active = -1;
-        steps.forEach((step, index) => {
-          if (step.getBoundingClientRect().top < viewport * 0.55) active = index;
-        });
+      if (steps.length && active !== lastActive) {
+        lastActive = active;
         setStep(active);
       }
     };
@@ -78,24 +95,27 @@ export function ScrollFx() {
       pointerFrame = 0;
       const event = pending;
       if (!event) return;
-      for (const tile of tiles) {
-        const box = tile.getBoundingClientRect();
+      // Read every box first, then write, so the browser measures the page once.
+      const tileBoxes = tiles.map((tile) => tile.getBoundingClientRect());
+      const buttonBoxes = buttons.map((button) => button.getBoundingClientRect());
+      tiles.forEach((tile, index) => {
+        const box = tileBoxes[index];
         const inside = event.clientX > box.left && event.clientX < box.right && event.clientY > box.top && event.clientY < box.bottom;
         if (!inside) {
           if (tile.style.transform) tile.style.transform = "";
-          continue;
+          return;
         }
         const dx = (event.clientX - box.left) / box.width - 0.5;
         const dy = (event.clientY - box.top) / box.height - 0.5;
         tile.style.transform = `perspective(900px) rotateX(${(-dy * 5).toFixed(2)}deg) rotateY(${(dx * 5).toFixed(2)}deg)`;
-      }
-      for (const button of buttons) {
-        const box = button.getBoundingClientRect();
+      });
+      buttons.forEach((button, index) => {
+        const box = buttonBoxes[index];
         const dx = event.clientX - (box.left + box.width / 2);
         const dy = event.clientY - (box.top + box.height / 2);
         const pull = Math.hypot(dx, dy) < 120 ? 0.25 : 0;
         button.style.translate = pull ? `${(dx * pull).toFixed(1)}px ${(dy * pull).toFixed(1)}px` : "";
-      }
+      });
     };
     const onMove = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
@@ -118,7 +138,9 @@ export function ScrollFx() {
       words.forEach((word) => word.classList.remove("is-lit"));
       rows.forEach((row) => row.classList.add("is-on"));
       if (bar) bar.style.transform = "";
-      hero?.style.removeProperty("--hp");
+      heroCopy?.style.removeProperty("translate");
+      heroCopy?.style.removeProperty("opacity");
+      board?.style.removeProperty("translate");
       for (const tile of tiles) tile.style.transform = "";
       for (const button of buttons) button.style.translate = "";
     };
