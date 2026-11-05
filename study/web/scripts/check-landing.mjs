@@ -39,10 +39,13 @@ const groups = {
     const { context, page } = await open(browser, 1440);
     const cells = await page.locator(".core").count();
     expect("board", cells === 42, `the hero board has ${cells} workers, expected 42`);
-    await page.locator(".core-board").click();
-    await page.waitForTimeout(300);
-    const busy = await page.$eval(".core-live span", (el) => el.textContent);
-    expect("board", busy === "42", `clicking the board should put all 42 workers on the task, got ${busy}`);
+    for (const count of ["42", "1"]) {
+      await page.getByRole("button", { name: count, exact: true }).click();
+      const pressed = await page.getByRole("button", { name: count, exact: true }).getAttribute("aria-pressed");
+      expect("board", pressed === "true", `choosing ${count} workers should mark that choice`);
+      const filled = await page.$eval(".core-board", (el) => el.classList.contains("is-run"));
+      expect("board", filled, `choosing ${count} workers should start a run`);
+    }
     await context.close();
     // With reduced motion the board is still there, just still.
     const still = await open(browser, 1440, { reducedMotion: "reduce" });

@@ -133,13 +133,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div className="band band-ink ticker" aria-hidden="true">
+      <div className="band ticker" aria-hidden="true">
         <div className="ticker-track" style={{ "--chips": SUBJECTS.length } as React.CSSProperties}>
           {[0, 1].map((copy) => (
             <ul key={copy}>
               {SUBJECTS.map((subject) => (
                 <li key={subject.number}>
-                  <span className="ticker-dot" />
                   <Mixed text={subject.title} />
                 </li>
               ))}
