@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .g { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #17784f; }
+  .r { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #b4233f; }
+  .a { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4b3cf5; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #1b1740; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="340" fill="#f7f6ff"/>
+  <g class="step" style="animation-delay:0.08s">
+  <text x="24" y="30" class="t" font-size="16" text-anchor="start" font-weight="700">Direct-mapped cache: one possible slot</text>
+  <text x="24" y="82" class="m" font-size="15" text-anchor="start" font-weight="700">Set 0</text>
+  <rect x="100" y="50" width="300" height="46" fill="#ffffff" stroke="#c9c3f5" stroke-width="1.5"/>
+  <text x="250.0" y="77.9" class="m" font-size="14" text-anchor="middle">empty</text>
+  <text x="24" y="144" class="m" font-size="15" text-anchor="start" font-weight="700">Set 1</text>
+  <rect x="100" y="112" width="300" height="46" fill="#e6e2ff" stroke="#4b3cf5" stroke-width="1.5"/>
+  <text x="250.0" y="139.9" class="a" font-size="14" text-anchor="middle" font-weight="700">Line from address A</text>
+  <text x="24" y="206" class="m" font-size="15" text-anchor="start" font-weight="700">Set 2</text>
+  <rect x="100" y="174" width="300" height="46" fill="#ffffff" stroke="#c9c3f5" stroke-width="1.5"/>
+  <text x="250.0" y="201.9" class="m" font-size="14" text-anchor="middle">empty</text>
+  <text x="24" y="268" class="m" font-size="15" text-anchor="start" font-weight="700">Set 3</text>
+  <rect x="100" y="236" width="300" height="46" fill="#ffffff" stroke="#c9c3f5" stroke-width="1.5"/>
+  <text x="250.0" y="263.9" class="m" font-size="14" text-anchor="middle">empty</text>
+  </g>
+  <g class="step" style="animation-delay:0.24s">
+  <line x1="400" y1="124" x2="500" y2="124" stroke="#4b3cf5" stroke-width="3"/>
+  <text x="510" y="129" class="a" font-size="15" text-anchor="start" font-weight="700">Address A</text>
+  <line x1="400" y1="146" x2="470" y2="202" stroke="#b4233f" stroke-width="3"/>
+  <text x="480" y="218" class="r" font-size="15" text-anchor="start" font-weight="700">Address B</text>
+  <rect x="440" y="240" width="256" height="80" rx="12" fill="#ffe3dc" stroke="#b4233f" stroke-width="1.5"/>
+  <text x="456" y="266" class="r" font-size="15" text-anchor="start" font-weight="700">Both map to Set 1</text>
+  <text x="456" y="288" class="t" font-size="13" text-anchor="start">One evicts the other, even</text>
+  <text x="456" y="306" class="t" font-size="13" text-anchor="start">when other sets are free.</text>
+  </g>
+</svg>

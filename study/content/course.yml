@@ -38,6 +38,8 @@ changelog:
     note: Made the practice harder and cleaner. Exercises and labs now start from the bare function with no comments, the questions ask you to reason through traps instead of recalling a fact, and the code editor can format your code.
   - date: 2026-11-01
     note: Brought the second practice session (Tutorial 2) into Lecture 2. Four new lessons cover casting, how function calls use the stack, structures on the stack and on the heap, and finding memory bugs with GDB and Valgrind. Two other lessons gained use-after-free and a side-by-side comparison of the stack and the heap, and the practice has six more exercises.
+  - date: 2026-11-05
+    note: Added Lecture 3, memory layout, alignment, and the cache, as six lessons on how C lays out arrays and tables, alignment and padding, cache lines and hits, how an address picks its place in the cache, locality and prefetching, and loop order, layout, and blocking, plus its practice with nine coding exercises and a matrix-multiplication lab.
 
 lectures:
   - id: lecture-1
@@ -63,6 +65,18 @@ lectures:
       records in memory and the tools that find memory bugs.
     topics: [casting, pointers-to-pointers, pointer-arithmetic, function-pointers, stack-frames, malloc-and-free, realloc-and-strings, stack-or-heap, structures-on-the-heap, debugging-tools]
     session: sessions/lecture-2.md
+  - id: lecture-3
+    number: 3
+    title: Memory layout, alignment, and the cache
+    summary: >
+      Where C puts arrays, structures, and tables in memory, why the compiler
+      adds empty bytes between members, and how the processor's cache moves
+      memory in lines and decides where each line goes. Then why the order you
+      read memory in changes the speed: counting cache lines, loop order,
+      arrays of structures against structures of arrays, and blocking a matrix
+      multiplication into tiles.
+    topics: [memory-layout, alignment-and-padding, cache-lines, cache-mapping, locality-and-prefetching, efficient-c]
+    session: sessions/lecture-3.md
 
 sources:
   - path: "Lecture 1 - Introduction.pdf"
@@ -143,6 +157,24 @@ sources:
       - prac-struct-layout
       - prac-pick-the-tool
       - prac-read-valgrind
+  - path: "Lecture 4 - Memory Layout, Alignment, Cache and Locality.pdf"
+    type: lecture
+    status: incorporated
+    note: "Byte addresses, contiguous arrays and row-major tables, alignment and padding, cache lines, hits and misses, how an address maps to a set, locality, prefetching, strides, loop interchange, array of structures against structure of arrays, and blocked matrix multiplication."
+    problems:
+      - prac-flat-index
+      - prac-struct-stride
+      - prac-record-layout
+      - prac-pad-sizes
+      - prac-line-numbers
+      - prac-split-address
+      - prac-conflict-pair
+      - prac-count-lines
+      - prac-pattern-guess
+      - prac-loop-order
+      - prac-matmul-model
+      - prac-tile-fit
+
 topics:
   - id: why-low-level
     file: topics/why-low-level.md
@@ -269,6 +301,48 @@ topics:
     summary: "Two free tools that stop a running program so you can look inside it, and report memory that was never given back."
     exam_weight: taught
     prerequisites: [structures-on-the-heap]
+    unlocks: [memory-layout]
+  - id: memory-layout
+    file: topics/memory-layout.md
+    title: How C lays out data in memory
+    summary: "Where the bytes of an array, a structure, and a table with rows and columns sit in memory, and why that decides how fast a loop can read them."
+    exam_weight: taught
+    prerequisites: [debugging-tools]
+    unlocks: [alignment-and-padding]
+  - id: alignment-and-padding
+    file: topics/alignment-and-padding.md
+    title: Alignment and padding
+    summary: "Why every value must start at a suitable address, where the compiler puts empty bytes inside and at the end of a structure, and how to choose the order of the members."
+    exam_weight: taught
+    prerequisites: [memory-layout]
+    unlocks: [cache-lines]
+  - id: cache-lines
+    file: topics/cache-lines.md
+    title: Cache lines and hits
+    summary: "The ladder of memories between the processor and main memory, why a cache moves whole lines, what a hit and a miss are, and how a misaligned value can touch two lines."
+    exam_weight: taught
+    prerequisites: [alignment-and-padding]
+    unlocks: [cache-mapping]
+  - id: cache-mapping
+    file: topics/cache-mapping.md
+    title: Where a line goes in the cache
+    summary: "How an address is cut into a tag, a set, and an offset, a worked example, direct-mapped and set-associative caches, and the three kinds of misses."
+    exam_weight: taught
+    prerequisites: [cache-lines]
+    unlocks: [locality-and-prefetching]
+  - id: locality-and-prefetching
+    file: topics/locality-and-prefetching.md
+    title: Locality and prefetching
+    summary: "What programs the cache likes, how the processor guesses what you will read next, and why you should count cache lines instead of loads."
+    exam_weight: taught
+    prerequisites: [cache-mapping]
+    unlocks: [efficient-c]
+  - id: efficient-c
+    file: topics/efficient-c.md
+    title: Loop order, layout, and blocking
+    summary: "Three changes that make a program faster without changing what it computes: the order of the loops, arrays of structures against structures of arrays, and working on small blocks."
+    exam_weight: taught
+    prerequisites: [locality-and-prefetching]
     unlocks: []
 
 glossary:
@@ -507,4 +581,78 @@ glossary:
   - term: buffer overflow
     topic: debugging-tools
     definition: Writing past the end of an array, which overwrites whatever sits next to it in memory.
+  - term: alignment
+    topic: alignment-and-padding
+    definition: The rule that a value starts at an address divisible by a certain number, usually its own size. A 4-byte int is aligned when its address is a multiple of 4.
+  - term: tail padding
+    topic: alignment-and-padding
+    definition: Empty bytes at the end of a structure, so that its size is a multiple of its biggest alignment and every element of an array of them stays aligned.
+  - term: offsetof
+    code: true
+    topic: alignment-and-padding
+    definition: A macro from stddef.h that gives the number of bytes from the start of a structure to one of its members, padding included.
+  - term: row-major order
+    topic: memory-layout
+    definition: Storing a table row by row, so the rightmost index changes fastest in memory. C stores a[3][4] this way.
+  - term: cache
+    topic: cache-lines
+    definition: A small, fast memory between the processor and main memory that keeps copies of recently used data.
+  - term: cache line
+    topic: cache-lines
+    definition: The block of neighboring bytes, typically 64, that a cache copies as one piece. Asking for one byte brings in its whole line.
+  - term: cache hit
+    topic: cache-lines
+    definition: A request for data that is already in the cache level being checked. It is fast.
+  - term: cache miss
+    topic: cache-lines
+    definition: A request for data that is not in the cache level being checked, so the next level must supply it. The extra waiting time is the miss penalty.
+  - term: set (cache)
+    topic: cache-mapping
+    definition: A group of one or a few cache lines. Each memory block maps to one set, and can be stored only in one of the lines of that set.
+  - term: tag
+    topic: cache-mapping
+    definition: The top part of an address, which tells the cache which block of memory is stored in a line.
+  - term: direct-mapped cache
+    topic: cache-mapping
+    definition: A cache where each set holds one line, so each memory block has exactly one place to go.
+  - term: set-associative cache
+    topic: cache-mapping
+    definition: A cache where each set holds several lines, called ways, so a memory block has several possible places.
+  - term: conflict miss
+    topic: cache-mapping
+    definition: A miss caused by several memory blocks competing for the same set, though the cache has room elsewhere.
+  - term: capacity miss
+    topic: cache-mapping
+    definition: A miss caused by the program needing more data than the cache can hold, so lines are thrown out before they are reused.
+  - term: cold miss
+    topic: cache-mapping
+    definition: A miss on the first use of a block of memory, which has never been loaded into the cache. It is also called a compulsory miss.
+  - term: temporal locality
+    topic: locality-and-prefetching
+    definition: Data that was used recently is likely to be used again soon.
+  - term: spatial locality
+    topic: locality-and-prefetching
+    definition: Data near an address that was just used is likely to be used soon.
+  - term: prefetching
+    topic: locality-and-prefetching
+    definition: The processor guessing which lines you will read next, from the pattern of your reads, and fetching them before you ask.
+  - term: stride
+    topic: locality-and-prefetching
+    definition: The distance, in elements, between one access of a loop and the next. Stride 1 reads neighbors, and a large stride reads far apart values.
+  - term: array of structures
+    topic: efficient-c
+    definition: Storing many records as one array whose elements are structures, so each record's members sit together.
+  - term: structure of arrays
+    topic: efficient-c
+    definition: Storing many records as one structure that holds one array per member, so all the values of one member sit together.
+  - term: loop interchange
+    topic: efficient-c
+    definition: Swapping the order of nested loops, without changing the result, so that the inner loop walks along memory with stride 1.
+  - term: blocking
+    topic: efficient-c
+    definition: Splitting a big job into small square tiles, so the data of one tile stays in the cache while it is reused. It is also called tiling.
+  - term: working set
+    topic: efficient-c
+    definition: The data a loop needs to keep between one use of a value and the next. If it is bigger than the cache, lines are thrown out too early.
+
 exams: []

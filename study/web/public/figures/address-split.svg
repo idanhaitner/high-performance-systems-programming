@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 270" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .g { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #17784f; }
+  .r { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #b4233f; }
+  .a { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4b3cf5; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #1b1740; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="270" fill="#f7f6ff"/>
+  <g class="step" style="animation-delay:0.08s">
+  <rect x="24" y="24" width="300" height="64" fill="#6a4fd8" stroke="#6a4fd8" stroke-width="0"/>
+  <text x="174.0" y="64" class="w" font-size="19" text-anchor="middle" font-weight="700">Tag</text>
+  <rect x="324" y="24" width="200" height="64" fill="#2f4fd6" stroke="#2f4fd6" stroke-width="0"/>
+  <text x="424.0" y="64" class="w" font-size="19" text-anchor="middle" font-weight="700">Set index</text>
+  <rect x="524" y="24" width="172" height="64" fill="#17784f" stroke="#17784f" stroke-width="0"/>
+  <text x="610.0" y="64" class="w" font-size="19" text-anchor="middle" font-weight="700">Block offset</text>
+  </g>
+  <g class="step" style="animation-delay:0.24s">
+  <text x="174.0" y="124" class="a" font-size="16" text-anchor="middle" font-weight="700">Tag</text>
+  <text x="174.0" y="150" class="t" font-size="14" text-anchor="middle">Which memory block</text>
+  <text x="174.0" y="170" class="t" font-size="14" text-anchor="middle">is stored here?</text>
+  <text x="424.0" y="124" class="a" font-size="16" text-anchor="middle" font-weight="700">Set index</text>
+  <text x="424.0" y="150" class="t" font-size="14" text-anchor="middle">Which cache set</text>
+  <text x="424.0" y="170" class="t" font-size="14" text-anchor="middle">can hold it?</text>
+  <text x="610.0" y="124" class="a" font-size="16" text-anchor="middle" font-weight="700">Block offset</text>
+  <text x="610.0" y="150" class="t" font-size="14" text-anchor="middle">Which byte</text>
+  <text x="610.0" y="170" class="t" font-size="14" text-anchor="middle">inside the line?</text>
+  </g>
+  <g class="step" style="animation-delay:0.40s">
+  <rect x="48" y="198" width="624" height="54" rx="12" fill="#fff0cc" stroke="#b07a00" stroke-width="1.5"/>
+  <text x="360" y="222" class="t" font-size="15" text-anchor="middle" font-weight="700">Each memory block maps to one specific cache set</text>
+  <text x="360" y="242" class="t" font-size="15" text-anchor="middle" font-weight="700">and can be stored only in one of the lines within that set.</text>
+  </g>
+</svg>

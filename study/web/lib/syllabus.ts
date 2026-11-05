@@ -80,6 +80,7 @@ export const SUBJECTS: Subject[] = [
     title: "Cache, locality, and efficient C",
     short: "Cache and locality",
     body: "A cache is a small, very fast memory close to the processor. Code that reads nearby values in order uses it well and runs faster.",
+    lecture: 3,
   },
   {
     number: 7,
