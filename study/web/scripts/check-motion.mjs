@@ -132,17 +132,17 @@ const groups = {
   async "hero-deal"(browser) {
     let { context, page } = await open(browser, "/");
     await page.reload({ waitUntil: "commit" });
-    await page.waitForSelector(".fan li:last-child");
+    await page.waitForSelector(".cores");
     await page.waitForTimeout(60);
-    const early = await page.$eval(".fan li:last-child", (el) => parseFloat(getComputedStyle(el).opacity));
-    await page.waitForTimeout(900);
-    const late = await page.$eval(".fan li:last-child", (el) => parseFloat(getComputedStyle(el).opacity));
-    expect("hero-deal", early < 1, `last fan card is already fully shown at load (opacity ${early})`);
-    expect("hero-deal", late === 1, `last fan card has not settled after 900ms (opacity ${late})`);
+    const early = await page.$eval(".cores", (el) => parseFloat(getComputedStyle(el).opacity));
+    await page.waitForTimeout(1500);
+    const late = await page.$eval(".cores", (el) => parseFloat(getComputedStyle(el).opacity));
+    expect("hero-deal", early < 1, `hero board is already fully shown at load (opacity ${early})`);
+    expect("hero-deal", late === 1, `hero board has not settled after 1.5s (opacity ${late})`);
     await context.close();
     ({ context, page } = await open(browser, "/", { reducedMotion: "reduce" }));
-    const reduced = await page.$eval(".fan li:last-child", (el) => [parseFloat(getComputedStyle(el).opacity), getComputedStyle(el).animationName]);
-    expect("hero-deal", reduced[0] === 1 && reduced[1] === "none", `reduced motion still deals the cards (${reduced})`);
+    const reduced = await page.$eval(".cores", (el) => [parseFloat(getComputedStyle(el).opacity), getComputedStyle(el).animationName]);
+    expect("hero-deal", reduced[0] === 1 && reduced[1] === "none", `reduced motion still rises in (${reduced})`);
     await context.close();
   },
 
