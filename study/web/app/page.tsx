@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Fragment } from "react";
+import { Backdrop } from "@/components/landing/Backdrop";
 import { FanMotion } from "@/components/landing/FanMotion";
 import { HeroCta } from "@/components/landing/HeroCta";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { LectureIndex } from "@/components/landing/LectureIndex";
-import { Reveal } from "@/components/landing/Reveal";
+import { ScrollFx } from "@/components/landing/ScrollFx";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Mixed } from "@/lib/bidi";
 import { loadCourse } from "@/lib/course";
@@ -73,7 +74,9 @@ export default function HomePage() {
 
   return (
     <article className="page landing">
-      <Reveal />
+      <Backdrop />
+      <ScrollFx />
+      <div className="scroll-bar" aria-hidden="true" />
       <FanMotion />
       <ScrollReveal selector=".landing section > h2, .syllabus-part, .outcome-list li, .how-card, .benefits li, .deck-tab, .deck-soon, .deck-panels, .final" />
       <LandingNav startHref={startHref} />
