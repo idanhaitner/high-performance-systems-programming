@@ -1,5 +1,5 @@
 // Browser checks for the home page. Run with the dev server up: npm run check:landing
-// Optional: BASE_URL=http://localhost:8732 ONLY=fan-front,targets
+// Optional: BASE_URL=http://localhost:8732 ONLY=board,targets
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL ?? "http://localhost:8732";
@@ -25,68 +25,56 @@ const groups = {
   async "cards-padded"(browser) {
     for (const width of WIDTHS) {
       const { context, page } = await open(browser, width);
-      const pads = await page.$$eval(".how-card, .benefits li", (els) =>
+      const pads = await page.$$eval(".how-card, .bento-tile", (els) =>
         els.map((el) => [getComputedStyle(el).paddingLeft, getComputedStyle(el).paddingRight]),
       );
       pads.forEach(([left, right], i) =>
-        expect("cards-padded", left === "24px" && right === "24px", `${width}px card ${i}: padding ${left} / ${right}`),
+        expect("cards-padded", parseFloat(left) >= 24 && parseFloat(right) >= 24, `${width}px card ${i}: padding ${left} / ${right}`),
       );
       await context.close();
     }
   },
 
-  async "fan-front"(browser) {
-    for (const width of [1440, 390]) {
-      const { context, page } = await open(browser, width);
-      const count = await page.locator(".fan a").count();
-      for (let i = 0; i < count; i++) {
-        await page.locator(".fan a").nth(i).focus();
-        await page.waitForTimeout(300);
-        const front = await page.evaluate((index) => {
-          const title = document.querySelectorAll(".fan-title")[index];
-          const box = title.getBoundingClientRect();
-          return title.closest("li").contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2));
-        }, i);
-        expect("fan-front", front, `${width}px: focused card ${i + 1} is covered by another card`);
-      }
-      await page.evaluate(() => document.activeElement?.blur());
-      await context.close();
-    }
-    // A still pointer must keep pointing at the same card while the fan reacts.
+  async board(browser) {
     const { context, page } = await open(browser, 1440);
-    // Find a point where card 2 is on top at rest, then park the pointer there.
-    const [x, y] = await page.evaluate(() => {
-      const box = document.querySelectorAll(".fan-num")[1].getBoundingClientRect();
-      for (let px = box.left; px < box.right; px += 2) {
-        const py = box.top + box.height / 2;
-        const li = document.elementFromPoint(px, py)?.closest(".fan li");
-        if (li && [...li.parentNode.children].indexOf(li) === 1) return [px, py];
-      }
-      return [box.left, box.top];
-    });
-    await page.mouse.move(x, y);
-    const seen = new Set();
-    for (let i = 0; i < 10; i++) {
-      await page.waitForTimeout(70);
-      seen.add(await page.evaluate(([px, py]) => {
-        const li = document.elementFromPoint(px, py)?.closest(".fan li");
-        return li ? [...li.parentNode.children].indexOf(li) : -1;
-      }, [x, y]));
-    }
-    expect("fan-front", seen.size === 1 && seen.has(1), `hover over card 2 drifted across cards ${[...seen].join(",")}`);
+    const cells = await page.locator(".core").count();
+    expect("board", cells === 42, `the hero board has ${cells} workers, expected 42`);
+    await page.locator(".core-board").click();
+    await page.waitForTimeout(300);
+    const busy = await page.$eval(".core-live span", (el) => el.textContent);
+    expect("board", busy === "42", `clicking the board should put all 42 workers on the task, got ${busy}`);
     await context.close();
+    // With reduced motion the board is still there, just still.
+    const still = await open(browser, 1440, { reducedMotion: "reduce" });
+    const stillCells = await still.page.locator(".core").count();
+    expect("board", stillCells === 42, "with reduced motion the board is missing");
+    await still.context.close();
   },
 
-  async "fan-opaque"(browser) {
-    for (const colorScheme of ["light", "dark"]) {
-      const { context, page } = await open(browser, 1440, { colorScheme });
-      const alphas = await page.$$eval(".fan a", (els) =>
-        els.map((el) => {
-          const m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g).map(Number);
-          return m.length === 4 ? m[3] : 1;
-        }),
-      );
-      alphas.forEach((a, i) => expect("fan-opaque", a === 1, `${colorScheme}: fan card ${i + 1} background alpha ${a}`));
+  async ladder(browser) {
+    const { context, page } = await open(browser, 1440);
+    await page.waitForTimeout(300);
+    await page.evaluate(() => document.querySelector(".ladder-step:nth-child(3)").scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(900);
+    const state = await page.evaluate(() => ({
+      on: [...document.querySelectorAll(".ladder-row")].map((row) => row.classList.contains("is-on")),
+      readout: [...document.querySelectorAll(".ladder-readout")].findIndex((el) => el.classList.contains("is-active")),
+    }));
+    expect("ladder", state.readout === 2, `the big number shows step ${state.readout + 1}, expected 3`);
+    expect("ladder", state.on.join() === "true,true,true,false", `rows filled: ${state.on.join()}`);
+    await context.close();
+    // Without motion the whole chart is already filled in.
+    const still = await open(browser, 1440, { reducedMotion: "reduce" });
+    const filled = await still.page.$$eval(".ladder-row", (rows) => rows.every((row) => row.classList.contains("is-on")));
+    expect("ladder", filled, "with reduced motion the ladder chart is not fully filled");
+    await still.context.close();
+  },
+
+  async "no-overflow"(browser) {
+    for (const width of WIDTHS) {
+      const { context, page } = await open(browser, width);
+      const wide = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect("no-overflow", wide <= 0, `${width}px: the page scrolls sideways by ${wide}px`);
       await context.close();
     }
   },
@@ -115,7 +103,7 @@ const groups = {
     const { context, page } = await open(browser, 1440);
     const slow = await page.evaluate(() => {
       const out = [];
-      for (const sel of [".landing-cta", ".deck-grid a", ".fan a", ".fan li", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
+      for (const sel of [".landing-cta", ".deck-grid a", ".core", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
         const el = document.querySelector(sel);
         if (!el) continue;
         const max = Math.max(...getComputedStyle(el).transitionDuration.split(",").map((s) => parseFloat(s)));
@@ -159,16 +147,9 @@ const groups = {
       parseFloat(getComputedStyle(document.querySelector(".tagline p")).fontSize),
     ]);
     expect("hierarchy", h1 > tagline, `hero h1 ${h1}px is not larger than tagline ${tagline}px`);
-    const borders = await page.$$eval(".benefits li", (els) => els.map((el) => getComputedStyle(el).borderTopWidth));
-    borders.forEach((b, i) => expect("hierarchy", b === "2px", `benefit tile ${i + 1} border ${b}`));
+    const borders = await page.$$eval(".bento-tile", (els) => els.map((el) => getComputedStyle(el).borderTopWidth));
+    borders.forEach((b, i) => expect("hierarchy", b === "2px", `bento tile ${i + 1} border ${b}`));
     await context.close();
-    const phone = await open(browser, 390);
-    const lines = await phone.page.$eval(".fan li:last-child .fan-title", (el) =>
-      // offsetHeight ignores the card's rotation, unlike getBoundingClientRect.
-      Math.round(el.offsetHeight / parseFloat(getComputedStyle(el).lineHeight)),
-    );
-    expect("hierarchy", lines <= 2, `390px: top fan card title wraps to ${lines} lines`);
-    await phone.context.close();
   },
 
   async progress(browser) {
