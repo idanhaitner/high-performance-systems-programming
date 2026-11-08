@@ -40,6 +40,8 @@ changelog:
     note: Brought the second practice session (Tutorial 2) into Lecture 2. Four new lessons cover casting, how function calls use the stack, structures on the stack and on the heap, and finding memory bugs with GDB and Valgrind. Two other lessons gained use-after-free and a side-by-side comparison of the stack and the heap, and the practice has six more exercises.
   - date: 2026-11-05
     note: Added Lecture 3, memory layout, alignment, and the cache, as six lessons on how C lays out arrays and tables, alignment and padding, cache lines and hits, how an address picks its place in the cache, locality and prefetching, and loop order, layout, and blocking, plus its practice with nine coding exercises and a matrix-multiplication lab.
+  - date: 2026-11-08
+    note: Brought the third practice session (Tutorial 3) into Lecture 3. Three new lessons cover functions that work with any type, structures that hold any type and carry their own function, and a bump allocator, a tiny version of malloc that handles alignment. The practice has five more exercises.
 
 lectures:
   - id: lecture-1
@@ -74,8 +76,11 @@ lectures:
       memory in lines and decides where each line goes. Then why the order you
       read memory in changes the speed: counting cache lines, loop order,
       arrays of structures against structures of arrays, and blocking a matrix
-      multiplication into tiles.
-    topics: [memory-layout, alignment-and-padding, cache-lines, cache-mapping, locality-and-prefetching, efficient-c]
+      multiplication into tiles. It ends by building your own tools from
+      memory: one function that works for any type, a structure that carries its
+      own function, and a tiny version of malloc that hands out aligned pieces
+      of one big array.
+    topics: [memory-layout, alignment-and-padding, cache-lines, cache-mapping, locality-and-prefetching, efficient-c, generic-functions, generic-structures, bump-allocator]
     session: sessions/lecture-3.md
 
 sources:
@@ -175,6 +180,19 @@ sources:
       - prac-matmul-model
       - prac-tile-fit
 
+  - path: "ps3.pdf"
+    type: exercise
+    status: incorporated
+    note: "Tutorial 3: generic functions with void pointers and sizeof, reading memory one byte at a time, byte order, a structure that holds any type, a function pointer inside a structure, a bump allocator, alignment and padding, and resetting the arena."
+    problems:
+      - prac-void-star
+      - prac-byte-order
+      - prac-swap-size
+      - prac-box-members
+      - prac-box-print
+      - prac-bump-trace
+      - prac-bump-full
+      - prac-bump-padding
 topics:
   - id: why-low-level
     file: topics/why-low-level.md
@@ -343,6 +361,27 @@ topics:
     summary: "Three changes that make a program faster without changing what it computes: the order of the loops, arrays of structures against structures of arrays, and working on small blocks."
     exam_weight: taught
     prerequisites: [locality-and-prefetching]
+    unlocks: [generic-functions]
+  - id: generic-functions
+    file: topics/generic-functions.md
+    title: Functions that work with any type
+    summary: "A pointer with no type, a size in bytes, and a walk through memory one byte at a time make one function work for every type, at the price of less help from the compiler."
+    exam_weight: taught
+    prerequisites: [efficient-c]
+    unlocks: [generic-structures]
+  - id: generic-structures
+    file: topics/generic-structures.md
+    title: Structures that hold any type
+    summary: "A structure that keeps the address and size of any value, and a function pointer inside it so that each value brings its own code."
+    exam_weight: taught
+    prerequisites: [generic-functions]
+    unlocks: [bump-allocator]
+  - id: bump-allocator
+    file: topics/bump-allocator.md
+    title: "A bump allocator: writing your own malloc"
+    summary: "A tiny malloc that hands out pieces of one big array with a counter, skips bytes to keep every block aligned, and frees everything at once."
+    exam_weight: taught
+    prerequisites: [generic-structures]
     unlocks: []
 
 glossary:
@@ -655,4 +694,31 @@ glossary:
     topic: efficient-c
     definition: The data a loop needs to keep between one use of a value and the next. If it is bigger than the cache, lines are thrown out too early.
 
+  - term: generic function
+    topic: generic-functions
+    definition: A function that works for values of any type. In C it receives the address of the data and its size in bytes, instead of a typed value.
+  - term: size_t
+    code: true
+    topic: generic-functions
+    definition: The whole number type C uses for sizes and counts of bytes. It cannot be negative. printf prints one with %zu.
+  - term: little-endian
+    topic: generic-functions
+    definition: A way to store a number in memory with its least significant byte first. The 4-byte number 0x12345678 is stored as 78 56 34 12. Most computers and phones today work this way.
+  - term: big-endian
+    topic: generic-functions
+    definition: A way to store a number in memory with its most significant byte first. The 4-byte number 0x12345678 is stored as 12 34 56 78.
+  - term: unsigned char
+    code: true
+    topic: generic-functions
+    definition: A one-byte type with values from 0 to 255. A pointer to it steps through memory one byte at a time, and C allows you to look at the bytes of any value through it.
+  - term: self
+    code: true
+    topic: generic-structures
+    definition: The usual name of the parameter that receives the address of the structure a function pointer is stored in. C does not pass it by itself, so the caller writes box.print(&box).
+  - term: arena
+    topic: bump-allocator
+    definition: One big block of memory, set aside in advance, that an allocator hands out pieces of.
+  - term: bump allocator
+    topic: bump-allocator
+    definition: A very simple allocator. It keeps an arena and a counter, and each request takes the next piece and moves the counter forward. It is fast, but it can only free everything at once.
 exams: []

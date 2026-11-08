@@ -106,5 +106,73 @@ A loop that reads only `mass` from an array of structures uses 4 bytes out of ev
 :::exercise ref=ex-matmul-ikj lesson=efficient-c
 :::
 
+:::check id=q-swap-one-byte lesson=generic-functions
+`generic_swap(p, q, n)` swaps the `n` bytes that start at `p` with the `n` bytes that start at `q`. On a typical machine, an `int` is 4 bytes and the lowest byte of a number is stored first. What does this print?
+
+```c
+int x = 257;   /* 0x0101 */
+int y = 514;   /* 0x0202 */
+generic_swap(&x, &y, 1);
+printf("%d %d\n", x, y);
+```
+
+- [ ] `514 257`
+- [x] `258 513`
+- [ ] `257 514`
+
+Only one byte is swapped, and it is the lowest byte of each number. `x` was `0x0101` and now holds `0x0102`, which is 258. `y` was `0x0202` and now holds `0x0201`, which is 513. The function swapped half of each number's bytes, and the compiler never warned.
+:::
+
+:::exercise ref=ex-generic-swap lesson=generic-functions
+:::
+
+:::check id=q-box-self lesson=generic-structures
+What does this print?
+
+```c
+typedef struct Box Box;
+struct Box {
+    int value;
+    int (*get)(const Box *self);
+};
+
+int twice(const Box *self) { return self->value * 2; }
+
+int main(void) {
+    Box b = {21, twice};
+    printf("%d\n", b.get(&b));
+    return 0;
+}
+```
+
+- [x] `42`
+- [ ] `21`
+- [ ] Nothing, because `b.get(&b)` does not compile
+
+`b.get` holds the address of `twice`, so the call runs `twice`. C does not hand the box to the function by itself, which is why the call passes `&b`. Inside `twice`, `self` is that address, so `self->value` is 21, and the function returns 42.
+:::
+
+:::exercise ref=ex-box-total lesson=generic-structures
+:::
+
+:::check id=q-three-blocks lesson=bump-allocator
+An allocator hands out memory from an array. A counter starts at 0. Each block starts at the first multiple of 8 that is at or after the counter, and then the counter moves to the end of the block. Three requests ask for 3 bytes, then 10 bytes, then 1 byte. At which offsets do the three blocks start?
+
+- [ ] 0, 3, 13
+- [x] 0, 8, 24
+- [ ] 0, 8, 18
+
+The first block starts at 0 and ends at 3. The second one starts at 8, the next multiple of 8, and ends at 18. The third starts at 24, the next multiple of 8 after 18. The counter itself is 25 at the end.
+:::
+
+:::exercise ref=ex-bump-alloc lesson=bump-allocator
+:::
+
+:::exercise ref=ex-padding-for lesson=bump-allocator
+:::
+
+:::exercise ref=ex-aligned-alloc lesson=bump-allocator
+:::
+
 :::lab ref=lab-cache-locality lesson=efficient-c
 :::

@@ -14,8 +14,8 @@ The course has 3 lectures so far. Read a lecture's lessons first, then do its pr
 
 | | Lecture 1: Data, memory, and running programs | Lecture 2: Memory management | Lecture 3: Memory layout, alignment, and the cache |
 | --- | --- | --- | --- |
-| **Lessons** | 8 | 6 | 6 |
-| **Coding exercises** | 16 | 12 | 9 |
+| **Lessons** | 8 | 6 | 9 |
+| **Coding exercises** | 16 | 12 | 14 |
 | **Lab** | Stride timing | Stack limit | Matrix multiplication |
 
 **Lecture 1 lessons**
@@ -46,6 +46,9 @@ The course has 3 lectures so far. Read a lecture's lessons first, then do its pr
 4. Where a line goes in the cache
 5. Locality and prefetching
 6. Loop order, layout, and blocking
+7. Functions that work with any type
+8. Structures that hold any type
+9. A bump allocator: writing your own `malloc`
 
 ## How you learn on the site
 

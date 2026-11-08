@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 286" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #1b1740; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="286" fill="#f7f6ff"/>
+  <g class="step" style="animation-delay:0.08s">
+  <defs><marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#4b3cf5"/></marker></defs>
+    <rect x="40" y="30" width="250" height="190" fill="#ffffff" stroke="#4b3cf5" stroke-width="2.5" rx="6"/>
+    <text x="165" y="56" class="t" font-size="16" text-anchor="middle" font-weight="700">GenericBox</text>
+    <rect x="60" y="72" width="210" height="60" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="165" y="107" class="mono" font-size="15" text-anchor="middle">void *data</text>
+    <rect x="60" y="146" width="210" height="60" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="165" y="181" class="mono" font-size="15" text-anchor="middle">size_t size</text>
+    <line x1="270" y1="102" x2="430" y2="102" stroke="#4b3cf5" stroke-width="2" marker-end="url(#ah)"/>
+    <rect x="430" y="66" width="250" height="72" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="555" y="107" class="mono" font-size="15" text-anchor="middle">int x = 42</text>
+    <text x="555" y="160" class="m" font-size="14" text-anchor="middle">a separate value, stored somewhere else</text>
+    <text x="165" y="244" class="m" font-size="14" text-anchor="middle">holds the address of x</text>
+    <text x="165" y="266" class="m" font-size="14" text-anchor="middle">and the size of x: sizeof x</text>
+  </g>
+
+</svg>

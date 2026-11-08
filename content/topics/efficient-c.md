@@ -258,4 +258,4 @@ One tile is 64 × 64 × 8 = 32 KiB, so three tiles are 96 KiB. That is three tim
 :::
 :::
 
-**Next:** the practice for this lecture has coding exercises and a lab where you time these loops on your own computer.
+**Next:** [Functions that work with any type](topic:generic-functions) turns from speed to building: one function that handles any type of data, then a structure that carries its own function, and then your own small `malloc`.

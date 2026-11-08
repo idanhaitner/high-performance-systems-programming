@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 262" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #1b1740; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="262" fill="#f7f6ff"/>
+  <g class="step" style="animation-delay:0.08s">
+    <rect x="24" y="60" width="150" height="60" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="99" y="95" class="mono" font-size="15" text-anchor="middle">Block A</text>
+    <rect x="174" y="60" width="230" height="60" fill="#ffffff" stroke="#4b3cf5" stroke-width="2"/>
+    <text x="289" y="95" class="mono" font-size="15" text-anchor="middle">Block B</text>
+    <rect x="404" y="60" width="292" height="60" fill="#ecebf5" stroke="#6b6690" stroke-width="1.5"/>
+    <text x="550" y="95" class="m" font-size="14" text-anchor="middle">free space</text>
+    <text x="99" y="140" class="m" font-size="13" text-anchor="middle">given out first</text>
+    <text x="289" y="140" class="m" font-size="13" text-anchor="middle">given out second</text>
+    <text x="550" y="140" class="m" font-size="13" text-anchor="middle">not given out yet</text>
+  <defs><marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#4b3cf5"/></marker></defs>
+    <line x1="404" y1="200" x2="404" y2="126" stroke="#4b3cf5" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="404" y="222" class="mono" font-size="15" text-anchor="middle">next_offset</text>
+    <text x="404" y="244" class="m" font-size="13" text-anchor="middle">the first free byte</text>
+    <text x="24" y="30" class="t" font-size="16" text-anchor="start" font-weight="700">The arena: one big array of bytes</text>
+  </g>
+
+</svg>
