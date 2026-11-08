@@ -37,12 +37,12 @@ const groups = {
 
   async board(browser) {
     const { context, page } = await open(browser, 1440);
-    const box = await page.locator(".pboard-canvas").boundingBox();
-    expect("board", !!box && box.width > 200 && Math.abs(box.width - box.height) < 2, "the hero progress canvas is missing or not square");
+    const box = await page.locator(".pboard-code").boundingBox();
+    expect("board", !!box && box.width > 200, "the hero progress program is missing");
     await context.close();
     // With reduced motion the picture is still there, just still.
     const still = await open(browser, 1440, { reducedMotion: "reduce" });
-    expect("board", (await still.page.locator(".pboard-canvas").count()) === 1, "with reduced motion the board is missing");
+    expect("board", (await still.page.locator(".pboard-code").count()) === 1, "with reduced motion the board is missing");
     await still.context.close();
   },
 
@@ -98,7 +98,7 @@ const groups = {
     const { context, page } = await open(browser, 1440);
     const slow = await page.evaluate(() => {
       const out = [];
-      for (const sel of [".landing-cta", ".deck-grid a", ".pboard-canvas", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
+      for (const sel of [".landing-cta", ".deck-grid a", ".pboard-code", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
         const el = document.querySelector(sel);
         if (!el) continue;
         const max = Math.max(...getComputedStyle(el).transitionDuration.split(",").map((s) => parseFloat(s)));
