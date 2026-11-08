@@ -6,8 +6,8 @@ import path from "node:path";
 import { buildTestSource, outputsMatch, parseTestOutput } from "../lib/test-output";
 
 const FLAGS = ["-std=c17", "-Wall", "-Wextra", "-Wno-unused-parameter", "-O0", "-g"];
-const repoRoot = path.resolve(process.cwd(), "../..");
-const content = path.join(repoRoot, "study", "content");
+const repoRoot = path.resolve(process.cwd(), "..");
+const content = path.join(repoRoot, "content");
 
 type Case = { name: string; args: string[]; stdin: string; expected: string; hint: string };
 type Exercise = {

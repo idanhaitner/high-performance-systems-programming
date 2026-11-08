@@ -73,7 +73,7 @@ git clone https://github.com/idanhaitner/high-performance-systems-programming.gi
 ```
 
 ```bash
-cd high-performance-systems-programming/study/web
+cd high-performance-systems-programming/web
 ```
 
 ```bash
@@ -88,11 +88,11 @@ Then open <http://localhost:3000>.
 
 ## How it works
 
-All the course content lives in plain text under `study/content/`. At build time, a small Python script turns it into JSON, and Next.js renders that JSON into a fully static site.
+All the course content lives in plain text under `content/`. At build time, a small Python script turns it into JSON, and Next.js renders that JSON into a fully static site.
 
 ```mermaid
 flowchart LR
-    A["study/content/<br>lessons, practice,<br>exercises, labs"] --> B["export_course.py<br>parses to JSON"]
+    A["content/<br>lessons, practice,<br>exercises, labs"] --> B["export_course.py<br>parses to JSON"]
     B --> C["Next.js<br>static export"]
     A --> D["build-labs.mjs<br>zips each lab"]
     D --> C
@@ -113,7 +113,7 @@ The stack:
 ## Repository layout
 
 ```text
-study/
+high-performance-systems-programming/
 ├── content/                 The course itself
 │   ├── course.yml           Course outline, lecture summaries, changelog, glossary
 │   ├── topics/              One Markdown file per lesson
@@ -161,7 +161,7 @@ printf("%.1f\n", total);
 :::
 ````
 
-A **coding exercise** is a folder in `study/content/exercises/` with four files:
+A **coding exercise** is a folder in `content/exercises/` with four files:
 
 | File | Purpose |
 | --- | --- |
@@ -170,13 +170,13 @@ A **coding exercise** is a folder in `study/content/exercises/` with four files:
 | `solution.c` | A finished answer |
 | `test.c` | The test cases behind **Submit** |
 
-A **lab** is a folder in `study/content/labs/` with a `README.md`, a `Makefile`, starter code, `tests/`, a `final/` exercise, and a `solution/` folder. The `solution/` folder is left out of the zip that readers download.
+A **lab** is a folder in `content/labs/` with a `README.md`, a `Makefile`, starter code, `tests/`, a `final/` exercise, and a `solution/` folder. The `solution/` folder is left out of the zip that readers download.
 
 All content is written for someone starting from zero, so explain a word before you use it, and start from an everyday picture before the formal rule.
 
 ## Tests and checks
 
-Run these from `study/web`. CI runs the first four on every pull request into `main`.
+Run these from `web`. CI runs the first four on every pull request into `main`.
 
 | Command | What it checks |
 | --- | --- |
@@ -205,4 +205,4 @@ Then, in a second terminal:
 
 ## Deployment
 
-[`pages.yml`](.github/workflows/pages.yml) runs the tests and the build on every pull request and every push to `main`. A push to `main` also deploys `study/web/out` to GitHub Pages, so a merged change goes live once its run succeeds.
+[`pages.yml`](.github/workflows/pages.yml) runs the tests and the build on every pull request and every push to `main`. A push to `main` also deploys `web/out` to GitHub Pages, so a merged change goes live once its run succeeds.

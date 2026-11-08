@@ -1,4 +1,4 @@
-// Zips every study/content/labs/<id>/ (without solution/) into public/labs/<id>.zip.
+// Zips every content/labs/<id>/ (without solution/) into public/labs/<id>.zip.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

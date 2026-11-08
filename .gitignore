@@ -1,12 +1,12 @@
 .DS_Store
 
-# Course source materials (lecture slides); local only, the site reads study/content/
+# Course source materials (lecture slides); local only, the site reads content/
 materials/
 
-study/web/node_modules/
-study/web/.next/
-study/web/out/
-study/web/tsconfig.tsbuildinfo
+web/node_modules/
+web/.next/
+web/out/
+web/tsconfig.tsbuildinfo
 **/__pycache__/
 *.pyc
 

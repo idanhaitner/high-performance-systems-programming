@@ -1209,16 +1209,16 @@ def walk_directives(blocks, parent=None):
 
 def load_course(root: Path) -> dict:
     root = root.resolve()
-    content = root / "study" / "content"
+    content = root / "content"
     course_path = content / "course.yml"
     if not course_path.exists():
-        raise StudyError(f"missing {course_path}. Write study/content/course.yml as described in schema.md.")
+        raise StudyError(f"missing {course_path}. Write content/course.yml as described in schema.md.")
     try:
         course = parse_yaml(course_path.read_text(encoding="utf-8"))
     except StudyError as exc:
-        raise StudyError(f"study/content/course.yml: {exc}") from exc
+        raise StudyError(f"content/course.yml: {exc}") from exc
     if not isinstance(course, dict):
-        raise StudyError("study/content/course.yml must be a mapping")
+        raise StudyError("content/course.yml must be a mapping")
     topics = []
     for entry in course.get("topics") or []:
         if not isinstance(entry, dict) or "file" not in entry:
@@ -1232,7 +1232,7 @@ def load_course(root: Path) -> dict:
         try:
             meta, blocks = parse_topic(path.read_text(encoding="utf-8"))
         except StudyError as exc:
-            raise StudyError(f"study/content/{rel}: {exc}") from exc
+            raise StudyError(f"content/{rel}: {exc}") from exc
         topics.append({"entry": entry, "meta": meta, "blocks": blocks, "rel": rel, "missing": False})
     model = {"root": root, "content": content, "course": course, "topics": topics}
     load_sessions(model)
@@ -1256,7 +1256,7 @@ def _require(mapping, key, label, errors):
 
 
 def section_slug(text: str, used: dict) -> str:
-    """Same output as slug() in study/web/components/Chapter.tsx."""
+    """Same output as slug() in web/components/Chapter.tsx."""
     base = re.sub(r"^-+|-+$", "", re.sub(r"[^a-z0-9]+", "-", text.lower())) or "section"
     count = used.get(base, 0)
     used[base] = count + 1
@@ -1389,7 +1389,7 @@ def _load_session(model, lecture_id: str, session_ref: str, errors: list):
         return None
     session_ref = match.group(1)
     path = model["content"] / rel
-    label = f"study/content/{rel}"
+    label = f"content/{rel}"
     if not path.exists():
         errors.append(f"lecture {lecture_id}: session file {label} is missing")
         return None
@@ -1482,7 +1482,7 @@ def load_sessions(model) -> None:
         if base.is_dir():
             for directory in sorted(base.iterdir()):
                 if directory.is_dir() and not directory.name.startswith("."):
-                    item = loader(directory, f"study/content/{key}/{directory.name}", errors)
+                    item = loader(directory, f"content/{key}/{directory.name}", errors)
                     if item:
                         found[item["id"]] = item
         model[key] = found
@@ -1622,7 +1622,7 @@ def validate_content(model) -> list[str]:
         if not str(entry.get("title") or "").strip():
             errors.append(f"{label}: title is required")
         if topic.get("missing"):
-            errors.append(f"{label}: missing file study/content/{rel}")
+            errors.append(f"{label}: missing file content/{rel}")
             continue
         meta = topic["meta"] if isinstance(topic["meta"], dict) else {}
         if str(meta.get("id") or "") != topic_id:
