@@ -37,20 +37,12 @@ const groups = {
 
   async board(browser) {
     const { context, page } = await open(browser, 1440);
-    const cells = await page.locator(".core").count();
-    expect("board", cells === 42, `the hero board has ${cells} workers, expected 42`);
-    for (const count of ["42", "1"]) {
-      await page.getByRole("button", { name: count, exact: true }).click();
-      const pressed = await page.getByRole("button", { name: count, exact: true }).getAttribute("aria-pressed");
-      expect("board", pressed === "true", `choosing ${count} workers should mark that choice`);
-      const filled = await page.$eval(".core-board", (el) => el.classList.contains("is-run"));
-      expect("board", filled, `choosing ${count} workers should start a run`);
-    }
+    const box = await page.locator(".pboard-code").boundingBox();
+    expect("board", !!box && box.width > 200, "the hero progress program is missing");
     await context.close();
-    // With reduced motion the board is still there, just still.
+    // With reduced motion the picture is still there, just still.
     const still = await open(browser, 1440, { reducedMotion: "reduce" });
-    const stillCells = await still.page.locator(".core").count();
-    expect("board", stillCells === 42, "with reduced motion the board is missing");
+    expect("board", (await still.page.locator(".pboard-code").count()) === 1, "with reduced motion the board is missing");
     await still.context.close();
   },
 
@@ -106,7 +98,7 @@ const groups = {
     const { context, page } = await open(browser, 1440);
     const slow = await page.evaluate(() => {
       const out = [];
-      for (const sel of [".landing-cta", ".deck-grid a", ".core", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
+      for (const sel of [".landing-cta", ".deck-grid a", ".pboard-code", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
         const el = document.querySelector(sel);
         if (!el) continue;
         const max = Math.max(...getComputedStyle(el).transitionDuration.split(",").map((s) => parseFloat(s)));

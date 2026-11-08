@@ -18,7 +18,7 @@ export function ScrollFx() {
     const bar = document.querySelector<HTMLElement>(".scroll-bar");
     const hero = document.querySelector<HTMLElement>(".hero");
     const heroCopy = document.querySelector<HTMLElement>(".hero-copy");
-    const board = document.querySelector<HTMLElement>(".cores");
+    const board = document.querySelector<HTMLElement>(".pboard");
     const tagline = document.querySelector<HTMLElement>(".tagline");
     const words = tagline ? [...tagline.querySelectorAll<HTMLElement>(".tagline-word")] : [];
     const ladder = document.querySelector<HTMLElement>(".ladder");
