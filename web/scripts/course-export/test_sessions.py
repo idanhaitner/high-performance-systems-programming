@@ -78,7 +78,7 @@ class ExportTests(unittest.TestCase):
         self.assertIsNone(ex["test"])
 
     def test_harness_and_lab(self):
-        expected = (TESTDATA / "study/content/exercises/harness.h").read_text()
+        expected = (TESTDATA / "content/exercises/harness.h").read_text()
         self.assertEqual(self.course["harness"], expected)
         lab = self.session["steps"][5]["lab"]
         self.assertEqual(lab["zip"], "/labs/lab-one.zip")
@@ -89,7 +89,7 @@ class ValidationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "root"
             shutil.copytree(TESTDATA, root)
-            mutate(root / "study/content")
+            mutate(root / "content")
             result = run_export(root)
         self.assertEqual(result.returncode, 1, result.stdout[:200])
         self.assertIn(expect, result.stderr)

@@ -3,10 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Block, Course } from "./types";
 
-const repoRoot = path.resolve(process.cwd(), "../..");
+const repoRoot = path.resolve(process.cwd(), "..");
 
 function contentStamp(root: string) {
-  const content = path.join(root, "study", "content");
+  const content = path.join(root, "content");
   const files = [path.join(content, "course.yml")];
   const topics = path.join(content, "topics");
   if (fs.existsSync(topics)) {
