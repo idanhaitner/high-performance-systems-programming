@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { CHIP, LEVELS, SLOT, layoutBoard, levelOf, type Level } from "@/lib/progress-board";
 import { readProgress } from "@/lib/progress";
 
-type Lesson = { id: string; title: string; practiceIds: string[] };
+type Lesson = { id: string; title: string; lessonNumber: number; practiceIds: string[] };
 type Lecture = { id: string; number: number; title: string; lessons: Lesson[] };
+
+const TONES = ["sun", "mint", "coral", "disk"] as const;
 
 // Count up to a number in about a second, easing out. With reduced motion it jumps straight there.
 function useCountUp(target: number) {
@@ -28,9 +31,11 @@ function useCountUp(target: number) {
   return shown;
 }
 
-// The hero picture: the student's own progress. Every lesson is a tile that fills from the bottom as its
-// questions are solved, grouped in one row per lecture. The tile for the lesson they read last pulses.
-// Progress lives in this browser, so the board is empty on the server and fills in right after the page loads.
+// The hero picture: the student's own progress, drawn as the course's own idea. Data is fast when it is close to the
+// processor. Every lesson is a block that starts on the disk, far away. As its questions get solved the block moves
+// up the ladder (main memory, cache, registers) until it sits next to the processor chip. A line reaches from the chip
+// down to the lesson read last. Progress lives in this browser, so the page first draws every block on the disk, then
+// the blocks travel to where the saved progress puts them.
 export function ProgressBoard({ courseId, lectures }: { courseId: string; lectures: Lecture[] }) {
   const [solved, setSolved] = useState<string[]>([]);
   const [last, setLast] = useState<string | undefined>();
@@ -46,54 +51,82 @@ export function ProgressBoard({ courseId, lectures }: { courseId: string; lectur
     return () => window.removeEventListener("study-progress", sync);
   }, [courseId]);
 
-  const total = lectures.reduce((sum, lecture) => sum + lecture.lessons.reduce((n, lesson) => n + lesson.practiceIds.length, 0), 0);
-  const done = lectures.reduce(
-    (sum, lecture) => sum + lecture.lessons.reduce((n, lesson) => n + lesson.practiceIds.filter((id) => solved.includes(id)).length, 0),
-    0,
+  const lessons = useMemo(
+    () => lectures.flatMap((lecture) => lecture.lessons.map((lesson) => ({ ...lesson, lecture: lecture.number }))),
+    [lectures],
   );
+  const counts = lessons.map((lesson) => lesson.practiceIds.filter((id) => solved.includes(id)).length);
+  const levels: Level[] = lessons.map((lesson, i) => levelOf(counts[i], lesson.practiceIds.length));
+  const { places, tops, height } = layoutBoard(levels);
+
+  const total = lessons.reduce((sum, lesson) => sum + lesson.practiceIds.length, 0);
+  const done = counts.reduce((sum, n) => sum + n, 0);
+  const inRegisters = levels.filter((level) => level === 0).length;
   const shown = useCountUp(done);
-  let index = 0;
+
+  // Blocks that travel the farthest leave first, so the closest ones arrive last and the board "lands" top down.
+  const order = [...lessons.keys()].sort((a, b) => levels[a] - levels[b] || a - b);
+  const rank = new Map(order.map((lessonIndex, position) => [lessonIndex, position]));
+
+  const here = lessons.findIndex((lesson) => lesson.id === last);
+  const reach = here >= 0 ? places[here].y - CHIP : 0;
 
   return (
     <figure className="pboard">
       <div className="pboard-card">
-        <p className="pboard-count" aria-live="polite">
-          <strong>{shown}</strong>
-          <span>of {total} practice steps solved</span>
-        </p>
-        <div className="pboard-rows">
-          {lectures.map((lecture) => (
-            <div className="pboard-row" key={lecture.id}>
-              <span className="pboard-label">Lecture {lecture.number}</span>
-              <ul className="pboard-tiles">
-                {lecture.lessons.map((lesson) => {
-                  const ids = lesson.practiceIds;
-                  const count = ids.filter((id) => solved.includes(id)).length;
-                  const fill = ids.length ? count / ids.length : 0;
-                  const style = { "--fill": fill, "--i": index++ } as React.CSSProperties;
-                  return (
-                    <li key={lesson.id}>
-                      <Link
-                        href={`/topics/${lesson.id}`}
-                        className={`pboard-tile${fill === 1 ? " is-done" : ""}${lesson.id === last ? " is-here" : ""}`}
-                        style={style}
-                        title={`${lesson.title}: ${count} of ${ids.length} solved`}
-                      >
-                        <span className="pboard-fill" />
-                        <span className="sr-only">{lesson.title}, {count} of {ids.length} solved</span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+        <div
+          className="pboard-stage"
+          style={{ "--h": height, "--w": 12 * SLOT } as React.CSSProperties}
+        >
+          <div className="pboard-chip" aria-hidden="true">
+            <span>CPU</span>
+          </div>
+          {LEVELS.map((level, index) => (
+            <p className={`pboard-level tone-${TONES[index]}`} key={level.name} style={{ "--y": tops[index] } as React.CSSProperties} aria-hidden="true">
+              <b>{level.name}</b>
+              <span>{level.cost}</span>
+            </p>
           ))}
+          {here >= 0 && (
+            <>
+              <span
+                className="pboard-wire"
+                aria-hidden="true"
+                style={{ "--x": places[here].x + 0.55, "--s": reach / (height - CHIP) } as React.CSSProperties}
+              />
+              <span
+                className="pboard-ping"
+                aria-hidden="true"
+                style={{ "--x": places[here].x + 0.55, "--len": reach } as React.CSSProperties}
+              />
+            </>
+          )}
+          <ul className="pboard-blocks">
+            {lessons.map((lesson, i) => (
+              <li key={lesson.id}>
+                <Link
+                  href={`/topics/${lesson.id}`}
+                  className={`pboard-block pboard-${TONES[levels[i]]}${i === here ? " is-here" : ""}`}
+                  style={{ "--x": places[i].x, "--y": places[i].y, "--n": rank.get(i) } as React.CSSProperties}
+                  title={`Lecture ${lesson.lecture}, lesson ${lesson.lessonNumber}: ${lesson.title}. ${counts[i]} of ${lesson.practiceIds.length} solved. Now in ${LEVELS[levels[i]].name.toLowerCase()}.`}
+                >
+                  <span aria-hidden="true">{lesson.lessonNumber}</span>
+                  <span className="sr-only">
+                    {lesson.title}, {counts[i]} of {lesson.practiceIds.length} solved, in {LEVELS[levels[i]].name.toLowerCase()}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
       <figcaption>
-        {done === 0
-          ? "Your board starts empty. Each tile is a lesson, and it fills as you solve its questions and exercises."
-          : "Each tile is a lesson. It fills as you solve its questions and exercises. The pulsing tile is where you stopped."}
+        <span className="pboard-lead">Your lessons, moved closer to the processor.</span>
+        <span aria-live="polite">
+          {done === 0
+            ? `Every lesson starts on the disk, the slowest place. Solve its questions and it moves up, until it reaches the registers.`
+            : `${shown} of ${total} practice steps solved. ${inRegisters} ${inRegisters === 1 ? "lesson has" : "lessons have"} reached the registers.`}
+        </span>
       </figcaption>
     </figure>
   );

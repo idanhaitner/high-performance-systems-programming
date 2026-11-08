@@ -135,7 +135,7 @@ export default function HomePage() {
               id: lecture.id,
               number: lecture.number,
               title: lecture.title,
-              lessons: lecture.lessons.map(({ id, title, practiceIds }) => ({ id, title, practiceIds })),
+              lessons: lecture.lessons.map(({ id, title, lessonNumber, practiceIds }) => ({ id, title, lessonNumber, practiceIds })),
             }))}
           />
         </div>

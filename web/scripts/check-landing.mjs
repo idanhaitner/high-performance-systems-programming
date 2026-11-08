@@ -37,14 +37,14 @@ const groups = {
 
   async board(browser) {
     const { context, page } = await open(browser, 1440);
-    const tiles = await page.locator(".pboard-tile").count();
+    const tiles = await page.locator(".pboard-block").count();
     expect("board", tiles > 0, "the hero progress board has no lesson tiles");
-    const empty = await page.locator(".pboard-count strong").innerText();
-    expect("board", empty === "0", `a new visitor should see 0 solved, saw ${empty}`);
+    const onDisk = await page.locator(".pboard-disk").count();
+    expect("board", onDisk === tiles, `a new visitor should have every lesson on the disk, found ${onDisk} of ${tiles}`);
     await context.close();
     // With reduced motion the board is still there, just still.
     const still = await open(browser, 1440, { reducedMotion: "reduce" });
-    const stillTiles = await still.page.locator(".pboard-tile").count();
+    const stillTiles = await still.page.locator(".pboard-block").count();
     expect("board", stillTiles === tiles, "with reduced motion the board is missing");
     await still.context.close();
   },
@@ -101,7 +101,7 @@ const groups = {
     const { context, page } = await open(browser, 1440);
     const slow = await page.evaluate(() => {
       const out = [];
-      for (const sel of [".landing-cta", ".deck-grid a", ".pboard-fill", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
+      for (const sel of [".landing-cta", ".deck-grid a", ".pboard-block", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
         const el = document.querySelector(sel);
         if (!el) continue;
         const max = Math.max(...getComputedStyle(el).transitionDuration.split(",").map((s) => parseFloat(s)));
