@@ -37,20 +37,15 @@ const groups = {
 
   async board(browser) {
     const { context, page } = await open(browser, 1440);
-    const cells = await page.locator(".core").count();
-    expect("board", cells === 42, `the hero board has ${cells} workers, expected 42`);
-    for (const count of ["42", "1"]) {
-      await page.getByRole("button", { name: count, exact: true }).click();
-      const pressed = await page.getByRole("button", { name: count, exact: true }).getAttribute("aria-pressed");
-      expect("board", pressed === "true", `choosing ${count} workers should mark that choice`);
-      const filled = await page.$eval(".core-board", (el) => el.classList.contains("is-run"));
-      expect("board", filled, `choosing ${count} workers should start a run`);
-    }
+    const tiles = await page.locator(".pboard-tile").count();
+    expect("board", tiles > 0, "the hero progress board has no lesson tiles");
+    const empty = await page.locator(".pboard-count strong").innerText();
+    expect("board", empty === "0", `a new visitor should see 0 solved, saw ${empty}`);
     await context.close();
     // With reduced motion the board is still there, just still.
     const still = await open(browser, 1440, { reducedMotion: "reduce" });
-    const stillCells = await still.page.locator(".core").count();
-    expect("board", stillCells === 42, "with reduced motion the board is missing");
+    const stillTiles = await still.page.locator(".pboard-tile").count();
+    expect("board", stillTiles === tiles, "with reduced motion the board is missing");
     await still.context.close();
   },
 
@@ -106,7 +101,7 @@ const groups = {
     const { context, page } = await open(browser, 1440);
     const slow = await page.evaluate(() => {
       const out = [];
-      for (const sel of [".landing-cta", ".deck-grid a", ".core", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
+      for (const sel of [".landing-cta", ".deck-grid a", ".pboard-fill", ".landing-links a", ".deck-session", ".landing-toggle span"]) {
         const el = document.querySelector(sel);
         if (!el) continue;
         const max = Math.max(...getComputedStyle(el).transitionDuration.split(",").map((s) => parseFloat(s)));

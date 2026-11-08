@@ -132,16 +132,16 @@ const groups = {
   async "hero-deal"(browser) {
     let { context, page } = await open(browser, "/");
     await page.reload({ waitUntil: "commit" });
-    await page.waitForSelector(".cores");
+    await page.waitForSelector(".pboard");
     await page.waitForTimeout(60);
-    const early = await page.$eval(".cores", (el) => parseFloat(getComputedStyle(el).opacity));
+    const early = await page.$eval(".pboard", (el) => parseFloat(getComputedStyle(el).opacity));
     await page.waitForTimeout(1500);
-    const late = await page.$eval(".cores", (el) => parseFloat(getComputedStyle(el).opacity));
+    const late = await page.$eval(".pboard", (el) => parseFloat(getComputedStyle(el).opacity));
     expect("hero-deal", early < 1, `hero board is already fully shown at load (opacity ${early})`);
     expect("hero-deal", late === 1, `hero board has not settled after 1.5s (opacity ${late})`);
     await context.close();
     ({ context, page } = await open(browser, "/", { reducedMotion: "reduce" }));
-    const reduced = await page.$eval(".cores", (el) => [parseFloat(getComputedStyle(el).opacity), getComputedStyle(el).animationName]);
+    const reduced = await page.$eval(".pboard", (el) => [parseFloat(getComputedStyle(el).opacity), getComputedStyle(el).animationName]);
     expect("hero-deal", reduced[0] === 1 && reduced[1] === "none", `reduced motion still rises in (${reduced})`);
     await context.close();
   },

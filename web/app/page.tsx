@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Fragment } from "react";
-import { CoreGrid } from "@/components/landing/CoreGrid";
 import { HeroCta } from "@/components/landing/HeroCta";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { LectureIndex } from "@/components/landing/LectureIndex";
+import { ProgressBoard } from "@/components/landing/ProgressBoard";
 import { ScrollFx } from "@/components/landing/ScrollFx";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Mixed } from "@/lib/bidi";
@@ -129,7 +129,15 @@ export default function HomePage() {
               <li><strong>0</strong> installs</li>
             </ul>
           </div>
-          <CoreGrid />
+          <ProgressBoard
+            courseId={course.id}
+            lectures={lectures.map((lecture) => ({
+              id: lecture.id,
+              number: lecture.number,
+              title: lecture.title,
+              lessons: lecture.lessons.map(({ id, title, practiceIds }) => ({ id, title, practiceIds })),
+            }))}
+          />
         </div>
       </section>
 
