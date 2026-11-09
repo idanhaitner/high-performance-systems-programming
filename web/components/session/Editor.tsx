@@ -73,6 +73,10 @@ const theme = EditorView.theme(
     ".cm-matchingBracket": { backgroundColor: "rgb(255 210 63 / 0.22)", outline: "none" },
     ".cm-linked-line": { backgroundColor: "rgb(143 134 255 / 0.3)" },
     ".cm-tooltip": { backgroundColor: "var(--card-solid)", color: "var(--ink)", border: "2px solid var(--edge)", borderRadius: "10px" },
+    // The page styles every list as a flex column with a gap; the suggestion list must stay a plain block.
+    ".cm-tooltip.cm-tooltip-autocomplete > ul": { display: "block", margin: "0", padding: "0", gap: "0", fontFamily: "var(--mono)", listStyle: "none" },
+    ".cm-tooltip.cm-tooltip-autocomplete > ul > li": { margin: "0", padding: "2px 8px", lineHeight: "1.5" },
+    ".cm-tooltip-autocomplete ul li[aria-selected]": { backgroundColor: "var(--code-key)", color: "var(--code)" },
     ".cm-diagnostic": { fontFamily: "var(--sans)", fontSize: "0.875rem", padding: "6px 10px" },
     ".cm-lintRange-error": { backgroundImage: "none", textDecoration: "wavy underline #ff8fa3", textUnderlineOffset: "3px" },
     ".cm-lintRange-warning": { backgroundImage: "none", textDecoration: "wavy underline #ffd23f", textUnderlineOffset: "3px" },
