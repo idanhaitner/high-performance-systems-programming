@@ -1,6 +1,7 @@
 "use client";
 
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import { cAutocomplete } from "@/lib/editor-complete";
 import { cpp } from "@codemirror/lang-cpp";
 import { setDiagnostics, type Diagnostic as CmDiagnostic } from "@codemirror/lint";
 import { EditorState, StateEffect, StateField, type Extension } from "@codemirror/state";
@@ -122,6 +123,8 @@ export function Editor({ value, onChange, diagnostics, onHoverLine, onFormat, hi
       bracketMatching(),
       // Typing ( [ { or a quote adds its closing partner, and Backspace between an empty pair removes both.
       closeBrackets(),
+      // Names the student wrote, C library functions and keywords pop up while typing; Enter or Tab takes one.
+      ...(readOnly ? [] : [cAutocomplete]),
       highlightActiveLine(),
       EditorView.lineWrapping,
       keymap.of([{ key: "Shift-Alt-f", run: format }, ...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
