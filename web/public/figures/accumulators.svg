@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .a { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4b3cf5; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; fill: #ffffff; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="330" fill="#f7f6ff"/>
+
+  <g class="step" style="animation-delay:0.08s">
+  <text x="24" y="32" class="t" font-size="16" font-weight="700">One accumulator: every addition waits for the one before</text>
+  <rect x="24" y="46" width="76" height="30" rx="6" fill="#b4233f"/><text x="62" y="66" class="mono" font-size="12" text-anchor="middle">+ A[0]</text>
+  <line x1="100" y1="61" x2="110" y2="61" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="110" y="46" width="76" height="30" rx="6" fill="#b4233f"/><text x="148" y="66" class="mono" font-size="12" text-anchor="middle">+ A[1]</text>
+  <line x1="186" y1="61" x2="196" y2="61" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="196" y="46" width="76" height="30" rx="6" fill="#b4233f"/><text x="234" y="66" class="mono" font-size="12" text-anchor="middle">+ A[2]</text>
+  <line x1="272" y1="61" x2="282" y2="61" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="282" y="46" width="76" height="30" rx="6" fill="#b4233f"/><text x="320" y="66" class="mono" font-size="12" text-anchor="middle">+ A[3]</text>
+  <line x1="358" y1="61" x2="368" y2="61" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="368" y="46" width="76" height="30" rx="6" fill="#b4233f"/><text x="406" y="66" class="mono" font-size="12" text-anchor="middle">+ A[4]</text>
+  <line x1="444" y1="61" x2="454" y2="61" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="454" y="46" width="76" height="30" rx="6" fill="#b4233f"/><text x="492" y="66" class="mono" font-size="12" text-anchor="middle">+ A[5]</text>
+  <line x1="530" y1="61" x2="540" y2="61" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="540" y="46" width="76" height="30" rx="6" fill="#b4233f"/><text x="578" y="66" class="mono" font-size="12" text-anchor="middle">+ A[6]</text>
+  <line x1="616" y1="61" x2="626" y2="61" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="626" y="46" width="76" height="30" rx="6" fill="#b4233f"/><text x="664" y="66" class="mono" font-size="12" text-anchor="middle">+ A[7]</text>
+  <text x="24" y="100" class="m" font-size="14">8 additions in a row: one long chain, 8 waits.</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.3s">
+  <text x="24" y="140" class="t" font-size="16" font-weight="700">Four accumulators: four short chains that run side by side</text>
+  <text x="24" y="170" class="m" font-size="14" font-weight="700">s0</text>
+  <rect x="62" y="152" width="76" height="28" rx="6" fill="#17784f"/><text x="100" y="171" class="mono" font-size="12" text-anchor="middle">+ A[0]</text>
+  <line x1="138" y1="166" x2="148" y2="166" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="148" y="152" width="76" height="28" rx="6" fill="#17784f"/><text x="186" y="171" class="mono" font-size="12" text-anchor="middle">+ A[4]</text>
+  <text x="24" y="206" class="m" font-size="14" font-weight="700">s1</text>
+  <rect x="62" y="188" width="76" height="28" rx="6" fill="#2f4fd6"/><text x="100" y="207" class="mono" font-size="12" text-anchor="middle">+ A[1]</text>
+  <line x1="138" y1="202" x2="148" y2="202" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="148" y="188" width="76" height="28" rx="6" fill="#2f4fd6"/><text x="186" y="207" class="mono" font-size="12" text-anchor="middle">+ A[5]</text>
+  <text x="24" y="242" class="m" font-size="14" font-weight="700">s2</text>
+  <rect x="62" y="224" width="76" height="28" rx="6" fill="#6a4fd8"/><text x="100" y="243" class="mono" font-size="12" text-anchor="middle">+ A[2]</text>
+  <line x1="138" y1="238" x2="148" y2="238" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="148" y="224" width="76" height="28" rx="6" fill="#6a4fd8"/><text x="186" y="243" class="mono" font-size="12" text-anchor="middle">+ A[6]</text>
+  <text x="24" y="278" class="m" font-size="14" font-weight="700">s3</text>
+  <rect x="62" y="260" width="76" height="28" rx="6" fill="#1b1740"/><text x="100" y="279" class="mono" font-size="12" text-anchor="middle">+ A[3]</text>
+  <line x1="138" y1="274" x2="148" y2="274" stroke="#4f4a75" stroke-width="2"/>
+  <rect x="148" y="260" width="76" height="28" rx="6" fill="#1b1740"/><text x="186" y="279" class="mono" font-size="12" text-anchor="middle">+ A[7]</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.5s">
+  <text x="260" y="196" class="a" font-size="14" font-weight="700">Each row still waits for itself,</text>
+  <text x="260" y="218" class="a" font-size="14" font-weight="700">but the four rows do not wait for each other.</text>
+  <text x="260" y="248" class="m" font-size="14">The longest chain is 2 steps instead of 8.</text>
+  <text x="24" y="316" class="t" font-size="14" font-weight="700">Measured: 36.46 ms with one accumulator, 6.90 ms with four (5.29 times faster).</text>
+  </g>
+</svg>

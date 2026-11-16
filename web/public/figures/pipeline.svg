@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .a { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4b3cf5; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="330" fill="#f7f6ff"/>
+
+  <g class="step" style="animation-delay:0.08s">
+  <text x="24" y="32" class="t" font-size="16" font-weight="700">Without a pipeline: one instruction at a time (15 ticks for 3)</text>
+  <text x="24" y="66" class="m" font-size="13">I1</text>
+  <rect x="56" y="50" width="28" height="24" rx="4" fill="#17784f"/><text x="70" y="67" class="w" font-size="13" text-anchor="middle" font-weight="700">F</text>
+  <rect x="86" y="50" width="28" height="24" rx="4" fill="#2f4fd6"/><text x="100" y="67" class="w" font-size="13" text-anchor="middle" font-weight="700">D</text>
+  <rect x="116" y="50" width="28" height="24" rx="4" fill="#6a4fd8"/><text x="130" y="67" class="w" font-size="13" text-anchor="middle" font-weight="700">R</text>
+  <rect x="146" y="50" width="28" height="24" rx="4" fill="#b4233f"/><text x="160" y="67" class="w" font-size="13" text-anchor="middle" font-weight="700">E</text>
+  <rect x="176" y="50" width="28" height="24" rx="4" fill="#1b1740"/><text x="190" y="67" class="w" font-size="13" text-anchor="middle" font-weight="700">W</text>
+  <text x="24" y="96" class="m" font-size="13">I2</text>
+  <rect x="206" y="80" width="28" height="24" rx="4" fill="#17784f"/><text x="220" y="97" class="w" font-size="13" text-anchor="middle" font-weight="700">F</text>
+  <rect x="236" y="80" width="28" height="24" rx="4" fill="#2f4fd6"/><text x="250" y="97" class="w" font-size="13" text-anchor="middle" font-weight="700">D</text>
+  <rect x="266" y="80" width="28" height="24" rx="4" fill="#6a4fd8"/><text x="280" y="97" class="w" font-size="13" text-anchor="middle" font-weight="700">R</text>
+  <rect x="296" y="80" width="28" height="24" rx="4" fill="#b4233f"/><text x="310" y="97" class="w" font-size="13" text-anchor="middle" font-weight="700">E</text>
+  <rect x="326" y="80" width="28" height="24" rx="4" fill="#1b1740"/><text x="340" y="97" class="w" font-size="13" text-anchor="middle" font-weight="700">W</text>
+  <text x="24" y="126" class="m" font-size="13">I3</text>
+  <rect x="356" y="110" width="28" height="24" rx="4" fill="#17784f"/><text x="370" y="127" class="w" font-size="13" text-anchor="middle" font-weight="700">F</text>
+  <rect x="386" y="110" width="28" height="24" rx="4" fill="#2f4fd6"/><text x="400" y="127" class="w" font-size="13" text-anchor="middle" font-weight="700">D</text>
+  <rect x="416" y="110" width="28" height="24" rx="4" fill="#6a4fd8"/><text x="430" y="127" class="w" font-size="13" text-anchor="middle" font-weight="700">R</text>
+  <rect x="446" y="110" width="28" height="24" rx="4" fill="#b4233f"/><text x="460" y="127" class="w" font-size="13" text-anchor="middle" font-weight="700">E</text>
+  <rect x="476" y="110" width="28" height="24" rx="4" fill="#1b1740"/><text x="490" y="127" class="w" font-size="13" text-anchor="middle" font-weight="700">W</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.3s">
+  <text x="24" y="182" class="t" font-size="16" font-weight="700">With a pipeline: a new instruction starts every tick (7 ticks for 3)</text>
+  <text x="24" y="216" class="m" font-size="13">I1</text>
+  <rect x="56" y="200" width="28" height="24" rx="4" fill="#17784f"/><text x="70" y="217" class="w" font-size="13" text-anchor="middle" font-weight="700">F</text>
+  <rect x="86" y="200" width="28" height="24" rx="4" fill="#2f4fd6"/><text x="100" y="217" class="w" font-size="13" text-anchor="middle" font-weight="700">D</text>
+  <rect x="116" y="200" width="28" height="24" rx="4" fill="#6a4fd8"/><text x="130" y="217" class="w" font-size="13" text-anchor="middle" font-weight="700">R</text>
+  <rect x="146" y="200" width="28" height="24" rx="4" fill="#b4233f"/><text x="160" y="217" class="w" font-size="13" text-anchor="middle" font-weight="700">E</text>
+  <rect x="176" y="200" width="28" height="24" rx="4" fill="#1b1740"/><text x="190" y="217" class="w" font-size="13" text-anchor="middle" font-weight="700">W</text>
+  <text x="24" y="246" class="m" font-size="13">I2</text>
+  <rect x="86" y="230" width="28" height="24" rx="4" fill="#17784f"/><text x="100" y="247" class="w" font-size="13" text-anchor="middle" font-weight="700">F</text>
+  <rect x="116" y="230" width="28" height="24" rx="4" fill="#2f4fd6"/><text x="130" y="247" class="w" font-size="13" text-anchor="middle" font-weight="700">D</text>
+  <rect x="146" y="230" width="28" height="24" rx="4" fill="#6a4fd8"/><text x="160" y="247" class="w" font-size="13" text-anchor="middle" font-weight="700">R</text>
+  <rect x="176" y="230" width="28" height="24" rx="4" fill="#b4233f"/><text x="190" y="247" class="w" font-size="13" text-anchor="middle" font-weight="700">E</text>
+  <rect x="206" y="230" width="28" height="24" rx="4" fill="#1b1740"/><text x="220" y="247" class="w" font-size="13" text-anchor="middle" font-weight="700">W</text>
+  <text x="24" y="276" class="m" font-size="13">I3</text>
+  <rect x="116" y="260" width="28" height="24" rx="4" fill="#17784f"/><text x="130" y="277" class="w" font-size="13" text-anchor="middle" font-weight="700">F</text>
+  <rect x="146" y="260" width="28" height="24" rx="4" fill="#2f4fd6"/><text x="160" y="277" class="w" font-size="13" text-anchor="middle" font-weight="700">D</text>
+  <rect x="176" y="260" width="28" height="24" rx="4" fill="#6a4fd8"/><text x="190" y="277" class="w" font-size="13" text-anchor="middle" font-weight="700">R</text>
+  <rect x="206" y="260" width="28" height="24" rx="4" fill="#b4233f"/><text x="220" y="277" class="w" font-size="13" text-anchor="middle" font-weight="700">E</text>
+  <rect x="236" y="260" width="28" height="24" rx="4" fill="#1b1740"/><text x="250" y="277" class="w" font-size="13" text-anchor="middle" font-weight="700">W</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.5s">
+  <text x="300" y="232" class="a" font-size="14" font-weight="700">F fetch · D decode · R read · E execute · W write</text>
+  <text x="300" y="256" class="m" font-size="14">Each step uses different hardware, so five</text>
+  <text x="300" y="276" class="m" font-size="14">instructions can be in different steps at once.</text>
+  <text x="24" y="312" class="a" font-size="14" font-weight="700">n instructions: 5 × n ticks without a pipeline, 4 + n ticks with one.</text>
+  </g>
+</svg>
