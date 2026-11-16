@@ -42,6 +42,8 @@ changelog:
     note: Added Lecture 3, memory layout, alignment, and the cache, as six lessons on how C lays out arrays and tables, alignment and padding, cache lines and hits, how an address picks its place in the cache, locality and prefetching, and loop order, layout, and blocking, plus its practice with nine coding exercises and a matrix-multiplication lab.
   - date: 2026-11-08
     note: Brought the third practice session (Tutorial 3) into Lecture 3. Three new lessons cover functions that work with any type, structures that hold any type and carry their own function, and a bump allocator, a tiny version of malloc that handles alignment. The practice has five more exercises.
+  - date: 2026-11-16
+    note: Added Lecture 4, code optimization, together with the fourth practice session (Tutorial 4), as seven lessons on measuring before you optimize, what the compiler does for you, the processor's pipeline, branch prediction, what the compiler cannot do because of hidden effects and aliasing, loop unrolling and multiple running totals, and a playbook that puts it all together. The practice has eleven coding exercises and a lab that times branches, running totals, and compiler options.
 
 lectures:
   - id: lecture-1
@@ -82,6 +84,19 @@ lectures:
       of one big array.
     topics: [memory-layout, alignment-and-padding, cache-lines, cache-mapping, locality-and-prefetching, efficient-c, generic-functions, generic-structures, bump-allocator]
     session: sessions/lecture-3.md
+  - id: lecture-4
+    number: 4
+    title: Code optimization
+    summary: >
+      How to make a program faster on one processor core. First, measure to
+      find the slow part, and learn what the compiler already does for you.
+      Then see how the processor works on several instructions at once and
+      guesses which way each if goes, and why a wrong guess costs time. Then
+      the rewrites the compiler is not allowed to make on its own, and how to
+      give the processor more work it can do at the same time. It ends with a
+      step-by-step plan for speeding up any program.
+    topics: [measure-first, compiler-optimizations, pipeline, branch-prediction, compiler-limits, unrolling-and-accumulators, optimization-playbook]
+    session: sessions/lecture-4.md
 
 sources:
   - path: "Lecture 1 - Introduction.pdf"
@@ -193,6 +208,30 @@ sources:
       - prac-bump-trace
       - prac-bump-full
       - prac-bump-padding
+  - path: "Lecture_04_Code_Optimization_in_C  -  ver 2.pdf"
+    type: lecture
+    status: incorporated
+    note: "The pipeline and its hazards, static and dynamic branch prediction, conditional moves and when the ternary operator helps, what compilers cannot do because of side effects and aliasing, restrict, optimization levels, index against moving pointer, loop unrolling, multiple accumulators, a staged case study, six optimization exercises, and a playbook."
+    problems:
+      - prac-median-runs
+      - prac-pipeline-count
+      - prac-reorder-gap
+      - prac-predict-the-pattern
+      - prac-branch-or-cmov
+      - prac-alias-results
+      - prac-hoist-or-not
+      - prac-unroll-count
+      - prac-accumulator-split
+      - prac-name-the-limit
+  - path: "ps4.pdf"
+    type: exercise
+    status: incorporated
+    note: "Tutorial 4: the optimization cycle, profiling with perf, compiler optimizations such as constant folding, dead code elimination, and inlining, optimization levels and a measured speedup, unrolling and the instruction cache, -march=native, a recap of caches and locality, an array of pointers against one contiguous block, memory pools and arenas, aligned(64) and false sharing, and profile-guided optimization."
+    problems:
+      - prac-profile-share
+      - prac-what-the-compiler-did
+      - prac-flag-speedup
+      - prac-pointer-overhead
 topics:
   - id: why-low-level
     file: topics/why-low-level.md
@@ -382,6 +421,55 @@ topics:
     summary: "A tiny malloc that hands out pieces of one big array with a counter, skips bytes to keep every block aligned, and frees everything at once."
     exam_weight: taught
     prerequisites: [generic-structures]
+    unlocks: [measure-first]
+  - id: measure-first
+    file: topics/measure-first.md
+    title: Measure before you optimize
+    summary: "Why you first find the slowest part of a program, how a profiler shows where the time goes, and how to time code fairly."
+    exam_weight: taught
+    prerequisites: [bump-allocator]
+    unlocks: [compiler-optimizations]
+  - id: compiler-optimizations
+    file: topics/compiler-optimizations.md
+    title: What the compiler does for you
+    summary: "How the compiler rewrites your code to make it faster, how to ask for more or less of that, and why you cannot judge speed just by reading the C code."
+    exam_weight: taught
+    prerequisites: [measure-first]
+    unlocks: [pipeline]
+  - id: pipeline
+    file: topics/pipeline.md
+    title: How the processor overlaps instructions
+    summary: "How the processor works on several instructions at once, like an assembly line, and what makes an instruction wait for the one before it."
+    exam_weight: taught
+    prerequisites: [compiler-optimizations]
+    unlocks: [branch-prediction]
+  - id: branch-prediction
+    file: topics/branch-prediction.md
+    title: Branches and branch prediction
+    summary: "How the processor guesses which way an if goes, why random data makes it guess wrong and slows a loop, and how to choose a value without a jump."
+    exam_weight: taught
+    prerequisites: [pipeline]
+    unlocks: [compiler-limits]
+  - id: compiler-limits
+    file: topics/compiler-limits.md
+    title: "What the compiler cannot do: hidden effects and aliasing"
+    summary: "Speed-ups the compiler is not allowed to make, because a function call might change something or two pointers might reach the same memory, and how to help it."
+    exam_weight: taught
+    prerequisites: [branch-prediction]
+    unlocks: [unrolling-and-accumulators]
+  - id: unrolling-and-accumulators
+    file: topics/unrolling-and-accumulators.md
+    title: Loop unrolling and multiple accumulators
+    summary: "Doing several elements in each pass of a loop, and splitting one long chain of additions into several short ones that the processor can work on at the same time."
+    exam_weight: taught
+    prerequisites: [compiler-limits]
+    unlocks: [optimization-playbook]
+  - id: optimization-playbook
+    file: topics/optimization-playbook.md
+    title: "Putting it together: a playbook for faster code"
+    summary: "How to tell what limits a loop and pick the fix that matches, how the way you ask for memory changes speed, and a step-by-step plan for any program."
+    exam_weight: taught
+    prerequisites: [unrolling-and-accumulators]
     unlocks: []
 
 glossary:
@@ -721,4 +809,107 @@ glossary:
   - term: bump allocator
     topic: bump-allocator
     definition: A very simple allocator. It keeps an arena and a counter, and each request takes the next piece and moves the counter forward. It is fast, but it can only free everything at once.
+
+  - term: bottleneck
+    topic: measure-first
+    definition: The part of a program that uses most of the time, so it limits the speed of the whole program. Speeding up any other part helps much less.
+  - term: profiler
+    topic: measure-first
+    definition: A tool that runs a program and reports how much of the time each function used, usually by pausing it many times per second and noting where it is.
+  - term: perf
+    code: true
+    topic: measure-first
+    definition: A profiler built into Linux. perf record runs a program and collects samples, and perf report shows which functions used the most time.
+  - term: benchmark
+    topic: measure-first
+    definition: A fair timing of a piece of code, with the same input and build options each time, run several times so one unlucky run does not decide the result.
+  - term: median
+    topic: measure-first
+    definition: The middle value after sorting a list of numbers. The median of 11, 12, 12, 13, 30 is 12. One very slow run cannot move it much.
+  - term: optimization level
+    topic: compiler-optimizations
+    definition: An option such as -O0, -O1, -O2, or -O3 that tells gcc how hard to try to make the program fast. -O0 is for debugging, and -O2 is the usual choice for the finished program.
+  - term: constant folding
+    topic: compiler-optimizations
+    definition: The compiler working out math on fixed numbers while compiling, so 60 * 60 * 24 is stored as 86400 and never computed when the program runs.
+  - term: dead code elimination
+    topic: compiler-optimizations
+    definition: The compiler removing code whose result is never used. It can delete a whole benchmark loop whose answer is never printed.
+  - term: inlining
+    topic: compiler-optimizations
+    definition: The compiler pasting the body of a small function where it is called, which saves the cost of the call and opens the way for more optimizations.
+  - term: "-march=native"
+    code: true
+    topic: compiler-optimizations
+    definition: A gcc option that uses every instruction of the processor doing the compiling. The program may get faster, but it may fail with "Illegal instruction" on an older processor.
+  - term: pipeline
+    topic: pipeline
+    definition: The processor splitting each instruction into steps done by separate hardware, so several instructions can be in different steps at once, like an assembly line.
+  - term: stall
+    topic: pipeline
+    definition: A pause in the pipeline while an instruction waits for a value that an earlier instruction has not finished computing.
+  - term: read-after-write hazard
+    topic: pipeline
+    definition: An instruction that needs a value an earlier instruction is still computing. Reading too early would give the old value, so the processor makes it wait.
+  - term: forwarding
+    topic: pipeline
+    definition: Passing a result straight from the step that computed it to the next instruction that needs it, before it is written back. It shortens stalls.
+  - term: branch
+    topic: pipeline
+    definition: A point in the machine code where the program can go one of two ways, such as an if or the test at the end of a loop.
+  - term: pipeline flush
+    topic: pipeline
+    definition: Throwing away the instructions the pipeline started on a wrong path, and starting again on the right one. It wastes several clock ticks.
+  - term: branch prediction
+    topic: branch-prediction
+    definition: The processor guessing which way a branch goes before the test is finished, so the pipeline can keep working instead of waiting.
+  - term: misprediction
+    topic: branch-prediction
+    definition: A wrong guess by the branch predictor. The work done on the wrong path is thrown away, which costs a pipeline flush.
+  - term: speculative execution
+    topic: branch-prediction
+    definition: Running instructions on a guessed path before it is known whether they are needed. The work is kept if the guess was right and thrown away if not.
+  - term: conditional move
+    topic: branch-prediction
+    definition: An instruction that picks one of two values depending on a test, without jumping. It has nothing to mispredict, but both values must be computed first. On x86 it is called cmov.
+  - term: profile-guided optimization
+    topic: branch-prediction
+    definition: Building a program twice. The first build counts how often each path runs on typical input, and the second build uses those counts to optimize the common paths.
+  - term: side effect
+    topic: compiler-limits
+    definition: Any change a piece of code makes beyond giving back a value, such as writing to memory, changing a global variable, or printing.
+  - term: aliasing
+    topic: compiler-limits
+    definition: Two pointers that reach the same memory. A write through one changes what the other reads, so the compiler must be careful when it cannot rule this out.
+  - term: restrict
+    code: true
+    topic: compiler-limits
+    definition: A word on a pointer parameter that promises the compiler no other pointer in the function reaches the same memory. The compiler trusts it without checking, so breaking it is undefined behavior.
+  - term: loop unrolling
+    topic: unrolling-and-accumulators
+    definition: Doing the work of several iterations in one pass through a loop, so the loop's test and jump run fewer times. A tail loop handles what is left over.
+  - term: loop overhead
+    topic: unrolling-and-accumulators
+    definition: The work a loop does besides its real job, such as adding 1 to the counter, comparing it with the end, and jumping back.
+  - term: dependency chain
+    topic: unrolling-and-accumulators
+    definition: A sequence of instructions where each one needs the result of the one before, such as sum += a[i] in a loop. The steps of a chain cannot overlap.
+  - term: accumulator
+    topic: unrolling-and-accumulators
+    definition: A variable that collects a running total, such as sum in a loop that adds up an array.
+  - term: instruction-level parallelism
+    topic: unrolling-and-accumulators
+    definition: One processor core working on several independent instructions at the same time, in different steps of its pipeline.
+  - term: tolerance
+    topic: unrolling-and-accumulators
+    definition: The small difference you allow when comparing two floating-point results, because adding numbers in another order can round the last digits differently.
+  - term: memory pool
+    topic: optimization-playbook
+    definition: An allocator that takes big pieces of memory in advance and hands out fixed-size slots from them, which is faster than many small malloc calls.
+  - term: false sharing
+    topic: optimization-playbook
+    definition: Two processor cores that each change their own variable, where the two variables share one cache line, so the cores keep taking the line from each other.
+  - term: baseline
+    topic: optimization-playbook
+    definition: The time of the original code, measured with the real build options, that every optimized version is compared against.
 exams: []

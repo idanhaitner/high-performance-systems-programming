@@ -73,6 +73,7 @@ export const SUBJECTS: Subject[] = [
     title: "Measuring and understanding performance",
     short: "Measuring speed",
     body: "Timing a program honestly, using a profiler (a tool that shows where the time goes), and finding the few places that make a program slow.",
+    lecture: 4,
   },
   {
     number: 6,

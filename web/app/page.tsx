@@ -300,7 +300,7 @@ export default function HomePage() {
               ...lecture,
               practiceSummary: practiceSummary(course.sessions.find((session) => session.id === lecture.sessionId)),
             }))}
-            later="More lectures arrive through the semester: measuring speed, caches, many core processors, and graphics cards."
+            later="More lectures arrive through the semester: memory shared by many processor cores, splitting work across cores, and graphics cards."
           />
         </div>
       </section>

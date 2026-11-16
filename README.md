@@ -10,13 +10,13 @@ No prior C or systems knowledge is assumed. Every term is explained before it is
 
 ## What's in the course
 
-The course has 3 lectures so far. Read a lecture's lessons first, then do its practice.
+The course has 4 lectures so far. Read a lecture's lessons first, then do its practice.
 
-| | Lecture 1: Data, memory, and running programs | Lecture 2: Memory management | Lecture 3: Memory layout, alignment, and the cache |
-| --- | --- | --- | --- |
-| **Lessons** | 8 | 6 | 9 |
-| **Coding exercises** | 16 | 12 | 14 |
-| **Lab** | Stride timing | Stack limit | Matrix multiplication |
+| | Lecture 1: Data, memory, and running programs | Lecture 2: Memory management | Lecture 3: Memory layout, alignment, and the cache | Lecture 4: Code optimization |
+| --- | --- | --- | --- | --- |
+| **Lessons** | 8 | 6 | 9 | 7 |
+| **Coding exercises** | 16 | 12 | 14 | 11 |
+| **Lab** | Stride timing | Stack limit | Matrix multiplication | Branches and running totals |
 
 **Lecture 1 lessons**
 
@@ -49,6 +49,16 @@ The course has 3 lectures so far. Read a lecture's lessons first, then do its pr
 7. Functions that work with any type
 8. Structures that hold any type
 9. A bump allocator: writing your own `malloc`
+
+**Lecture 4 lessons**
+
+1. Measure before you optimize
+2. What the compiler does for you
+3. How the processor overlaps instructions
+4. Branches and branch prediction
+5. What the compiler cannot do: hidden effects and aliasing
+6. Loop unrolling and multiple accumulators
+7. Putting it together: a playbook for faster code
 
 ## How you learn on the site
 
