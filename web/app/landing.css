@@ -176,7 +176,7 @@ body:has(.landing) .reading-progress { display: none; }
 @media (max-width: 30rem) { .pboard-code { font-size: 0.6875rem; } .pboard-line { gap: 8px; } }
 @keyframes core-wave { 0%, 100% { opacity: 0; } 35%, 55% { opacity: 0.85; } }
 
-/* ---- Ticker: the ten subjects, rolling ---- */
+/* ---- Ticker: the course subjects, rolling ---- */
 .ticker { --band-bg: var(--bg); padding: 28px 0 32px; overflow: clip; background: var(--band-bg); }
 /* The subjects fade in and out at the edges instead of being cut off mid-word. */
 .ticker::before, .ticker::after { content: ""; position: absolute; inset-block: 0; z-index: 1; width: min(12vw, 10rem); pointer-events: none; }
