@@ -210,7 +210,8 @@ export default function HomePage() {
           <h2 className="sec-title" id="syllabus-title">What the course covers</h2>
           <p className="sec-intro">
             Ten subjects in three parts. You start with C, learn to make programs fast, and finish by running work on
-            many processor cores and on a graphics card. Subjects with a lecture link are already written here.
+            many processor cores and on a graphics card. The lectures do not follow these subject numbers: a subject
+            with a lecture link is already on the site, under that lecture.
           </p>
           {PARTS.map((part) => (
             <div className="syl-part" key={part.id}>
@@ -224,7 +225,7 @@ export default function HomePage() {
                   const first = lecture?.lessons[0];
                   return (
                     <li className="syl-row" key={subject.number}>
-                      <span className="syl-num">{pad(subject.number)}</span>
+                      <span className="syl-num"><span className="syl-kicker">Subject </span>{pad(subject.number)}</span>
                       <div>
                         <strong>{subject.title}</strong>
                         <span>{subject.body}</span>
@@ -234,7 +235,7 @@ export default function HomePage() {
                           Lecture {lecture!.number} is ready <span aria-hidden="true">→</span>
                         </Link>
                       ) : (
-                        <span className="subject-tag">Arrives later</span>
+                        <span className="subject-tag">Not on the site yet</span>
                       )}
                     </li>
                   );
