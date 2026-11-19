@@ -209,8 +209,9 @@ export default function HomePage() {
         <div className="wrap">
           <h2 className="sec-title" id="syllabus-title">What the course covers</h2>
           <p className="sec-intro">
-            Ten subjects in three parts. You start with C, learn to make programs fast, and finish by running work on
-            many processor cores and on a graphics card. Subjects with a lecture link are already written here.
+            Eight subjects in three parts, in the order you study them. You start with C, learn to make programs fast,
+            and finish by running work on many processor cores and on a graphics card. Subjects 1 to 4 are Lectures 1
+            to 4 and are already on the site. The rest arrive through the semester.
           </p>
           {PARTS.map((part) => (
             <div className="syl-part" key={part.id}>
@@ -224,7 +225,7 @@ export default function HomePage() {
                   const first = lecture?.lessons[0];
                   return (
                     <li className="syl-row" key={subject.number}>
-                      <span className="syl-num">{pad(subject.number)}</span>
+                      <span className="syl-num"><span className="syl-kicker">Subject </span>{pad(subject.number)}</span>
                       <div>
                         <strong>{subject.title}</strong>
                         <span>{subject.body}</span>
