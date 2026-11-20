@@ -5,36 +5,11 @@ title: "Lecture 1 practice: data, memory, and running programs"
 ---
 
 :::learn title="How this practice works"
-You have read the lessons, so now you use them. Each lesson gets one new question, then a very small code question where you write just a few lines, then a bigger coding exercise. One lab, done on your own computer in VS Code (a free code editor), comes last. It ends with a final exercise that uses everything from these lessons.
+This practice goes over the main ideas of the lecture: a few quick questions, a few coding exercises, and one lab at the end that you do on your own computer in VS Code, a free code editor.
 
-Press **Next** when a step is done. If you are stuck, press **Skip for now**, or use the **Reread** link at the top of the step to open that step's lesson.
+In an exercise, the panel on the left says what the function must do, and you write it on the right. **Run** shows what your code prints, and **Submit** checks it against small tests. If you are stuck, open **Hints** one at a time, or use the **Reread** link to open the step's lesson.
 
-A coding exercise gives you the function's first line, and the panel on the left says what it must do. You write the rest on the right. **Run** shows what your code prints. **Submit** checks it against small test cases, and all of them must pass. Your code is tidied by itself each time you press either one. Pressing Ctrl+S (Cmd+S on a Mac) does the same as **Run**. The **Assembly** tab shows the machine instructions the compiler made; it is there if you are curious. If you get stuck, **Hints** opens one hint at a time, and **Solution** shows a finished answer. Try the exercise first, because you learn more that way. To move out of the editor with the keyboard, press Esc and then Tab.
-
-Your code is built by godbolt.org, a free website that runs the C compiler, so your code is sent there when you press one of these buttons.
-:::
-
-:::check id=q-lost-one lesson=why-low-level
-A `double` keeps only about 16 significant digits. What does this print?
-
-```c
-double total = 1e20;
-total = total + 1.0;
-total = total - 1e20;
-printf("%.1f\n", total);
-```
-
-- [ ] `1.0`
-- [x] `0.0`
-- [ ] `100000000000000000000.0`
-
-The 1.0 is far too small for a number as big as 1e20 to remember, so the first addition changes nothing. Subtracting 1e20 then leaves exactly 0.
-:::
-
-:::exercise ref=ex-sum-row lesson=why-low-level
-:::
-
-:::exercise ref=ex-sum-squares lesson=why-low-level
+Your code is built by godbolt.org, a free website that runs the C compiler, so your code is sent there when you press **Run** or **Submit**.
 :::
 
 :::check id=q-two-divisions-together lesson=c-data-types
@@ -52,9 +27,6 @@ printf("%.1f %.1f\n", b, c);
 - [ ] `2.0 2.0`
 
 In `a / 4` both sides are whole numbers, so the division throws away the fraction and gives 2. Storing that in a `double` is too late to bring the fraction back. In `a / 4.0` one side is a `double`, so the fraction is kept.
-:::
-
-:::exercise ref=ex-digit-value lesson=c-data-types
 :::
 
 :::exercise ref=ex-average lesson=c-data-types
@@ -78,31 +50,7 @@ printf("%d %d\n", a[0], *p);
 `p` starts at `a[0]`, so `*p = 9` changes `a[0]`. Then `p + 2` moves the pointer two `int`s along, to `a[2]`, which holds 7. Moving the pointer does not change the array.
 :::
 
-:::exercise ref=ex-set-to-zero lesson=memory-and-pointers
-:::
-
 :::exercise ref=ex-swap lesson=memory-and-pointers
-:::
-
-:::check id=q-one-number-three-ways lesson=printf-and-scanf
-What does this print? Remember that the letter `A` has the number 65.
-
-```c
-int n = 65;
-printf("%d %c %X\n", n, n, n);
-```
-
-- [x] `65 A 41`
-- [ ] `65 65 65`
-- [ ] `A A A`
-
-All three placeholders get the same number and show it in different ways. `%d` shows it as a decimal number, `%c` as the letter with that number, and `%X` in hexadecimal (base 16), where 65 is 41.
-:::
-
-:::exercise ref=ex-print-price lesson=printf-and-scanf
-:::
-
-:::exercise ref=ex-number-then-letter lesson=printf-and-scanf
 :::
 
 :::check id=q-early-end lesson=strings
@@ -118,9 +66,6 @@ word[2] = '\0';
 - [x] It prints `he`, and `strlen(word)` is 2
 
 A string ends at its first `'\0'`, wherever that is. Both `printf` and `strlen` stop there. The letters after it are still in the array, but string tools never reach them.
-:::
-
-:::exercise ref=ex-count-letter lesson=strings
 :::
 
 :::exercise ref=ex-compare-text lesson=strings
@@ -146,9 +91,6 @@ printf("%d\n", pts[1].y);
 `p = pts[0]` makes a separate copy, so `p.x = 9` leaves `pts[0].x` at 1. The sum is 9 + 1, which is 10.
 :::
 
-:::exercise ref=ex-move-point lesson=structures
-:::
-
 :::exercise ref=ex-best-student lesson=structures
 :::
 
@@ -160,28 +102,6 @@ Your `main.c` calls `area`, and the code of `area` is in `shapes.c`. You build w
 - [x] The linker could not find the code of `area`. Add `shapes.c` to the command
 
 The linker's job is to connect each call to the code it calls. Nobody gave it `shapes.c`, so the call to `area` had nothing to connect to.
-:::
-
-:::exercise ref=ex-global-counter lesson=source-to-process
-:::
-
-:::exercise ref=ex-next-ticket lesson=source-to-process
-:::
-
-:::check id=q-bad-word lesson=command-line-arguments
-This program prints `atoi(argv[1]) + atoi(argv[2])`. You run it as `./add 5 abc`. What does it print?
-
-- [ ] An error message, and then it stops
-- [x] `5`
-- [ ] `0`
-
-`atoi` cannot report bad input. `atoi("abc")` just returns 0, so the sum is 5 + 0. The program gives a wrong-looking answer and no warning.
-:::
-
-:::exercise ref=ex-count-args lesson=command-line-arguments
-:::
-
-:::exercise ref=ex-sum-args lesson=command-line-arguments
 :::
 
 :::lab ref=lab-stride-timing lesson=why-low-level

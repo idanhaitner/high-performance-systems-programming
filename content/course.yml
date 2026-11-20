@@ -44,6 +44,8 @@ changelog:
     note: Brought the third practice session (Tutorial 3) into Lecture 3. Three new lessons cover functions that work with any type, structures that hold any type and carry their own function, and a bump allocator, a tiny version of malloc that handles alignment. The practice has five more exercises.
   - date: 2026-11-16
     note: Added Lecture 4, code optimization, together with the fourth practice session (Tutorial 4), as seven lessons on measuring before you optimize, what the compiler does for you, the processor's pipeline, branch prediction, what the compiler cannot do because of hidden effects and aliasing, loop unrolling and multiple running totals, and a playbook that puts it all together. The practice has eleven coding exercises and a lab that times branches, running totals, and compiler options.
+  - date: 2026-11-20
+    note: Made every lecture's practice much shorter. Each one now has about a dozen steps on the lecture's main ideas, a few questions and four coding exercises, then its lab, with a shorter introduction.
 
 lectures:
   - id: lecture-1

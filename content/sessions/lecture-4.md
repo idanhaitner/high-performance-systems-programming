@@ -5,15 +5,13 @@ title: "Lecture 4 practice: code optimization"
 ---
 
 :::learn title="How this practice works"
-You have read the lessons, so now you use them. Each lesson gets one new question, and most also get a coding exercise. One lab, done on your own computer in VS Code (a free code editor), comes last. It ends with a final exercise that uses everything from these lessons.
+This practice goes over the main ideas of the lecture: a few quick questions, a few coding exercises, and one lab at the end that you do on your own computer in VS Code, a free code editor.
 
-Press **Next** when a step is done. If you are stuck, press **Skip for now**, or use the **Reread** link at the top of the step to open that step's lesson.
+In an exercise, the panel on the left says what the function must do, and you write it on the right. **Run** shows what your code prints, and **Submit** checks it against small tests. If you are stuck, open **Hints** one at a time, or use the **Reread** link to open the step's lesson.
 
-A coding exercise gives you the function's first line, and the panel on the left says what it must do. You write the rest on the right. **Run** shows what your code prints. **Submit** checks it against small test cases, and all of them must pass. Your code is tidied by itself each time you press either one. Pressing Ctrl+S (Cmd+S on a Mac) does the same as **Run**. The **Assembly** tab shows the machine instructions the compiler made, which is useful in this lecture: you can see whether a loop has a jump in it. If you get stuck, **Hints** opens one hint at a time, and **Solution** shows a finished answer. Try the exercise first, because you learn more that way. To move out of the editor with the keyboard, press Esc and then Tab.
+The tests check that your answer is correct, not that it is fast. Timing needs your own computer, and that is what the lab is for.
 
-The test cases check that your answer is **correct**, not that it is fast. Timing needs your own machine, and that is what the lab is for.
-
-Your code is built by godbolt.org, a free website that runs the C compiler, so your code is sent there when you press one of these buttons.
+Your code is built by godbolt.org, a free website that runs the C compiler, so your code is sent there when you press **Run** or **Submit**.
 :::
 
 :::check id=q-where-to-start lesson=measure-first
@@ -26,12 +24,6 @@ A profiler shows that a program spends 60% of its time in `sort_rows`, 30% in `r
 Halving a part saves half of its share. Half of 60% is 30%, half of 30% is 15%, and half of 10% is 5%. The biggest part gives the biggest saving.
 :::
 
-:::exercise ref=ex-median-time lesson=measure-first
-:::
-
-:::exercise ref=ex-new-total-time lesson=measure-first
-:::
-
 :::check id=q-same-machine-code lesson=compiler-optimizations
 Built with `-O2`, `x * 2` and `x + x` on an `int x` turn into the same machine instructions. What does that tell you?
 
@@ -42,19 +34,6 @@ Built with `-O2`, `x * 2` and `x + x` on an `int x` turn into the same machine i
 The compiler is free to pick any instructions that give the same result. Two ways of writing the same value often end up identical, which is why you measure instead of guessing from the C code.
 :::
 
-:::check id=q-pipeline-long lesson=pipeline
-A processor has a 4-step pipeline. About how many ticks does it need for 1,000 instructions that never wait for each other?
-
-- [ ] 4,000
-- [x] 1,003
-- [ ] 250
-
-The first instruction needs 4 ticks. Each of the other 999 adds one tick, so 4 + 999 = 1,003. Without a pipeline, it would be 4 × 1,000 = 4,000.
-:::
-
-:::exercise ref=ex-pipeline-ticks lesson=pipeline
-:::
-
 :::check id=q-sort-first lesson=branch-prediction
 A loop counts how many numbers in a big array are above 100, with `if (a[i] > 100) count++;`. The numbers are random. Someone sorts the array first and the loop becomes much faster, though the sorting itself took longer than the time saved. What sped up the loop?
 
@@ -63,9 +42,6 @@ A loop counts how many numbers in a big array are above 100, with `if (a[i] > 10
 - [ ] Sorting moved the array into the cache
 
 The loop does the same comparisons either way. On sorted data, the test is false for a long run and then true for a long run, so the branch is easy to predict, and there are almost no pipeline flushes. Sorting is only worth it when you need the data sorted anyway, or when you reuse it many times.
-:::
-
-:::exercise ref=ex-unswitch-filter lesson=branch-prediction
 :::
 
 :::exercise ref=ex-branchless-update lesson=branch-prediction
@@ -94,9 +70,6 @@ An array of 1,000 `double`s is added up with eight running totals instead of one
 Each of the eight totals gets every eighth number, so each gets 1,000 / 8 = 125 numbers. The eight chains do not wait for each other, so the longest one has 125 additions.
 :::
 
-:::exercise ref=ex-unroll-by-four lesson=unrolling-and-accumulators
-:::
-
 :::exercise ref=ex-four-sums lesson=unrolling-and-accumulators
 :::
 
@@ -108,12 +81,6 @@ You make three changes to a slow function at once, and it becomes 20% faster. Wh
 - [ ] Changes only count if each one doubles the speed
 
 Changes interact, and some do nothing or make things worse. Making one change at a time, and measuring after each, tells you what really helped.
-:::
-
-:::exercise ref=ex-filtered-sum lesson=optimization-playbook
-:::
-
-:::exercise ref=ex-transform-rows lesson=optimization-playbook
 :::
 
 :::exercise ref=ex-contiguous-points lesson=optimization-playbook
