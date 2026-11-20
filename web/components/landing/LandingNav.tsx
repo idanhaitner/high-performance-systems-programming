@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
+import { startLabel, type ResumeLesson } from "@/lib/progress";
+import { useResume } from "./useResume";
 
 const LINKS = [
   { href: "#syllabus", label: "Syllabus" },
@@ -11,7 +13,11 @@ const LINKS = [
   { href: "/glossary/", label: "Glossary" },
 ];
 
-export function LandingNav({ startHref }: { startHref: string }) {
+export function LandingNav({ courseId, lessons }: { courseId: string; lessons: ResumeLesson[] }) {
+  const resume = useResume(courseId, lessons);
+  const target = resume ?? lessons[0];
+  const startHref = target ? `/topics/${target.id}` : "/";
+  const label = startLabel(resume);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -65,7 +71,7 @@ export function LandingNav({ startHref }: { startHref: string }) {
           ))}
         </nav>
         <ThemeSwitch />
-        <Link className="landing-cta landing-cta-small" href={startHref}>Start lecture 1</Link>
+        <Link className="landing-cta landing-cta-small" href={startHref}>{label}</Link>
         <button
           ref={toggleRef}
           type="button"
@@ -99,7 +105,7 @@ export function LandingNav({ startHref }: { startHref: string }) {
             </Link>
           ))}
           <Link className="landing-cta" href={startHref} style={{ animationDelay: `${Math.min(LINKS.length * 60, 400)}ms` }}>
-            Start lecture 1
+            {label}
           </Link>
         </nav>
       </div>

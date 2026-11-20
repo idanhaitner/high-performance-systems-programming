@@ -90,15 +90,17 @@ export default function HomePage() {
   const course = loadCourse();
   const lectures = course.lectures;
   const lessons = lectures.flatMap((lecture) => lecture.lessons);
-  const startHref = lessons[0] ? `/topics/${lessons[0].id}` : "/";
-  const cta = <HeroCta courseId={course.id} lessons={lessons.map(({ id, title }) => ({ id, title }))} />;
+  const resumable = lectures.flatMap((lecture) =>
+    lecture.lessons.map(({ id, title }) => ({ id, title, lecture: lecture.number })),
+  );
+  const cta = <HeroCta courseId={course.id} lessons={resumable} />;
 
   return (
     <article className="page landing">
       <ScrollFx />
       <ScrollReveal selector=".landing .sec-title, .syl-part, .bento > li, .stage-card, .deck-tab, .deck-soon, .deck-panels, .final-inner" />
       <div className="scroll-bar" aria-hidden="true" />
-      <LandingNav startHref={startHref} />
+      <LandingNav courseId={course.id} lessons={resumable} />
 
       <section className="band hero" aria-labelledby="hero-title">
         <div className="wrap hero-grid">

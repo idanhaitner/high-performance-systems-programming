@@ -1,19 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { readProgress } from "@/lib/progress";
-
-type Lesson = { id: string; title: string };
+import type { ResumeLesson } from "@/lib/progress";
+import { useResume } from "./useResume";
 
 // Start at lesson 1, or pick up where the student stopped last time.
-export function HeroCta({ courseId, lessons }: { courseId: string; lessons: Lesson[] }) {
-  const [resume, setResume] = useState<Lesson | null>(null);
-
-  useEffect(() => {
-    const last = readProgress(courseId).last;
-    setResume(lessons.find((lesson) => lesson.id === last) ?? null);
-  }, [courseId, lessons]);
+export function HeroCta({ courseId, lessons }: { courseId: string; lessons: ResumeLesson[] }) {
+  const resume = useResume(courseId, lessons);
 
   const first = lessons[0];
   if (!first) return null;
