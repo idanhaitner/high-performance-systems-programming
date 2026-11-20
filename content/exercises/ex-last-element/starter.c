@@ -1,3 +1,0 @@
-int *last_element(int *a, int n) {
-    return a;
-}
