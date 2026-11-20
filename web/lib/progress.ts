@@ -30,3 +30,15 @@ export function writeProgress(courseId: string, progress: Progress) {
   }
   window.dispatchEvent(new Event("study-progress"));
 }
+
+export type ResumeLesson = { id: string; title: string; lecture: number };
+
+// The lesson the student opened last, if it is still part of the course.
+export function findResume<T extends { id: string }>(lessons: T[], last: string | undefined): T | null {
+  return lessons.find((lesson) => lesson.id === last) ?? null;
+}
+
+// The label of the landing page's start button: the first lecture for a new student, their lecture after that.
+export function startLabel(resume: ResumeLesson | null) {
+  return resume ? `Continue lecture ${resume.lecture}` : "Start lecture 1";
+}
