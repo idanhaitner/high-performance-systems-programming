@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .a { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4b3cf5; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="330" fill="#f7f6ff"/>
+  <rect x="16" y="14" width="688" height="302" rx="12" fill="none" stroke="#4f4a75" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="32" y="40" class="t" font-size="16" font-weight="700">One process</text>
+
+  <g class="step" style="animation-delay:0.08s">
+  <text x="32" y="72" class="m" font-size="14" font-weight="700">Shared by every thread</text>
+  <rect x="32" y="84" width="152" height="44" rx="8" fill="#17784f"/><text x="108" y="111" class="w" font-size="14" font-weight="700" text-anchor="middle">Code</text>
+  <rect x="198" y="84" width="152" height="44" rx="8" fill="#17784f"/><text x="274" y="111" class="w" font-size="14" font-weight="700" text-anchor="middle">Global variables</text>
+  <rect x="364" y="84" width="152" height="44" rx="8" fill="#17784f"/><text x="440" y="111" class="w" font-size="14" font-weight="700" text-anchor="middle">Heap (malloc)</text>
+  <rect x="530" y="84" width="158" height="44" rx="8" fill="#17784f"/><text x="609" y="111" class="w" font-size="14" font-weight="700" text-anchor="middle">Open files</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.3s">
+  <text x="32" y="166" class="m" font-size="14" font-weight="700">Private to each thread</text>
+  <g>
+    <rect x="32" y="178" width="208" height="110" rx="10" fill="#ffffff" stroke="#2f4fd6" stroke-width="2"/>
+    <text x="136" y="202" class="t" font-size="15" font-weight="700" text-anchor="middle">Thread 0</text>
+    <text x="136" y="228" class="m" font-size="14" text-anchor="middle">its own stack</text>
+    <text x="136" y="250" class="m" font-size="14" text-anchor="middle">its own registers</text>
+    <text x="136" y="272" class="m" font-size="14" text-anchor="middle">its own program counter</text>
+  </g>
+  <g>
+    <rect x="256" y="178" width="208" height="110" rx="10" fill="#ffffff" stroke="#2f4fd6" stroke-width="2"/>
+    <text x="360" y="202" class="t" font-size="15" font-weight="700" text-anchor="middle">Thread 1</text>
+    <text x="360" y="228" class="m" font-size="14" text-anchor="middle">its own stack</text>
+    <text x="360" y="250" class="m" font-size="14" text-anchor="middle">its own registers</text>
+    <text x="360" y="272" class="m" font-size="14" text-anchor="middle">its own program counter</text>
+  </g>
+  <g>
+    <rect x="480" y="178" width="208" height="110" rx="10" fill="#ffffff" stroke="#2f4fd6" stroke-width="2"/>
+    <text x="584" y="202" class="t" font-size="15" font-weight="700" text-anchor="middle">Thread 2</text>
+    <text x="584" y="228" class="m" font-size="14" text-anchor="middle">its own stack</text>
+    <text x="584" y="250" class="m" font-size="14" text-anchor="middle">its own registers</text>
+    <text x="584" y="272" class="m" font-size="14" text-anchor="middle">its own program counter</text>
+  </g>
+  </g>
+
+  <g class="step" style="animation-delay:0.5s">
+  <text x="360" y="306" class="a" font-size="14" font-weight="700" text-anchor="middle">Sharing is cheap, and it is also where threads can get in each other's way.</text>
+  </g>
+</svg>

@@ -8,8 +8,9 @@ summary: >
   you how memory works, along with the Linux command line. Then you learn to
   measure how long a program takes, and how the processor's cache, a small and
   very fast memory, rewards code that reads nearby values in order. Last you
-  split a job across the several cores of one processor with OpenMP, and across
-  the thousands of tiny workers on a graphics card with CUDA. No prior C or
+  split a job across the several cores of one processor, first with threads
+  and then with OpenMP, and across the thousands of tiny workers on a graphics
+  card with CUDA. No prior C or
   systems knowledge is assumed. Each lesson has short explanations and practice
   questions.
 
@@ -46,6 +47,8 @@ changelog:
     note: Added Lecture 4, code optimization, together with the fourth practice session (Tutorial 4), as seven lessons on measuring before you optimize, what the compiler does for you, the processor's pipeline, branch prediction, what the compiler cannot do because of hidden effects and aliasing, loop unrolling and multiple running totals, and a playbook that puts it all together. The practice has eleven coding exercises and a lab that times branches, running totals, and compiler options.
   - date: 2026-11-20
     note: Made every lecture's practice much shorter. Each one now has about a dozen steps on the lecture's main ideas, a few questions and four coding exercises, then its lab, with a shorter introduction.
+  - date: 2026-11-23
+    note: Added Lecture 5, threads in C with Pthreads, together with the fifth practice session (Tutorial 5), as eight lessons on what a thread is, starting and joining threads, passing input and getting results, splitting work into ranges, race conditions, mutexes and deadlock, atomics with barriers and condition variables, and measuring speedup on a full parallel program. The practice has four coding exercises with real threads and a lab that measures speedup on your own computer.
 
 lectures:
   - id: lecture-1
@@ -99,6 +102,20 @@ lectures:
       step-by-step plan for speeding up any program.
     topics: [measure-first, compiler-optimizations, pipeline, branch-prediction, compiler-limits, unrolling-and-accumulators, optimization-playbook]
     session: sessions/lecture-4.md
+  - id: lecture-5
+    number: 5
+    title: Threads in C
+    summary: >
+      How one program can use several processor cores at once. A thread is one
+      path of work inside a running program, and all the threads of a program
+      share its memory. You start threads and wait for them, give each one its
+      own input and a place for its result, and split an array so each thread
+      handles its own part. Then what goes wrong when two threads change the
+      same value, and how locks and indivisible updates prevent it, without
+      making the threads wait for each other forever. It ends by measuring how
+      much faster the threaded program really is.
+    topics: [threads-and-processes, creating-threads, thread-arguments, splitting-work, race-conditions, mutexes-and-deadlock, atomics-and-coordination, parallel-speedup]
+    session: sessions/lecture-5.md
 
 sources:
   - path: "Lecture 1 - Introduction.pdf"
@@ -234,6 +251,24 @@ sources:
       - prac-what-the-compiler-did
       - prac-flag-speedup
       - prac-pointer-overhead
+  - path: "Lecture 5 - Pthreads in C.pdf"
+    type: lecture
+    status: incorporated
+    note: "Processes and threads, shared and private state, pthread_create and pthread_join, the thread function, passing arguments and the loop-counter bug, returning results, partitioning work and combining partial results, race conditions and lost updates, critical sections and mutexes, lock granularity, deadlock and lock order, measuring speedup and efficiency, error checking, joinable and detached threads, pthread_exit, atomics and a spinlock, atomics against mutexes, barriers, a parallel maximum, histograms, a bank transfer, parallel search, and dynamic work distribution."
+    problems:
+      - prac-what-is-shared
+      - prac-arg-lifetime
+      - prac-race-trace
+      - prac-bank-deadlock
+      - prac-ticket-order
+  - path: "Tutorial5.pdf"
+    type: exercise
+    status: incorporated
+    note: "Tutorial 5: the thread function, creating and joining a thread and checking its return code, what happens when main does not wait, many threads, passing several values in a structure, which output orders are possible, a parallel record processor with an arena, splitting records into ranges, a context structure per worker, a race on a shared arena found with ThreadSanitizer, one arena per worker, checking against the one-thread checksum, and measured speedup against thread overhead."
+    problems:
+      - prac-join-order
+      - prac-split-ten
+      - prac-measure-threads
 topics:
   - id: why-low-level
     file: topics/why-low-level.md
@@ -472,6 +507,62 @@ topics:
     summary: "How to tell what limits a loop and pick the fix that matches, how the way you ask for memory changes speed, and a step-by-step plan for any program."
     exam_weight: taught
     prerequisites: [unrolling-and-accumulators]
+    unlocks: [threads-and-processes]
+  - id: threads-and-processes
+    file: topics/threads-and-processes.md
+    title: "Threads: several workers inside one program"
+    summary: "What a thread is, why a program might want several, and which memory all the threads of a program share and which each one keeps to itself."
+    exam_weight: taught
+    prerequisites: [optimization-playbook]
+    unlocks: [creating-threads]
+  - id: creating-threads
+    file: topics/creating-threads.md
+    title: Starting a thread and waiting for it
+    summary: "Starting a thread with pthread_create, waiting for it with pthread_join, why threads can print in any order, and checking for errors."
+    exam_weight: taught
+    prerequisites: [threads-and-processes]
+    unlocks: [thread-arguments]
+  - id: thread-arguments
+    file: topics/thread-arguments.md
+    title: Giving a thread its input and getting its result
+    summary: "Passing a thread its input through one pointer, why every thread needs its own object, and two ways to get a result back."
+    exam_weight: taught
+    prerequisites: [creating-threads]
+    unlocks: [splitting-work]
+  - id: splitting-work
+    file: topics/splitting-work.md
+    title: Splitting work across threads
+    summary: "Cutting an array into ranges, one per thread, letting each thread write only its own answer, and combining the answers after waiting for every thread."
+    exam_weight: taught
+    prerequisites: [thread-arguments]
+    unlocks: [race-conditions]
+  - id: race-conditions
+    file: topics/race-conditions.md
+    title: "Race conditions: when threads share a variable"
+    summary: "Why two threads that add to the same counter lose updates, why such bugs can pass tests, and a tool that finds them."
+    exam_weight: taught
+    prerequisites: [splitting-work]
+    unlocks: [mutexes-and-deadlock]
+  - id: mutexes-and-deadlock
+    file: topics/mutexes-and-deadlock.md
+    title: "Locks: mutexes and deadlock"
+    summary: "A lock that lets one thread at a time change shared data, how to lock rarely so threads do not wait, and how two locks can make threads wait forever."
+    exam_weight: taught
+    prerequisites: [race-conditions]
+    unlocks: [atomics-and-coordination]
+  - id: atomics-and-coordination
+    file: topics/atomics-and-coordination.md
+    title: "Atomics, and making threads wait for each other"
+    summary: "Updating one shared value in a single step with no lock, handing out work with it, and making threads wait for each other with barriers and condition variables."
+    exam_weight: taught
+    prerequisites: [mutexes-and-deadlock]
+    unlocks: [parallel-speedup]
+  - id: parallel-speedup
+    file: topics/parallel-speedup.md
+    title: "Speedup, and a parallel program from start to end"
+    summary: "Measuring how much faster threads made a program, why more threads can be slower, and a full parallel program built and checked step by step."
+    exam_weight: taught
+    prerequisites: [atomics-and-coordination]
     unlocks: []
 
 glossary:
@@ -914,4 +1005,66 @@ glossary:
   - term: baseline
     topic: optimization-playbook
     definition: The time of the original code, measured with the real build options, that every optimized version is compared against.
+  - term: core
+    topic: threads-and-processes
+    definition: One of the separate units inside a processor chip that can each run instructions at the same time. A chip with 8 cores can run 8 threads at once.
+  - term: thread
+    topic: threads-and-processes
+    definition: One independent path of execution inside a running program. A program starts with one thread, which runs main, and can start more. All the threads of a program share its memory, but each has its own stack.
+  - term: Pthreads
+    topic: threads-and-processes
+    definition: Short for POSIX threads, the standard C library for creating and coordinating threads on Linux and macOS. You include pthread.h and build with -pthread.
+  - term: pthread_create
+    code: true
+    topic: creating-threads
+    definition: Starts a new thread that runs a given function with one pointer as its argument, and stores the new thread's ID. It returns 0 on success and an error number on failure.
+  - term: pthread_join
+    code: true
+    topic: creating-threads
+    definition: Waits until a given thread has finished, and can collect the pointer that the thread returned. After it returns, everything that thread did is complete.
+  - term: detached thread
+    topic: creating-threads
+    definition: A thread that nobody will join. It cleans up after itself when it finishes, and its return value is lost. You make one with pthread_detach.
+  - term: partition
+    topic: splitting-work
+    definition: A way of cutting a job, such as the indexes of an array, into pieces that do not overlap and together cover everything, so each thread gets one piece.
+  - term: race condition
+    topic: race-conditions
+    definition: A bug where the result depends on the timing of threads, because two of them use the same memory at once, at least one writes, and nothing makes them take turns.
+  - term: lost update
+    topic: race-conditions
+    definition: A change to a shared value that disappears because another thread read the old value and then wrote over it.
+  - term: critical section
+    topic: race-conditions
+    definition: A piece of code that uses shared data and must not be run by two threads at the same time.
+  - term: ThreadSanitizer
+    topic: race-conditions
+    definition: A checker built into gcc and clang, turned on with -fsanitize=thread, that watches a running program and reports two threads using the same memory without taking turns.
+  - term: mutex
+    topic: mutexes-and-deadlock
+    definition: A lock that at most one thread can hold at a time. A thread locks it before a critical section and unlocks it afterwards, and other threads that want it wait.
+  - term: contention
+    topic: mutexes-and-deadlock
+    definition: Several threads wanting the same lock, or the same memory, at the same moment, so that some of them must wait.
+  - term: deadlock
+    topic: mutexes-and-deadlock
+    definition: A state in which threads each wait for a lock that another of them holds, in a circle, so none of them can ever continue. Taking locks in one fixed order prevents it.
+  - term: atomic operation
+    topic: atomics-and-coordination
+    definition: An operation that reads or changes one shared value in a single indivisible step, so no other thread can see it half done. In C they come from stdatomic.h.
+  - term: spinlock
+    topic: atomics-and-coordination
+    definition: A lock where a waiting thread keeps checking in a loop instead of sleeping. It wastes processor time, so it suits only very short waits.
+  - term: barrier
+    topic: atomics-and-coordination
+    definition: A meeting point for a group of threads. Each thread that reaches it waits until all of them have, and then they all continue.
+  - term: condition variable
+    topic: atomics-and-coordination
+    definition: A way for a thread to sleep until another thread tells it that some condition may now be true. It is always used together with a mutex.
+  - term: speedup
+    topic: parallel-speedup
+    definition: How many times faster a program runs on p threads than on one, T(1) divided by T(p). A speedup below 1 means the threads made it slower.
+  - term: efficiency
+    topic: parallel-speedup
+    definition: The speedup divided by the number of threads. It is 100% when p threads make a program exactly p times faster.
 exams: []

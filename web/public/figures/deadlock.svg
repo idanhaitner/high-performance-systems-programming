@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .bad { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #b4233f; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <defs>
+    <marker id="dl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1b1740"/>
+    </marker>
+    <marker id="dl-arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b4233f"/>
+    </marker>
+  </defs>
+
+  <rect width="720" height="280" fill="#f7f6ff"/>
+  <text x="24" y="32" class="t" font-size="16" font-weight="700">Two threads take two mutexes in opposite orders</text>
+
+  <g class="step" style="animation-delay:0.08s">
+  <rect x="40" y="60" width="170" height="54" rx="10" fill="#2f4fd6"/><text x="125" y="93" class="w" font-size="16" font-weight="700" text-anchor="middle">Thread A</text>
+  <rect x="510" y="60" width="170" height="54" rx="10" fill="#e8642c"/><text x="595" y="93" class="w" font-size="16" font-weight="700" text-anchor="middle">Thread B</text>
+  <rect x="40" y="170" width="170" height="54" rx="10" fill="#ffffff" stroke="#1b1740" stroke-width="2"/><text x="125" y="203" class="t" font-size="16" font-weight="700" text-anchor="middle">mutex 1</text>
+  <rect x="510" y="170" width="170" height="54" rx="10" fill="#ffffff" stroke="#1b1740" stroke-width="2"/><text x="595" y="203" class="t" font-size="16" font-weight="700" text-anchor="middle">mutex 2</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.3s">
+  <line x1="125" y1="170" x2="125" y2="118" stroke="#1b1740" stroke-width="2.5" marker-end="url(#dl-arrow)"/>
+  <text x="135" y="148" class="m" font-size="13">held by A</text>
+  <line x1="595" y1="170" x2="595" y2="118" stroke="#1b1740" stroke-width="2.5" marker-end="url(#dl-arrow)"/>
+  <text x="605" y="148" class="m" font-size="13">held by B</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.5s">
+  <line x1="210" y1="100" x2="506" y2="185" stroke="#b4233f" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#dl-arrow-bad)"/>
+  <line x1="510" y1="100" x2="214" y2="185" stroke="#b4233f" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#dl-arrow-bad)"/>
+  <text x="360" y="84" class="bad" font-size="13" text-anchor="middle">each waits for the other's mutex</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.7s">
+  <text x="24" y="262" class="bad" font-size="14" font-weight="700">The waits form a circle, so neither thread can ever continue.</text>
+  </g>
+</svg>

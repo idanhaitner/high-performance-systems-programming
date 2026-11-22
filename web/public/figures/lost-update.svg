@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .bad { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #b4233f; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="300" fill="#f7f6ff"/>
+  <text x="24" y="32" class="t" font-size="16" font-weight="700">Two threads run counter++ at the same time</text>
+
+  <text x="40" y="66" class="m" font-size="14" font-weight="700">Step</text>
+  <text x="190" y="66" class="m" font-size="14" font-weight="700" text-anchor="middle">Thread A</text>
+  <text x="410" y="66" class="m" font-size="14" font-weight="700" text-anchor="middle">Thread B</text>
+  <text x="610" y="66" class="m" font-size="14" font-weight="700" text-anchor="middle">counter in memory</text>
+
+  <g class="step" style="animation-delay:0.08s">
+  <text x="52" y="102" class="t" font-size="15">1</text>
+  <rect x="120" y="82" width="140" height="30" rx="6" fill="#2f4fd6"/><text x="190" y="102" class="w" font-size="14" text-anchor="middle">reads 10</text>
+  <text x="610" y="102" class="t" font-size="15" font-weight="700" text-anchor="middle">10</text>
+  </g>
+  <g class="step" style="animation-delay:0.25s">
+  <text x="52" y="144" class="t" font-size="15">2</text>
+  <rect x="340" y="124" width="140" height="30" rx="6" fill="#e8642c"/><text x="410" y="144" class="w" font-size="14" text-anchor="middle">reads 10</text>
+  <text x="610" y="144" class="t" font-size="15" font-weight="700" text-anchor="middle">10</text>
+  </g>
+  <g class="step" style="animation-delay:0.42s">
+  <text x="52" y="186" class="t" font-size="15">3</text>
+  <rect x="120" y="166" width="140" height="30" rx="6" fill="#2f4fd6"/><text x="190" y="186" class="w" font-size="14" text-anchor="middle">writes 11</text>
+  <text x="610" y="186" class="t" font-size="15" font-weight="700" text-anchor="middle">11</text>
+  </g>
+  <g class="step" style="animation-delay:0.6s">
+  <text x="52" y="228" class="t" font-size="15">4</text>
+  <rect x="340" y="208" width="140" height="30" rx="6" fill="#e8642c"/><text x="410" y="228" class="w" font-size="14" text-anchor="middle">writes 11</text>
+  <text x="610" y="228" class="bad" font-size="15" font-weight="700" text-anchor="middle">11, not 12</text>
+  </g>
+  <g class="step" style="animation-delay:0.78s">
+  <text x="24" y="278" class="bad" font-size="14" font-weight="700">Both threads read 10 before either wrote, so one of the two increments is lost.</text>
+  </g>
+</svg>
