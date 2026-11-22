@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" role="img">
+
+<style>
+  .t { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #1b1740; }
+  .m { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4f4a75; }
+  .w { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #ffffff; }
+  .a { font-family: Figtree, Heebo, system-ui, sans-serif; fill: #4b3cf5; }
+  .mono { font-family: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace; }
+  .step { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .step { animation: appear 0.45s ease both; }
+  }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none !important; opacity: 1 !important; }
+  }
+</style>
+
+  <rect width="720" height="250" fill="#f7f6ff"/>
+  <text x="24" y="32" class="t" font-size="16" font-weight="700">pthread_join makes main wait until the worker has finished</text>
+
+  <g class="step" style="animation-delay:0.08s">
+  <text x="24" y="92" class="t" font-size="15" font-weight="700">main</text>
+  <rect x="100" y="72" width="130" height="30" rx="6" fill="#1b1740"/><text x="165" y="92" class="w mono" font-size="12" text-anchor="middle">pthread_create</text>
+  <line x1="230" y1="87" x2="270" y2="87" stroke="#1b1740" stroke-width="3"/>
+  <rect x="270" y="72" width="110" height="30" rx="6" fill="#1b1740"/><text x="325" y="92" class="w mono" font-size="12" text-anchor="middle">pthread_join</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.3s">
+  <text x="24" y="162" class="t" font-size="15" font-weight="700">worker</text>
+  <line x1="165" y1="102" x2="165" y2="142" stroke="#4f4a75" stroke-width="2" stroke-dasharray="4 4"/>
+  <rect x="165" y="142" width="390" height="30" rx="6" fill="#e8642c"/><text x="360" y="162" class="w mono" font-size="12" text-anchor="middle">worker() runs</text>
+  </g>
+
+  <g class="step" style="animation-delay:0.5s">
+  <rect x="380" y="72" width="175" height="30" rx="6" fill="#ffffff" stroke="#4f4a75" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="467" y="92" class="m" font-size="13" text-anchor="middle">waiting in join</text>
+  <line x1="555" y1="142" x2="555" y2="102" stroke="#4f4a75" stroke-width="2" stroke-dasharray="4 4"/>
+  <rect x="555" y="72" width="140" height="30" rx="6" fill="#1b1740"/><text x="625" y="92" class="w" font-size="13" text-anchor="middle">main continues</text>
+  <text x="24" y="210" class="m" font-size="14">Between create and join, main and the worker run at the same time, in any order.</text>
+  <text x="24" y="232" class="a" font-size="14" font-weight="700">After join returns, everything the worker did is finished.</text>
+  </g>
+</svg>

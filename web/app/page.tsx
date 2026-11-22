@@ -211,9 +211,9 @@ export default function HomePage() {
         <div className="wrap">
           <h2 className="sec-title" id="syllabus-title">What the course covers</h2>
           <p className="sec-intro">
-            Eight subjects in three parts, in the order you study them. You start with C, learn to make programs fast,
-            and finish by running work on many processor cores and on a graphics card. Subjects 1 to 4 are Lectures 1
-            to 4 and are already on the site. The rest arrive through the semester.
+            Nine subjects in three parts, in the order you study them. You start with C, learn to make programs fast,
+            and finish by running work on many processor cores and on a graphics card. Subjects 1 to 5 are Lectures 1
+            to 5 and are already on the site. The rest arrive through the semester.
           </p>
           {PARTS.map((part) => (
             <div className="syl-part" key={part.id}>
@@ -303,7 +303,7 @@ export default function HomePage() {
               ...lecture,
               practiceSummary: practiceSummary(course.sessions.find((session) => session.id === lecture.sessionId)),
             }))}
-            later="More lectures arrive through the semester: memory shared by many processor cores, splitting work across cores, and graphics cards."
+            later="More lectures arrive through the semester: how processor cores keep shared memory in agreement, splitting loops across cores with OpenMP, and graphics cards."
           />
         </div>
       </section>

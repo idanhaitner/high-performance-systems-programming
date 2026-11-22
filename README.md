@@ -10,13 +10,13 @@ No prior C or systems knowledge is assumed. Every term is explained before it is
 
 ## What's in the course
 
-The course has 4 lectures so far. Read a lecture's lessons first, then do its practice.
+The course has 5 lectures so far. Read a lecture's lessons first, then do its practice.
 
-| | Lecture 1: Data, memory, and running programs | Lecture 2: Memory management | Lecture 3: Memory layout, alignment, and the cache | Lecture 4: Code optimization |
-| --- | --- | --- | --- | --- |
-| **Lessons** | 8 | 6 | 9 | 7 |
-| **Coding exercises** | 16 | 12 | 14 | 11 |
-| **Lab** | Stride timing | Stack limit | Matrix multiplication | Branches and running totals |
+| | Lecture 1: Data, memory, and running programs | Lecture 2: Memory management | Lecture 3: Memory layout, alignment, and the cache | Lecture 4: Code optimization | Lecture 5: Threads in C |
+| --- | --- | --- | --- | --- | --- |
+| **Lessons** | 8 | 10 | 9 | 7 | 8 |
+| **Coding exercises** | 4 | 4 | 4 | 4 | 4 |
+| **Lab** | Stride timing | Stack limit | Matrix multiplication | Branches and running totals | Measuring thread speedup |
 
 **Lecture 1 lessons**
 
@@ -31,12 +31,16 @@ The course has 4 lectures so far. Read a lecture's lessons first, then do its pr
 
 **Lecture 2 lessons**
 
-1. Pointers to pointers
-2. Pointer arithmetic and pointer mistakes
-3. Pointers to functions
-4. Memory on request: `malloc` and `free`
-5. Resizing memory and arrays of strings
-6. Stack or heap?
+1. Changing a value's type: casting
+2. Pointers to pointers
+3. Pointer arithmetic and pointer mistakes
+4. Pointers to functions
+5. How function calls use the stack
+6. Memory on request: `malloc` and `free`
+7. Resizing memory and arrays of strings
+8. Stack or heap?
+9. Structures on the stack and on the heap
+10. Finding memory bugs: GDB and Valgrind
 
 **Lecture 3 lessons**
 
@@ -59,6 +63,17 @@ The course has 4 lectures so far. Read a lecture's lessons first, then do its pr
 5. What the compiler cannot do: hidden effects and aliasing
 6. Loop unrolling and multiple accumulators
 7. Putting it together: a playbook for faster code
+
+**Lecture 5 lessons**
+
+1. Threads: several workers inside one program
+2. Starting a thread and waiting for it
+3. Giving a thread its input and getting its result
+4. Splitting work across threads
+5. Race conditions: when threads share a variable
+6. Locks: mutexes and deadlock
+7. Atomics, and making threads wait for each other
+8. Speedup, and a parallel program from start to end
 
 ## How you learn on the site
 
